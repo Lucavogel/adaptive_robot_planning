@@ -1,0 +1,9 @@
+{
+  "HotDay": {"causes": "Dehydration"},
+  "Dehydration": {"motivates": "DrinkWater"},
+  "DrinkWater": {"requires": "GlassOfWater"},
+  "Stretching": {"increases": "BodyTemperature"},
+  "BodyTemperature": {"contributes_to": "Dehydration"},
+  "GlassOfWater": {"is_a": "Object"},
+  "Human": {"performs": "Stretching"}
+}
