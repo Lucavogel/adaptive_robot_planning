@@ -9,3 +9,5 @@ This repo implements the first simulation loop for adaptive robot planning:
 - Full execution pipeline (main.py)
 
 Goal: Full pipeline reasoning in simulation for Week 1.
+
+pip install -r requirements.txt
