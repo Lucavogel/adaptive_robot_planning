@@ -7,11 +7,26 @@ client = OpenAI(
 )
 
 # Scenario: the human stretches and says "It's hot"; robot sees a glass of water
-prompt = (
-    "The robot is guiding a human through morning stretches. "
-    "The human stretches their arms up and says: 'It's a very hot day.' "
-    "There is a glass of water on the table nearby. "
-    "What should the robot do next?"
+prompt = ("""
+    The robot is guiding a human through a set of morning stretches.
+
+Context:
+- The human stretches their arms upward.
+- While stretching, the human says: "It's a very hot day."
+- There is a glass of water on the table nearby.
+
+Task:
+1. Reason step by step what the robot should do next, using commonsense and situational awareness.
+2. The reasoning should consider both verbal (what the human said) and visual context (glass of water).
+3. At the end, provide a clear, single-line **output** that states what the robot is going to say.
+
+Format your response like:
+
+Reasoning:
+<your reasoning here>
+
+Output: <the robot's next action>
+"""
 )
 
 # Send message to LLaMA 3.3 via OpenRouter
