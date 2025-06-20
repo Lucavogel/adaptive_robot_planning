@@ -33,6 +33,11 @@ def main():
         # Prochaine étape
         next_exercise = exercise_sequence[i + 1] if i + 1 < len(exercise_sequence) else "None"
 
+        # --- NOUVEAU : Prendre une image et détecter les objets ---
+        perception_context = get_environment_context(show_window=True)
+        print(perception_context)
+        # ----------------------------------------------------------
+
         # Intro du robot
         robot_intro = f"Robot: Let's start with the next exercise: {exercise}."
         print(robot_intro)
@@ -47,10 +52,12 @@ def main():
             dialogue_history.append(f"Human: {human_input}")
 
         while True:
-            context_description = get_environment_context() + "\n" + "\n".join(dialogue_history)
+            # --- Utilise la perception dans le contexte ---
+            context_description = perception_context + "\n" + "\n".join(dialogue_history)
+            # ----------------------------------------------
 
             # Appel LLM
-            llm_response = reason_with_context(
+            llm_response = reason_with_context_ollama(
                 context_description,
                 current_exercise=exercise,
                 next_exercise=next_exercise
@@ -69,7 +76,7 @@ def main():
             if "NEXT_EXERCISE:" in action:
                 break
 
-            # Sinon, on continue la conversationco
+            # Sinon, on continue la conversation
             print("🧍 Say something to the robot (stop talking = end)...")
             human_input = listen_until_silent()
             
