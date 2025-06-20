@@ -1,9 +1,102 @@
 {
-  "HotDay": {"causes": "Dehydration"},
-  "Dehydration": {"motivates": "DrinkWater"},
-  "DrinkWater": {"requires": "GlassOfWater"},
-  "Stretching": {"increases": "BodyTemperature"},
-  "BodyTemperature": {"contributes_to": "Dehydration"},
-  "GlassOfWater": {"is_a": "Object"},
-  "Human": {"performs": "Stretching"}
+  "Stretching": {
+    "increases": "BodyTemperature",
+    "requires": "CalmEnvironment"
+  },
+  "BodyTemperature": {
+    "contributes_to": "Fatigue",
+    "causes": "Thirst"
+  },
+  "Fatigue": {
+    "motivates": "TakeBreak",
+    "reduces": "Performance",
+    "can_be_detected_by": "SlowMovements"
+  },
+  "Thirst": {
+    "motivates": "DrinkWater",
+    "is_alleviated_by": "Hydration",
+    "is_a": "Discomfort"
+  },
+  "DrinkWater": {
+    "requires": "GlassOfWater",
+    "satisfies": "Hydration",
+    "is_less_relevant_after": "RecentDrink"
+  },
+  "Hydration": {
+    "is_valid_for": "ShortDuration"
+  },
+  "TakeBreak": {
+    "helps_with": "Fatigue",
+    "helps_with_alt": "BreathingRegulation"
+  },
+  "ExerciseSession": {
+    "contains": ["NeckStretch", "ToeTouch", "ArmRaise"],
+    "goal": "BodyRelaxation"
+  },
+  "NeckStretch": {
+    "targets": "Neck",
+    "duration": "30s",
+    "reduces": "NeckTension"
+  },
+  "ToeTouch": {
+    "targets": "Hamstrings",
+    "requires_flexibility": "Moderate",
+    "can_cause": "LowerBackStrain"
+  },
+  "ArmRaise": {
+    "targets": "UpperBack",
+    "reduces": "ShoulderStiffness"
+  },
+  "Pain": {
+    "suggests": "StopExercise",
+    "can_be_detected_by": "TouchingAffectedArea"
+  },
+  "UserState": {
+    "can_be": ["Tired", "Thirsty", "Motivated", "InPain"],
+    "can_change_due_to": ["Stretching", "EnvironmentalFactors"]
+  },
+  "HotDay": {
+    "increases": "BodyTemperature",
+    "motivates": "DrinkWater"
+  },
+  "Observation": {
+    "TouchingLowerBack": "IndicatesBackPain",
+    "Yawn": "IndicatesFatigue",
+    "HoldingNeck": "IndicatesNeckTension"
+  },
+  "GlassOfWater": {
+    "is_a": "Object",
+    "affords": "DrinkWater",
+    "location_hint": "OnTable",
+    "is_relevant_when": "Thirst",
+    "actions": ["PickUp", "Drink"]
+  },
+  "Towel": {
+    "is_a": "Object",
+    "affords": "DrySweat",
+    "location_hint": "OnTable",
+    "is_relevant_when": "Sweating",
+    "can_indicate": "Exertion",
+    "actions": ["PickUp", "Use"]
+
+  },
+  "Banana": {
+    "is_a": "Object",
+    "affords": "QuickEnergyBoost",
+    "location_hint": "OnTable",
+    "is_relevant_when": "Fatigue",
+    "actions": ["PickUp", "Eat"]
+  },
+  "DrySweat": {
+    "requires": "Towel",
+    "helps_with": "Comfort"
+  },
+  "QuickEnergyBoost": {
+    "requires": "Banana",
+    "alleviates": "Fatigue"
+  },
+  "Sweating": {
+    "indicates": "Exertion",
+    "motivates": "DrySweat"
+  }
 }
