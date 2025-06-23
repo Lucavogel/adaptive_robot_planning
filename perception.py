@@ -40,10 +40,9 @@ def get_environment_context(show_window=True):
         return f"- The robot sees: {obj_list}."
     else:
         return "- The robot sees: nothing."
-"""
-def get_environment_context():
+
+def get_environment_context_test():
 
     return (
         "- The robot sees: a glass of water , a towel, and a banana."
     )
-"""

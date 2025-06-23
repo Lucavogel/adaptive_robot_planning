@@ -31,7 +31,6 @@ your stretching plan is :
 Stretch your arms
 Touch your toes
 Rotate your neck
-stretching session finished
 
 Current exercise: {current_exercise}
 Next exercise: {next_exercise}
@@ -51,10 +50,12 @@ Your instructions:
 5. Do not offer the same help more than once unless the user expresses a new need.
 6. Speak with short, warm, and simple sentences. Use friendly language. Congratulate or encourage when appropriate.
 7. Ask a caring question if you think the user may be struggling or needs support.
-8. if the user is asking a question alweys answer it with something related to that question, even if it is not related to the current exercise.
+8. If the user is asking a question, always answer it with something related to that question, even if it is not related to the current exercise.
+9. If you want the robot to point to an object detected in front of it (for example, a glass, a banana, or a towel), start your Output line with: POINT_<OBJECT> (for example: POINT_GLASS, POINT_BANANA, POINT_TOWEL), then continue your sentence naturally.
 
 IMPORTANT:
 - If it's appropriate to start the next exercise, begin your Output line with: NEXT_EXERCISE:
+- If you want the robot to point to an object, begin your Output line with: POINT_<OBJECT> (replace <OBJECT> by the object name in English and uppercase, e.g., POINT_GLASS).
 - Otherwise, respond naturally and empathetically to the user.
 
 Format your reply like this and only one time:
@@ -70,5 +71,15 @@ Output: <what the robot should say or ask next in 1–2 sentences>
         messages=[{"role": "user", "content": prompt}],
         extra_body={}
     )
+
+    # Ajout de la vérification de None et du contenu attendu
+    if (
+        response is None or
+        not hasattr(response, "choices") or
+        not response.choices or
+        not hasattr(response.choices[0], "message") or
+        not hasattr(response.choices[0].message, "content")
+    ):
+        return "Sorry, I can't answer right now (API error or rate limit)."
 
     return response.choices[0].message.content
