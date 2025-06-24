@@ -3,11 +3,13 @@ import queue
 import vosk
 import json
 import time
+import os
 
 q = queue.Queue()
 
-# Load your Vosk model (download and place the folder if needed)
-model = vosk.Model("vosk-model-small-en-us-0.15")  # or 'vosk-model-small-fr-0.22' for French
+# 🔧 Chemin vers le modèle Vosk
+model_path = os.path.join(os.path.dirname(__file__), "vosk-model-small-en-us-0.15")
+model = vosk.Model(model_path)
 
 def _callback(indata, frames, time_info, status):
     if status:

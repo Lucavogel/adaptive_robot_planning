@@ -1,0 +1,14 @@
+<launch>
+  <!-- Lance le driver pour la webcam -->
+  <node pkg="usb_cam" type="usb_cam_node" name="webcam">
+    <param name="video_device" value="/dev/video0"/>
+    <param name="image_width" value="640"/>
+    <param name="image_height" value="480"/>
+    <param name="pixel_format" value="yuyv"/>
+    <param name="camera_frame_id" value="webcam"/>
+  </node>
+
+  <!-- Affiche l'image (optionnel, utile pour debug) -->
+  <node pkg="rqt_image_view" type="rqt_image_view" name="image_view" args="/usb_cam/image_raw"/>
+</launch>
+

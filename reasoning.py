@@ -1,13 +1,19 @@
 import json
 from openai import OpenAI
 from config import API_KEY, MODEL, BASE_URL
+import os
 
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
-def load_knowledge_graph(path="knowledge_graph.json"):
+
+
+def load_knowledge_graph(path=None):
+    if path is None:
+        path = os.path.join(os.path.dirname(__file__), "knowledge_graph.json")
     with open(path, "r") as f:
         kg = json.load(f)
     return kg
+
 
 def format_kg(kg: dict) -> str:
     lines = []
