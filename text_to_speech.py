@@ -4,6 +4,8 @@ import os
 import pygame
 
 def speak(text, lang="en"):
+    if not text or not text.strip():
+        raise AssertionError("No text to speak")
     # Create temp file and close it before playback
     fp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
     try:

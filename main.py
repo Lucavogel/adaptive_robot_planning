@@ -6,6 +6,21 @@ from perception import get_environment_context_test
 import re
 from speech_to_text import listen_until_silent
 from text_to_speech import speak
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+from planner import clean_llm_response
+
+class LLMCommander(Node):
+    def __init__(self):
+        super().__init__('llm_commander')
+        self.publisher = self.create_publisher(String, 'target_point', 10)
+
+    def send_command(self, command):
+        msg = String()
+        msg.data = command
+        self.publisher.publish(msg)
+        self.get_logger().info(f'Command sent: {command}')
 
 memory = []
 
@@ -21,6 +36,9 @@ def is_question(text):
     return "?" in text or text.startswith(("would", "shall", "do you", "should", "are you", "is it", "did you"))
 def main():
     dialogue_history = []
+    rclpy.init()
+    commander_node = LLMCommander()
+
 
     intro_prompt = (
     "You are StretchBot, a friendly robot coach. "
@@ -36,82 +54,66 @@ def main():
     print("🤖", intro_response)
     action = extract_action_from_response(intro_response)
     print("✅ Robot Action:", action)
+    action = clean_llm_response(action)
     speak(action)
     dialogue_history.append(f"Robot: {action}")
     memory.append(action)
     
+    stop_routine = False  # Ajoute ce flag avant la boucle for
+
     for i, exercise in enumerate(exercise_sequence):
         print(f"\n➡️ Exercise {i+1}: {exercise}")
-
-        # Prochaine étape
         next_exercise = exercise_sequence[i + 1] if i + 1 < len(exercise_sequence) else "None"
-
-        # --- NOUVEAU : Prendre une image et détecter les objets ---
-        #perception_context = get_environment_context(show_window=True)
-        perception_context = get_environment_context_test()  # For testing purposes
+        perception_context = get_environment_context_test()
         print(perception_context)
-        # ----------------------------------------------------------
-
-
-        # Premier message de l’humain
         print("🧍 Say something to the robot (stop talking = end)...")
-        #human_input = listen_until_silent()
         human_input = input("You: ")
-        
         if human_input:
-            #print(f"\nYou: {human_input}")
             dialogue_history.append(f"Human: {human_input}")
 
         while True:
-            # --- Utilise la perception dans le contexte ---
             context_description = perception_context + "\n" + "\n".join(dialogue_history)
-            # ----------------------------------------------
-
-            # Appel LLM
             llm_response = reason_with_context(
                 context_description,
                 current_exercise=exercise,
                 next_exercise=next_exercise
             )
             print("\n🤖 Robot's reasoning:\n", llm_response)
-
-            # Extraction de l’action
             action = extract_action_from_response(llm_response)
             print("✅ Robot Action:", action)
-            speak(action)
+            
+            if "POINT_" in action:
+                match = re.search(r"(POINT_[A-Z_]+)", action)
+                if match:
+                    point_name = match.group(1)
+                    commander_node.send_command(point_name)
+            clean_action = clean_llm_response(action)
+            speak(clean_action)
             memory.append(action)
             dialogue_history.append(f"Robot: {action}")
 
             # Nouvelle logique : détection explicite du passage à l'exercice suivant
-            
+            if "STOP_ROUTINE" in action:
+                print("\n🛑 Routine interrompue par le robot.")
+                stop_routine = True   # Active le flag
+                break  # Sort de la boucle while
             if "NEXT_EXERCISE:" in action:
                 break
 
-            # Sinon, on continue la conversation
-            #print("🧍 Say something to the robot (stop talking = end)...")
-            #human_input = listen_until_silent()
             human_input = input("You: ")
             if human_input:
-                #print(f"\nYou: {human_input}")
-                dialogue_history.append(f"Human: {human_input}")        
+                dialogue_history.append(f"Human: {human_input}")
+
+        if stop_routine:   # Ajoute ce test juste après la boucle while
+            break
+        
     print("\n✅ Routine terminée.")
     print("\n--- Full Conversation Log ---")
     for line in dialogue_history:
         print(line)
 
-    outro_prompt = (
-    "You are StretchBot, a friendly robot coach. "
-    "The user has just finished all their stretching exercises. "
-    "Congratulate them in a warm, personalized way and encourage them for the rest of their day."
-)
-    outro_response = reason_with_context(
-    context_description="\n".join(dialogue_history),
-    current_exercise="",
-    next_exercise=""
-)
-    print("🤖", outro_response)
-    speak(outro_response)
-    dialogue_history.append(f"Robot: {outro_response}")
+    commander_node.destroy_node()
+    rclpy.shutdown()
 
 
 if __name__ == "__main__":
