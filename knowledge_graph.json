@@ -30,7 +30,7 @@
     "helps_with_alt": "BreathingRegulation"
   },
   "ExerciseSession": {
-    "contains": ["NeckStretch", "ToeTouch", "ArmRaise"],
+    "contains": ["lean", "ToeTouch", "ArmRaise"],
     "goal": "BodyRelaxation"
   },
   "NeckStretch": {
