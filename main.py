@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
-
+import rospy
+import re
 from reasoning import reason_with_context
 from planner import extract_action_from_response
-from perception import get_environment_context
+from perception import get_environment_context, get_latest_objects
 from speech_to_text import listen_until_silent
 from text_to_speech import speak
 from plan_and_execute import execute_llm_decision
-import re
 
-# Mémoire et séquence d'exercices
 memory = []
 exercise_sequence = [
     "Stretch your arms",
@@ -17,93 +16,83 @@ exercise_sequence = [
     "Rotate your neck"
 ]
 
-def clean(text):
-    return re.sub(r"[^\w\s]", "", text).strip().lower()
-
-def is_question(text):
-    text = text.lower()
-    return "?" in text or text.startswith(("would", "shall", "do you", "should", "are you", "is it", "did you"))
-
 def main():
+    rospy.init_node("adaptive_coach", anonymous=True)
     dialogue_history = []
 
-    # 🟢 Introduction
+    
     intro_response = reason_with_context(
         context_description="",
         current_exercise="",
         next_exercise=exercise_sequence[0]
     )
-
-    print("🤖", intro_response)
+    print("intro :", intro_response)
     action = extract_action_from_response(intro_response)
     speak(action)
     memory.append(action)
     dialogue_history.append(f"Robot: {action}")
 
-    # 🔁 Boucle d'exercices
+    # exercices loop
     for i, exercise in enumerate(exercise_sequence):
-        print(f"\n➡️ Exercise {i+1}: {exercise}")
-        next_exercise = exercise_sequence[i + 1] if i + 1 < len(exercise_sequence) else "None"
+        print(f"\n exercise {i+1}: {exercise}")
+        next_exercise = exercise_sequence[i + 1] if i + 1 < len(exercise_sequence) else ""
 
-        # 📷 Perception simulée
+        # get environment context
         perception_context = get_environment_context()
         print(perception_context)
 
-        # 🧍 Message de l’humain
-        print("🧍 Say something to the robot...")
-        # human_input = listen_until_silent()
-        human_input = input("You: ")
+        
+        current_objects = get_latest_objects()
+        if any(obj.lower() in ("cup", "bottle") for obj in current_objects):
+            fake_resp = 'Output: POINT_CUP "Here is a cup of water."'
+            execute_llm_decision(fake_resp)
+            speak("Here is a cup of water. Please take a sip!")
+            continue
+
+        # our input
+        human_input = input("Human: ")
         if human_input:
-            print(f"\nYou: {human_input}")
+            print(f"Human: {human_input}")
             dialogue_history.append(f"Human: {human_input}")
 
-        # 🔁 Interaction jusqu'à l'exercice suivant
-        while True:
-            context_description = perception_context + "\n" + "\n".join(dialogue_history)
-            llm_response = reason_with_context(
-                context_description,
-                current_exercise=exercise,
-                next_exercise=next_exercise
-            )
-            print("\n🤖 Robot's reasoning:\n", llm_response)
+        # call LLM 
+        llm_response = reason_with_context(
+            context_description=perception_context + "\n" + "\n".join(dialogue_history),
+            current_exercise=exercise,
+            next_exercise=next_exercise,
+            dialogue_history=dialogue_history
+        )
+        print("\n model reasoning:\n", llm_response)
 
-            # 🦾 Exécution éventuelle du mouvement
-            execute_llm_decision(llm_response)
+        execute_llm_decision(llm_response)
 
-            # 🗣️ Action parlée (sans POINT_XXX)
-            action = extract_action_from_response(llm_response)
-            print("✅ Robot Action:", action)
-            spoken_text = re.sub(r"POINT_[A-Z]+\b", "", action).strip()
-            speak(spoken_text)
+        action = extract_action_from_response(llm_response)
+        print(" ###Robot Action####", action)
+        spoken = re.sub(r"POINT_[A-Z]+", "", action).strip()
+        speak(spoken)
 
-            memory.append(action)
-            dialogue_history.append(f"Robot: {action}")
+        memory.append(action)
+        dialogue_history.append(f"######robot: {action}#####")
 
-            # Passage à l'exercice suivant ?
-            if "NEXT_EXERCISE:" in action:
-                break
+        # NEXT_EXERCISE
+        if action.startswith("NEXT_EXERCISE:"):
+            continue
 
-            # 🧍 Nouvelle entrée utilisateur
-            # human_input = listen_until_silent()
-            human_input = input("You: ")
-            if human_input:
-                dialogue_history.append(f"Human: {human_input}")
-
-    # 🎉 Fin de routine
-    print("\n✅ Routine terminée.")
-    print("\n--- Full Conversation Log ---")
+    print("\n end of routine")
+    print("\n############ full Conversation Log #############")
     for line in dialogue_history:
         print(line)
 
-    # 🎤 Message final
-    outro_response = reason_with_context(
+    # LLM conclusion
+    outro = reason_with_context(
         context_description="\n".join(dialogue_history),
         current_exercise="",
-        next_exercise=""
+        next_exercise="",
+        dialogue_history=dialogue_history
     )
-    print("🤖", outro_response)
-    speak(outro_response)
-    dialogue_history.append(f"Robot: {outro_response}")
+    print("robot output:", outro)
+    speak(outro)
+    dialogue_history.append(f"robot: {outro}")
 
 if __name__ == "__main__":
     main()

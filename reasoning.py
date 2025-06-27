@@ -28,7 +28,7 @@ def reason_with_context(context_description, current_exercise, next_exercise, di
 
     history_str = ""
     if dialogue_history:
-        history_str = "\nDialogue history:\n" + "\n".join(dialogue_history)
+        history_str = "\ndialogue history:\n" + "\n".join(dialogue_history)
 
     prompt = f"""
 You are StretchBot, a friendly and empathetic robot coach guiding a human through a safe and supportive morning stretching routine and normal conversations.
@@ -78,7 +78,6 @@ Output: <what the robot should say or ask next in 1–2 sentences>
         extra_body={}
     )
 
-    # Ajout de la vérification de None et du contenu attendu
     if (
         response is None or
         not hasattr(response, "choices") or

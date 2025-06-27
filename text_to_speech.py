@@ -4,12 +4,12 @@ import os
 import pygame
 
 def speak(text, lang="en"):
-    # Create temp file and close it before playback
+  
     fp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
     try:
         tts = gTTS(text=text, lang=lang)
         tts.save(fp.name)
-        fp.close()  # Close so pygame can access it
+        fp.close()  
 
         pygame.mixer.init()
         pygame.mixer.music.load(fp.name)

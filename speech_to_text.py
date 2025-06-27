@@ -11,13 +11,13 @@ q = queue.Queue()
 model_path = os.path.join(os.path.dirname(__file__), "vosk-model-small-en-us-0.15")
 model = vosk.Model(model_path)
 
-def _callback(indata, frames, time_info, status):
+def _callback(indata, status):
     if status:
         print(status)
     q.put(bytes(indata))
 
-def listen_until_silent(timeout=1.2):
-    print("🎤 Listening (stop talking for", timeout, "s to end)...")
+def listen_until_silent(timeout=1.8):
+    print(" Listening (stop talking for", timeout, "s to end)...")
     rec = vosk.KaldiRecognizer(model, 16000)
     silence_start = None
     full_text = ""
