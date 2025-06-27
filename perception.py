@@ -30,6 +30,9 @@ def get_environment_context(show_window=True):
             cv2.rectangle(annotated_frame, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (0,255,0), 2)
             cv2.putText(annotated_frame, label, (xyxy[0], xyxy[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 2)
 
+    # Print detected objects
+    print("Detected objects:", ", ".join(detected) if detected else "None")
+
     if show_window:
         cv2.imshow("YOLO Detection", annotated_frame)
         cv2.waitKey(2000)  # Affiche 2 secondes

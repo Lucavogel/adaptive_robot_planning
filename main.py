@@ -2,6 +2,7 @@ from reasoning import reason_with_context
 from reasoning_ollama import reason_with_context_ollama
 from planner import extract_action_from_response, clean_llm_response
 from perception import get_environment_context_test
+from perception import get_environment_context
 from speech_to_text import listen_until_silent
 from text_to_speech import speak
 import re
@@ -25,20 +26,87 @@ class LLMCommander(Node):
         self.publisher.publish(msg)
         self.get_logger().info(f'Command sent: {command}')
 
-class ExerciseMonitor(threading.Thread):
-    def __init__(self, exercise):
-        super().__init__()
-        self.exercise = exercise
-        self.status = "not yet"
-        self.finished = threading.Event()
-        self._lock = threading.Lock()
+def llm_interaction_thread(exercise, next_exercise, commander_node, stop_flag, dialogue_history, get_status_func, perception_context):
+    while not stop_flag['stop']:
+        exercise_status = get_status_func()
+        context_description = f"Exercise status: {exercise_status}\n{perception_context}"
+        print("🧍 Say something to the robot (speak, then stay silent to end)...")
+        #human_input = listen_until_silent(timeout=1.2)
+        human_input = input("You (text): ")  # For testing purposes, replace with listen_until_silent in production
+        if human_input:
+            print(f"You (speech): {human_input}")
+            dialogue_history.append(f"Human: {human_input}")
 
-    def run(self):
+        llm_response = reason_with_context(
+            context_description,
+            current_exercise=exercise,
+            next_exercise=next_exercise,
+            dialogue_history=dialogue_history
+        )
+        print("\n🤖 Robot's reasoning:\n", llm_response)
+        action = extract_action_from_response(llm_response)
+        print("✅ Robot Action:", action)
+
+        if "POINT_" in action:
+            match = re.search(r"(POINT_[A-Z_]+)", action)
+            if match:
+                point_name = match.group(1)
+                commander_node.send_command(point_name)
+
+        clean_action = clean_llm_response(action)
+        speak(clean_action)
+        dialogue_history.append(f"Robot: {action}")
+
+        if "STOP_ROUTINE" in action:
+            stop_flag['stop'] = True
+            break
+        if "NEXT_EXERCISE" in action:
+            break
+
+def main():
+    dialogue_history = []
+    rclpy.init()
+    commander_node = LLMCommander()
+
+    intro_response = reason_with_context("", "", exercise_sequence[0])
+    print("🤖", intro_response)
+    action = extract_action_from_response(intro_response)
+    print("✅ Robot Action:", action)
+    speak(clean_llm_response(action))
+    dialogue_history.append(f"Robot: {action}")
+    memory.append(action)
+
+    stop_flag = {"stop": False}
+
+    for i, exercise in enumerate(exercise_sequence):
+        if stop_flag["stop"]:
+            break
+
+        print(f"\n➡️ Exercise {i+1}: {exercise}")
+        next_exercise = exercise_sequence[i + 1] if i + 1 < len(exercise_sequence) else "None"
+
+        print("🧍 Fais l'exercice devant la caméra... (ESC pour quitter)")
+
+        # Get environment context in the main thread (with imshow)
+        perception_context = get_environment_context(show_window=True)
+
         mp_pose = mp.solutions.pose
         pose = mp_pose.Pose()
         mp_drawing = mp.solutions.drawing_utils
         cap = cv2.VideoCapture(0)
-        while not self.finished.is_set():
+        status = "not yet"
+
+        def get_status():
+            return status
+
+        # Pass perception_context to the LLM thread
+        llm_thread = threading.Thread(
+            target=llm_interaction_thread,
+            args=(exercise, next_exercise, commander_node, stop_flag, dialogue_history, get_status, perception_context)
+        )
+        llm_thread.start()
+
+        while not stop_flag["stop"]:
             success, image = cap.read()
             if not success:
                 break
@@ -56,132 +124,21 @@ class ExerciseMonitor(threading.Thread):
                 h, w, _ = image.shape
                 for idx, landmark in enumerate(results.pose_landmarks.landmark):
                     x, y = int(landmark.x * w), int(landmark.y * h)
-                    cv2.putText(
-                        image, str(idx), (x, y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1, cv2.LINE_AA
-                    )
-                with self._lock:
-                    self.status = check_exercise(self.exercise, results.pose_landmarks.landmark)
-                if self.status == "success":
-                    self.finished.set()
-            print("Affichage image pour exercice:", self.exercise)
-            cv2.imshow(f"Pose_{self.exercise}", image)
+                    cv2.putText(image, str(idx), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1, cv2.LINE_AA)
+                status = check_exercise(exercise, results.pose_landmarks.landmark)
+                if status == "success":
+                    break
+
+            cv2.imshow(f"Pose_{exercise}", image)
             if cv2.waitKey(5) & 0xFF == 27:
-                self.finished.set()
+                stop_flag["stop"] = True
                 break
+
         cap.release()
         cv2.destroyAllWindows()
-        time.sleep(0.5)  # <-- Ajoute ce délai pour laisser le temps à la caméra de se libérer
+        llm_thread.join()
 
-    def get_status(self):
-        with self._lock:
-            return self.status
-
-    def stop(self):
-        self.finished.set()
-
-memory = []
-
-exercise_sequence = [
-    "Stretch your arms above your head",
-    "Touch your toes",
-    "lean left and right",
-]
-
-def check_exercise_with_camera(exercise):
-    mp_pose = mp.solutions.pose
-    pose = mp_pose.Pose()
-    cap = cv2.VideoCapture(0)
-    status = "not yet"
-    while True:
-        success, image = cap.read()
-        if not success:
-            break
-        image = cv2.flip(image, 1)
-        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results = pose.process(rgb_image)
-        if results.pose_landmarks:
-            status = check_exercise(exercise, results.pose_landmarks.landmark)
-            if status == "success":
-                break
-        cv2.imshow("Pose", image)
-        if cv2.waitKey(5) & 0xFF == 27:
-            break
-    cap.release()
-    cv2.destroyAllWindows()
-    return status
-
-def main():
-    dialogue_history = []
-    rclpy.init()
-    commander_node = LLMCommander()
-
-    # Introduction
-    intro_response = reason_with_context_ollama(
-        context_description="",
-        current_exercise="",
-        next_exercise=exercise_sequence[0]
-    )
-
-    print("🤖", intro_response)
-    action = extract_action_from_response(intro_response)
-    print("✅ Robot Action:", action)
-    action = clean_llm_response(action)
-    speak(action)
-    dialogue_history.append(f"Robot: {action}")
-    memory.append(action)
-
-    stop_routine = False
-
-    for i, exercise in enumerate(exercise_sequence):
-        print(f"\n➡️ Exercise {i+1}: {exercise}")
-        next_exercise = exercise_sequence[i + 1] if i + 1 < len(exercise_sequence) else "None"
-        
-        print("🧍 Fais l'exercice devant la caméra... (appuie sur ESC pour quitter)")
-        exercise_status = check_exercise_with_camera(exercise)  # Appel direct, sans thread
-
-        perception_context = get_environment_context_test()
-        context_description = f"Exercise status: {exercise_status}\n{perception_context}"
-        print(perception_context)
-        print("🧍 Say something to the robot (stop talking = end)...")
-
-        human_input = input("You: ")
-        if human_input:
-            dialogue_history.append(f"Human: {human_input}")
-
-        while True:
-            llm_response = reason_with_context_ollama(
-                context_description,
-                current_exercise=exercise,
-                next_exercise=next_exercise
-            )
-            print("\n🤖 Robot's reasoning:\n", llm_response)
-            action = extract_action_from_response(llm_response)
-            print("✅ Robot Action:", action)
-
-            if "POINT_" in action:
-                match = re.search(r"(POINT_[A-Z_]+)", action)
-                if match:
-                    point_name = match.group(1)
-                    commander_node.send_command(point_name)
-
-            clean_action = clean_llm_response(action)
-            speak(clean_action)
-            memory.append(action)
-            dialogue_history.append(f"Robot: {action}")
-
-            if "STOP_ROUTINE" in action:
-                print("\n🛑 Routine interrompue par le robot.")
-                stop_routine = True
-                break
-            if "NEXT_EXERCISE" in action:
-                break
-
-            human_input = input("You: ")
-            if human_input:
-                dialogue_history.append(f"Human: {human_input}")
-
-        if stop_routine:
+        if stop_flag["stop"]:
             break
 
         print("✅ Passage à l'exercice suivant !")
@@ -196,4 +153,10 @@ def main():
     rclpy.shutdown()
 
 if __name__ == "__main__":
+    memory = []
+    exercise_sequence = [
+        "Stretch your arms above your head",
+        "Touch your toes",
+        "lean left and right",
+    ]
     main()

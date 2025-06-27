@@ -1,102 +1,176 @@
 {
-  "Stretching": {
-    "increases": "BodyTemperature",
-    "requires": "CalmEnvironment"
-  },
-  "BodyTemperature": {
-    "contributes_to": "Fatigue",
-    "causes": "Thirst"
-  },
-  "Fatigue": {
-    "motivates": "TakeBreak",
-    "reduces": "Performance",
-    "can_be_detected_by": "SlowMovements"
-  },
-  "Thirst": {
-    "motivates": "DrinkWater",
-    "is_alleviated_by": "Hydration",
-    "is_a": "Discomfort"
-  },
-  "DrinkWater": {
-    "requires": "GlassOfWater",
-    "satisfies": "Hydration",
-    "is_less_relevant_after": "RecentDrink"
-  },
-  "Hydration": {
-    "is_valid_for": "ShortDuration"
-  },
-  "TakeBreak": {
-    "helps_with": "Fatigue",
-    "helps_with_alt": "BreathingRegulation"
-  },
-  "ExerciseSession": {
-    "contains": ["lean", "ToeTouch", "ArmRaise"],
-    "goal": "BodyRelaxation"
-  },
-  "NeckStretch": {
-    "targets": "Neck",
-    "duration": "30s",
-    "reduces": "NeckTension"
-  },
-  "ToeTouch": {
-    "targets": "Hamstrings",
-    "requires_flexibility": "Moderate",
-    "can_cause": "LowerBackStrain"
-  },
-  "ArmRaise": {
-    "targets": "UpperBack",
-    "reduces": "ShoulderStiffness"
-  },
-  "Pain": {
-    "suggests": "StopExercise",
-    "can_be_detected_by": "TouchingAffectedArea"
-  },
-  "UserState": {
-    "can_be": ["Tired", "Thirsty", "Motivated", "InPain"],
-    "can_change_due_to": ["Stretching", "EnvironmentalFactors"]
-  },
-  "HotDay": {
-    "increases": "BodyTemperature",
-    "motivates": "DrinkWater"
-  },
-  "Observation": {
-    "TouchingLowerBack": "IndicatesBackPain",
-    "Yawn": "IndicatesFatigue",
-    "HoldingNeck": "IndicatesNeckTension"
-  },
-  "GlassOfWater": {
-    "is_a": "Object",
-    "affords": "DrinkWater",
-    "location_hint": "OnTable",
-    "is_relevant_when": "Thirst",
-    "actions": ["pointedto", "Drink"]
-  },
-  "Towel": {
-    "is_a": "Object",
-    "affords": "DrySweat",
-    "location_hint": "OnTable",
-    "is_relevant_when": "Sweating",
-    "can_indicate": "Exertion",
-    "actions": ["pointedto", "Use"]
-
-  },
-  "Banana": {
-    "is_a": "Object",
-    "affords": "QuickEnergyBoost",
-    "location_hint": "OnTable",
-    "is_relevant_when": "Fatigue",
-    "actions": ["Pointedto", "Eat"]
-  },
-  "DrySweat": {
-    "requires": "Towel",
-    "helps_with": "Comfort"
-  },
-  "QuickEnergyBoost": {
-    "requires": "Banana",
-    "alleviates": "Fatigue"
-  },
-  "Sweating": {
-    "indicates": "Exertion",
-    "motivates": "DrySweat"
+  "entities": {
+    "Stretching": {
+      "type": "Activity",
+      "relations": {
+        "increases": "BodyTemperature",
+        "requires": "CalmEnvironment",
+        "contributes_to": "BodyRelaxation"
+      }
+    },
+    "BodyTemperature": {
+      "type": "PhysicalState",
+      "relations": {
+        "contributes_to": "Fatigue",
+        "causes": "Thirst"
+      }
+    },
+    "Fatigue": {
+      "type": "PhysicalState",
+      "relations": {
+        "motivates": "TakeBreak",
+        "reduces": "Performance",
+        "can_be_detected_by": "SlowMovements"
+      }
+    },
+    "Thirst": {
+      "type": "PhysicalState",
+      "relations": {
+        "motivates": "DrinkWater",
+        "is_alleviated_by": "Hydration",
+        "is_a": "Discomfort"
+      }
+    },
+    "DrinkWater": {
+      "type": "Action",
+      "relations": {
+        "requires": "GlassOfWater",
+        "satisfies": "Hydration",
+        "is_less_relevant_after": "RecentDrink"
+      }
+    },
+    "GlassOfWater": {
+      "type": "Object",
+      "relations": {
+        "affords": "DrinkWater",
+        "location_hint": "OnTable",
+        "is_relevant_when": "Thirst"
+      }
+    },
+    "Hydration": {
+      "type": "Benefit",
+      "relations": {
+        "helps_with": "Comfort",
+        "is_valid_for": "ShortDuration"
+      }
+    },
+    "TakeBreak": {
+      "type": "Action",
+      "relations": {
+        "helps_with": "Fatigue",
+        "helps_with_alt": "BreathingRegulation"
+      }
+    },
+    "Towel": {
+      "type": "Object",
+      "relations": {
+        "affords": "DrySweat",
+        "location_hint": "OnTable",
+        "is_relevant_when": "Sweating",
+        "can_indicate": "Exertion"
+      }
+    },
+    "DrySweat": {
+      "type": "Action",
+      "relations": {
+        "requires": "Towel",
+        "helps_with": "Comfort"
+      }
+    },
+    "Sweating": {
+      "type": "PhysicalState",
+      "relations": {
+        "indicates": "Exertion",
+        "motivates": "DrySweat"
+      }
+    },
+    "Banana": {
+      "type": "Object",
+      "relations": {
+        "affords": "QuickEnergyBoost",
+        "location_hint": "OnTable",
+        "is_relevant_when": "Fatigue"
+      }
+    },
+    "QuickEnergyBoost": {
+      "type": "Benefit",
+      "relations": {
+        "requires": "Banana",
+        "alleviates": "Fatigue"
+      }
+    },
+    "Pain": {
+      "type": "Discomfort",
+      "relations": {
+        "suggests": "StopExercise",
+        "can_be_detected_by": "TouchingAffectedArea"
+      }
+    },
+    "UserState": {
+      "type": "MetaState",
+      "relations": {
+        "can_be": ["Tired", "Thirsty", "Motivated", "InPain"],
+        "can_change_due_to": ["Stretching", "EnvironmentalFactors"]
+      }
+    },
+    "HotDay": {
+      "type": "Environment",
+      "relations": {
+        "increases": "BodyTemperature",
+        "motivates": "DrinkWater"
+      }
+    },
+    "Observation": {
+      "type": "MetaObservation",
+      "relations": {
+        "TouchingLowerBack": "IndicatesBackPain",
+        "Yawn": "IndicatesFatigue",
+        "HoldingNeck": "IndicatesNeckTension"
+      }
+    },
+    "ExerciseSession": {
+      "type": "Routine",
+      "relations": {
+        "contains": ["ArmRaise", "ToeTouch", "LeanLeftRight"],
+        "goal": "BodyRelaxation"
+      }
+    },
+    "ArmRaise": {
+      "type": "Stretch",
+      "relations": {
+        "targets": "UpperBack",
+        "reduces": "ShoulderStiffness"
+      }
+    },
+    "ToeTouch": {
+      "type": "Stretch",
+      "relations": {
+        "targets": "Hamstrings",
+        "requires_flexibility": "Moderate",
+        "can_cause": "LowerBackStrain"
+      }
+    },
+    "LeanLeftRight": {
+      "type": "Stretch",
+      "relations": {
+        "targets": "Obliques",
+        "helps_with": "SpinalMobility"
+      }
+    },
+    "NeckStretch": {
+      "type": "Stretch",
+      "relations": {
+        "targets": "Neck",
+        "duration": "30s",
+        "reduces": "NeckTension"
+      }
+    },
+    "StopExercise": {
+      "type": "Action",
+      "relations": {
+        "is_triggered_by": "Pain",
+        "is_recommended_if": "InjuryRisk"
+      }
+    }
   }
 }

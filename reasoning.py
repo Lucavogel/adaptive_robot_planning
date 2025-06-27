@@ -52,7 +52,7 @@ Your instructions:
 7. Ask a caring question if you think the user may be struggling or needs support.
 8. If the user is asking a question, always answer it with something related to that question, even if it is not related to the current exercise.
 9. If you want the robot to point to an object detected in front of it (for example, a glass, a banana, or a towel), start your Output line with: POINT_<OBJECT> (for example: POINT_GLASS, POINT_BANANA, POINT_TOWEL), then continue your sentence naturally.
-10. If the user wants to stop the stretching routine, or if you think it is necessary to stop for safety or well-being, start your Output line with: STOP_ROUTINE, it will be your final message to the user.
+10. If the user wants to stop the stretching routine, or if you think it is necessary to stop for safety or well-being or the routine is ower, start your Output line with: STOP_ROUTINE, it will be your final message to the user.
 
 - You will receive a line like 'Exercise status: success' or 'Exercise status: not yet' in the context.
 - If the status is 'success', congratulate the user and propose to move to the next exercise and only go to the next exercice if he succeded.
@@ -70,7 +70,6 @@ Reasoning:
 <step-by-step reasoning>
 
 Output: <what the robot should say or ask next in 1–2 sentences>
-
 
 """
 
