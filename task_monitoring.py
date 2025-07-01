@@ -14,6 +14,8 @@ def check_exercise(exercise, landmarks):
         seuil_haut = 0.3
         if left_wrist < left_shoulder and right_wrist < right_shoulder and left_wrist < seuil_haut and right_wrist < seuil_haut:
             return "success"
+        
+        
         else:
             return "not yet"
     elif exercise == "Touch your toes":

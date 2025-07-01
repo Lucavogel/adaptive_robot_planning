@@ -31,8 +31,8 @@ def llm_interaction_thread(exercise, next_exercise, commander_node, stop_flag, d
         exercise_status = get_status_func()
         context_description = f"Exercise status: {exercise_status}\n{perception_context}"
         print("🧍 Say something to the robot (speak, then stay silent to end)...")
-        #human_input = listen_until_silent(timeout=1.2)
-        human_input = input("You (text): ")  # For testing purposes, replace with listen_until_silent in production
+        human_input = listen_until_silent(timeout=1.2)
+        #human_input = input("You (text): ")  # For testing purposes, replace with listen_until_silent in production
         if human_input:
             print(f"You (speech): {human_input}")
             dialogue_history.append(f"Human: {human_input}")
@@ -68,7 +68,13 @@ def main():
     rclpy.init()
     commander_node = LLMCommander()
 
-    intro_response = reason_with_context("", "", exercise_sequence[0])
+    intro_context = (
+        "You are about to start a gentle morning stretching routine with StretchBot. "
+        "The robot will guide you step by step. "
+        "Take your time, listen to your body, and don't hesitate to ask questions or request a break at any time. "
+        "Let's begin together!"
+    )
+    intro_response = reason_with_context(intro_context, "", exercise_sequence[0])
     print("🤖", intro_response)
     action = extract_action_from_response(intro_response)
     print("✅ Robot Action:", action)
@@ -88,7 +94,8 @@ def main():
         print("🧍 Fais l'exercice devant la caméra... (ESC pour quitter)")
 
         # Get environment context in the main thread (with imshow)
-        perception_context = get_environment_context(show_window=True)
+        #perception_context = get_environment_context(show_window=True)
+        perception_context = get_environment_context_test()
 
         mp_pose = mp.solutions.pose
         pose = mp_pose.Pose()
@@ -106,7 +113,7 @@ def main():
         )
         llm_thread.start()
 
-        while not stop_flag["stop"]:
+        while not stop_flag["stop"] and llm_thread.is_alive():
             success, image = cap.read()
             if not success:
                 break
