@@ -64,7 +64,7 @@ IMPORTANT:
 - If the user wants to stop or you decide to stop the stretching routine, begin your Output line with: STOP_ROUTINE , it will be your final message to the user.
 - Otherwise, respond naturally and empathetically to the user.
 
-Format your reply like this and only one time:
+Format your reply like this and only once:
 
 Reasoning:
 <step-by-step reasoning>

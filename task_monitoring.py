@@ -5,7 +5,7 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 mp_drawing = mp.solutions.drawing_utils
 
-def check_exercise(exercise, landmarks):
+def check_exercise(exercise, landmarks, state=None):
     if exercise == "Stretch your arms above your head":
         left_wrist = landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y
         left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y
@@ -42,6 +42,9 @@ def check_exercise(exercise, landmarks):
         else:
             return "not yet"
     elif exercise == "lean left and right":
+        # Use a state dict to keep track of left/right leans
+        if state is None:
+            state = {"left": False, "right": False}
         l_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
         r_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
         l_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP.value]
@@ -50,10 +53,17 @@ def check_exercise(exercise, landmarks):
         hips_center_x = (l_hip.x + r_hip.x) / 2
         seuil_inclinaison = 0.03
         diff = shoulders_center_x - hips_center_x
-        if abs(diff) > seuil_inclinaison:
-            return "success"
+
+        # Detect left or right lean
+        if diff > seuil_inclinaison:
+            state["right"] = True
+        elif diff < -seuil_inclinaison:
+            state["left"] = True
+
+        if state["left"] and state["right"]:
+            return "success", state
         else:
-            return "not yet"
+            return "not yet", state
     return "not checked"
 
 if __name__ == "__main__":
@@ -65,6 +75,7 @@ if __name__ == "__main__":
     exercise_idx = 0
 
     cap = cv2.VideoCapture(0)
+    lean_state = {"left": False, "right": False}
     while cap.isOpened() and exercise_idx < len(exercise_sequence):
         success, image = cap.read()
         if not success:
@@ -95,7 +106,10 @@ if __name__ == "__main__":
 
             # Vérifie l'exercice courant
             exercice = exercise_sequence[exercise_idx]
-            result = check_exercise(exercice, results.pose_landmarks.landmark)
+            if exercice == "lean left and right":
+                result, lean_state = check_exercise(exercice, results.pose_landmarks.landmark, lean_state)
+            else:
+                result = check_exercise(exercice, results.pose_landmarks.landmark)
             if result == "success":
                 message = f"✅ {exercice} réussi !"
                 color = (0, 255, 0)

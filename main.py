@@ -14,6 +14,7 @@ import cv2
 import mediapipe as mp
 from task_monitoring import check_exercise
 import threading
+import queue
 
 class LLMCommander(Node):
     def __init__(self):
@@ -28,40 +29,61 @@ class LLMCommander(Node):
 
 def llm_interaction_thread(exercise, next_exercise, commander_node, stop_flag, dialogue_history, get_status_func, perception_context):
     while not stop_flag['stop']:
-        exercise_status = get_status_func()
-        context_description = f"Exercise status: {exercise_status}\n{perception_context}"
-        print("🧍 Say something to the robot (speak, then stay silent to end)...")
-        human_input = listen_until_silent(timeout=1.2)
-        #human_input = input("You (text): ")  # For testing purposes, replace with listen_until_silent in production
+        audio_queue = queue.Queue()
+        listening_done = threading.Event()
+
+        def listening_task():
+            text = listen_until_silent(timeout=1.2)
+            audio_queue.put(text)
+            listening_done.set()
+
+        # Start listening in its own thread
+        thread = threading.Thread(target=listening_task)
+        thread.start()
+
+        # Wait for the listening to finish (do not interrupt if exercise is completed)
+        listening_done.wait()
+
+        # Get the text if any (may be empty if finished early)
+        try:
+            human_input = audio_queue.get_nowait()
+        except queue.Empty:
+            human_input = ""
+
+        latest_status = get_status_func()
+        context_description = f"Exercise status: {latest_status}\n{perception_context}"
+
         if human_input:
             print(f"You (speech): {human_input}")
             dialogue_history.append(f"Human: {human_input}")
 
-        llm_response = reason_with_context(
-            context_description,
-            current_exercise=exercise,
-            next_exercise=next_exercise,
-            dialogue_history=dialogue_history
-        )
-        print("\n🤖 Robot's reasoning:\n", llm_response)
-        action = extract_action_from_response(llm_response)
-        print("✅ Robot Action:", action)
+        # Now reason even if no speech input, if exercise is complete
+        if human_input or latest_status == "success":
+            llm_response = reason_with_context(
+                context_description,
+                current_exercise=exercise,
+                next_exercise=next_exercise,
+                dialogue_history=dialogue_history
+            )
+            print("\n🤖 Robot's reasoning:\n", llm_response)
+            action = extract_action_from_response(llm_response)
+            print("✅ Robot Action:", action)
 
-        if "POINT_" in action:
-            match = re.search(r"(POINT_[A-Z_]+)", action)
-            if match:
-                point_name = match.group(1)
-                commander_node.send_command(point_name)
+            if "POINT_" in action:
+                match = re.search(r"(POINT_[A-Z_]+)", action)
+                if match:
+                    point_name = match.group(1)
+                    commander_node.send_command(point_name)
 
-        clean_action = clean_llm_response(action)
-        speak(clean_action)
-        dialogue_history.append(f"Robot: {action}")
+            clean_action = clean_llm_response(action)
+            speak(clean_action)
+            dialogue_history.append(f"Robot: {action}")
 
-        if "STOP_ROUTINE" in action:
-            stop_flag['stop'] = True
-            break
-        if "NEXT_EXERCISE" in action:
-            break
+            if "STOP_ROUTINE" in action:
+                stop_flag['stop'] = True
+                break
+            if "NEXT_EXERCISE" in action:
+                break
 
 def main():
     dialogue_history = []
