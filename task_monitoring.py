@@ -54,6 +54,7 @@ def check_exercise(exercise, landmarks, state=None):
         seuil_inclinaison = 0.03
         diff = shoulders_center_x - hips_center_x
 
+<<<<<<< Updated upstream
         # Detect left or right lean
         if diff > seuil_inclinaison:
             state["right"] = True
