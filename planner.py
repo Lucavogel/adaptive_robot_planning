@@ -19,19 +19,31 @@ def clean_llm_response(text: str) -> str:
 # print(clean_llm_response(response))
 
 
+import re
+
 def extract_action_from_response(llm_response: str) -> str:
+    # Sépare en lignes, strip, ignore lignes vides
     lines = [line.strip() for line in llm_response.strip().splitlines() if line.strip()]
+
     for i, line in enumerate(lines):
-        # Cas Output: NEXT_EXERCISE: ...
-        if line.lower().startswith("output:"):
-            action = line.split(":", 1)[1].strip()
-            if action:  # Si la ligne Output: contient déjà l'action
-                return action
-            # Sinon, prend la ligne suivante non vide
+        # Enlève les * avant de checker
+        clean_line = re.sub(r'\*+', '', line).strip().lower()
+
+        # Cas Output: ...
+        if clean_line.startswith("output:"):
+            # Extrait tout après ':'
+            parts = line.split(":", 1)
+            if len(parts) > 1:
+                action = parts[1].strip()
+                if action:  # Si contenu sur la même ligne
+                    return action
+            # Sinon, cherche la prochaine ligne non vide
             for next_line in lines[i+1:]:
-                if next_line:
-                    return next_line
-        # Cas NEXT_EXERCISE: seul
+                if next_line.strip():
+                    return next_line.strip()
+
+        # Cas NEXT_EXERCISE: sur une ligne
         if line.startswith("NEXT_EXERCISE:"):
-            return line
+            return line.strip()
+
     return "No action found."

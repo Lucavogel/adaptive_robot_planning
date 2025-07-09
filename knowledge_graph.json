@@ -5,7 +5,9 @@
       "relations": {
         "increases": "BodyTemperature",
         "requires": "CalmEnvironment",
-        "contributes_to": "BodyRelaxation"
+        "contributes_to": "BodyRelaxation",
+        "has_goal": "BodyRelaxation",
+        "motivated_by": "Tension"
       }
     },
     "BodyTemperature": {
@@ -20,7 +22,8 @@
       "relations": {
         "motivates": "TakeBreak",
         "reduces": "Performance",
-        "can_be_detected_by": "SlowMovements"
+        "can_be_detected_by": "SlowMovements",
+        "is_a": "Discomfort"
       }
     },
     "Thirst": {
@@ -28,22 +31,26 @@
       "relations": {
         "motivates": "DrinkWater",
         "is_alleviated_by": "Hydration",
-        "is_a": "Discomfort"
+        "causes": "Discomfort",
+        "is_a": "Need"
       }
     },
     "DrinkWater": {
       "type": "Action",
       "relations": {
         "requires": "GlassOfWater",
-        "satisfies": "Hydration",
-        "is_less_relevant_after": "RecentDrink"
+        "used_for": "Hydration",
+        "motivated_by": "Thirst",
+        "prevents": "Dehydration"
       }
     },
     "GlassOfWater": {
       "type": "Object",
       "relations": {
         "affords": "DrinkWater",
-        "location_hint": "OnTable",
+        "at_location": "OnTable",
+        "used_for": "Hydration",
+        "has_property": "Liquid",
         "is_relevant_when": "Thirst"
       }
     },
@@ -57,17 +64,19 @@
     "TakeBreak": {
       "type": "Action",
       "relations": {
-        "helps_with": "Fatigue",
-        "helps_with_alt": "BreathingRegulation"
+        "helps_with": ["Fatigue", "BreathingRegulation"],
+        "motivated_by": "Fatigue"
       }
     },
     "Towel": {
       "type": "Object",
       "relations": {
         "affords": "DrySweat",
-        "location_hint": "OnTable",
+        "at_location": "OnTable",
         "is_relevant_when": "Sweating",
-        "can_indicate": "Exertion"
+        "can_indicate": "Exertion",
+        "used_for": "DrySweat",
+        "capable_of": "AbsorbingSweat"
       }
     },
     "DrySweat": {
@@ -88,8 +97,9 @@
       "type": "Object",
       "relations": {
         "affords": "QuickEnergyBoost",
-        "location_hint": "OnTable",
-        "is_relevant_when": "Fatigue"
+        "at_location": "OnTable",
+        "is_relevant_when": "Fatigue",
+        "is_a": "Food"
       }
     },
     "QuickEnergyBoost": {
@@ -171,6 +181,28 @@
         "is_triggered_by": "Pain",
         "is_recommended_if": "InjuryRisk"
       }
+    },
+    "Food": {
+      "type": "Category",
+      "relations": {
+        "used_for": "Nutrition"
+      }
+    },
+    "Discomfort": {
+      "type": "AbstractConcept",
+      "relations": {}
+    },
+    "Benefit": {
+      "type": "AbstractConcept",
+      "relations": {}
+    },
+    "Need": {
+      "type": "AbstractConcept",
+      "relations": {}
+    },
+    "AbstractConcept": {
+      "type": "MetaType",
+      "relations": {}
     }
   }
 }

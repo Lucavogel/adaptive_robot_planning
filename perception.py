@@ -49,3 +49,44 @@ def get_environment_context_test():
     return (
         "- The robot sees: a glass of water , a towel, and a banana."
     )
+import time
+from collections import deque
+import cv2
+from deepface import DeepFace
+
+def detect_emotion_print():
+    cap = cv2.VideoCapture(0)
+    print("Appuie sur Ctrl+C pour arrêter")
+
+    last_analysis_time = 0
+    emotion_buffer = deque(maxlen=5)  # mémorise les 5 dernières émotions
+
+    try:
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("Erreur de capture caméra")
+                break
+
+            current_time = time.time()
+            if current_time - last_analysis_time > 2:
+                try:
+                    result = DeepFace.analyze(frame, actions=['emotion'], enforce_detection=False)
+                    emotion = result[0]['dominant_emotion']
+                    emotion_buffer.append(emotion)
+
+                    # Trouve l'émotion la plus fréquente sur la fenêtre glissante
+                    most_common_emotion = max(set(emotion_buffer), key=emotion_buffer.count)
+                    print(f"Emotion détectée (stabilisée) : {most_common_emotion}")
+
+                    last_analysis_time = current_time
+                except Exception as e:
+                    print("Erreur DeepFace:", e)
+
+            time.sleep(0.1)
+
+    except KeyboardInterrupt:
+        print("\nArrêt demandé par utilisateur")
+
+    cap.release()
+
