@@ -33,7 +33,7 @@ Your task:
    - It should start with POINT_ if referring to a detected object.
    - It should start with STOP_ROUTINE if stopping the session.
    - The reply must be friendly, brief, and supportive.
-3. If the output incorrectly uses 'NEXT_EXERCISE:', remove this prefix and rewrite the entire sentence as a friendly and encouraging continuation of the current exercise, without skipping ahead.
+3. If the output incorrectly uses 'NEXT_EXERCISE', remove this prefix and rewrite the entire sentence as a friendly and encouraging continuation of the current exercise, without skipping ahead.
 4. If other corrections are needed (clarity, empathy), also improve them.
 5. If the output is fine, repeat it exactly.
 

@@ -116,18 +116,16 @@ Context:
 - Dialogue history: {history_str}
 - Helpful knowledge: 
 {concepts_relations}
+-the user has responded: {user_answer}
 
-the user has respnded: {user_answer}
-
-What to do:
-
+Instructions:
 - If the user completed the current stretch,and is feeling well start your response with: NEXT_EXERCISE and explain the next stretch briefly.
 - If the user is tired, confused, or needs support, you can offer help like water, food, or a break.
 - If you want to point to an object in front of you to offer it (like a glass, banana, or towel), start your response with: POINT_<OBJECT>. Then continue normally.
 - If the current exercise status is "not yet", encourage the user to keep trying and give helpful advice. 
 - If you are sure the user wants to skip, start your output with NEXT_EXERCISE followed by a brief explanation of the next stretch.
 - If the user wants to stop or it’s better to stop the routine or it is the last exercice, start with: STOP_ROUTINE.
-- Otherwise: Just speak naturally and supportively.
+- Otherwise, feel free to encourage, advise, or chat as you see fit.
 
 Examples:
 1. If the user says "That was hard but I did it!", and status = "success":

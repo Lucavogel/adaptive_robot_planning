@@ -20,7 +20,7 @@ from text_to_speech import speak, speak_text_realistic
 from Query_knowledge_graph import  get_multiple_entities_relations, load_knowledge_graph
 emotion_of_voice = "happy"  # Par défaut, on utilise une émotion neutre
 user_states = ["InPain"]#"Tired","InPain","happy"
-wether_conditions = ["Rainy"]# "Rainy", "Cold","HotDay"
+wether_conditions = ["Rainy"]# "Rainy", "Cold", "HotDay"
 
 YOLO_OBJECT_MAP = {
     "GlassOfWater": "GLASS",
