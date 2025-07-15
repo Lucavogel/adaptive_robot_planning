@@ -56,8 +56,11 @@ if __name__ == '__main__':
                 angle = random.uniform(-span, span)
                 cmd.append(angle)
 
+            # cmd = [12., 0., 90., 0., 0., 0.]  # Example command for testing
+
+            # TODO: develop a thread/ROS node to transfer the joint angle topic to the 'cmd' var.
             print(f"[Main] [{i+1}/{rl_config.STRESS_TEST_ITERS}] -> move_abs: {cmd}")
-            robo.move_abs_with_speed(cmd, speed=rl_config.MAX_SPEED)
+            robo.move_abs_with_speed(cmd, speed=rl_config.MAX_SPEED)   # [0, 0, 90, 0, 0, 0]
             if natnet_data_manager.latest_relative_pos is not None:
                 print(f'[Main] eef relative pos X={natnet_data_manager.latest_relative_pos[0]:.4f}, Y={natnet_data_manager.latest_relative_pos[1]:.4f}, Z={natnet_data_manager.latest_relative_pos[2]:.4f}')
             else:
