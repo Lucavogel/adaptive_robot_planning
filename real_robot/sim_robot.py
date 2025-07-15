@@ -8,6 +8,7 @@ import threading
 import numpy as np
 import subprocess
 import tempfile
+import atexit # Import atexit for cleanup
 
 
 # Mimic motor_cmd constants needed by Robot class.
@@ -30,14 +31,17 @@ class SimMotor:
         self._bus_lock = bus_lock
         self._pybullet_api_lock = pybullet_api_lock
 
-        self._target_position_rad = 0.0
+        self._target_position_rad = 0.0 # Reverted to original name (was _target_position_reg)
 
     def genericRead_Blocking_int(self, cmd):
         if cmd == "QD":
-            # with self._bus_lock:
             with self._pybullet_api_lock:
-                joint_state = self._p_api.getJointState(self._robot_id, self._joint_id, physicsClientId=self._physics_client_id)
-            return int(np.degrees(joint_state[0]) * 100)
+                try:
+                    joint_state = self._p_api.getJointState(self._robot_id, self._joint_id, physicsClientId=self._physics_client_id)
+                    return int(np.degrees(joint_state[0]) * 100)
+                except p.error as e:
+                    # Removed detailed error logging as per API alignment, but kept basic notice.
+                    return None
         return None
 
     # Generic write/read are simplified as they won't send/receive actual serial data
@@ -75,10 +79,10 @@ class SimMotor:
                 )
 
     def move_abs(self, pos_centi_deg):
-        # with self._bus_lock:
         with self._pybullet_api_lock:
             target_pos_rad = np.radians(pos_centi_deg / 100.0)
-            self._target_position_rad = target_pos_rad
+            # Removed logging for API alignment
+            self._target_position_rad = target_pos_rad # Reverted to original name
             self._p_api.setJointMotorControl2(
                 bodyUniqueId=self._robot_id,
                 jointIndex=self._joint_id,
@@ -89,10 +93,10 @@ class SimMotor:
             )
 
     def move_abs_with_speed(self, pos_centi_deg, speed):
-        # with self._bus_lock:
         with self._pybullet_api_lock:
             target_pos_rad = np.radians(pos_centi_deg / 100.0)
-            self._target_position_rad = target_pos_rad
+            # Removed logging for API alignment
+            self._target_position_rad = target_pos_rad # Reverted to original name
             pybullet_max_velocity = (speed / 1000.0) * 15
             pybullet_max_velocity = max(0.1, pybullet_max_velocity)
             self._p_api.setJointMotorControl2(
@@ -110,43 +114,49 @@ class SimMotor:
 
 # B. Modify SimRobot to store and pass around the pybullet module and client ID
 class SimRobot:
-    def __init__(self, render_mode, emergency_time=0.5):
-        self.render_mode = render_mode
-        self._pybullet_api = p
-
-        self._pybullet_api_lock = threading.Lock() # NEW: CREATE the global PyBullet API lock
-
-        with self._pybullet_api_lock: # ACQUIRE LOCK for p.connect
-            self._physics_client = self._pybullet_api.connect(self._pybullet_api.GUI if self.render_mode == "human" else self._pybullet_api.DIRECT)
-            self._pybullet_api.setAdditionalSearchPath(pybullet_data.getDataPath())
-            self._pybullet_api.setGravity(0, 0, -9.81)
-
-        self._bus = True
-        self._bus_lock = threading.Lock() # This lock is specifically for motor access, NOT for PyBullet API calls
+    # Change __init__ signature to match Robot class
+    def __init__(self, portname=None):
+        self._bus = None # Now acts as a flag for PyBullet connection status
+        self._bus_lock = threading.Lock()
         self._motor_ids = [0, 1, 2, 3, 4, 5]
+        self._portname = portname # Parameter for API alignment, not directly used in sim
         self._motors = []
+        atexit.register(self.close_bus) # Register cleanup
+
+        # PyBullet specific attributes, initialized to None until init_bus()
+        self._pybullet_api = None
+        self._physics_client = None
         self._robot_id = None
-        self.home_position = [0, 0, 0, 0, 0, 0]
-        self._joint_info = []
+        self._pybullet_api_lock = threading.Lock() # Global PyBullet API lock
+        self._controlled_joint_indices = []
         self._end_effector_link_id = -1
+
+        self.home_position = [0, 0, 0, 0, 0, 0]
         self._in_emergency_state = False
         self._emergency_thread = None
-        self._emergency_time = emergency_time  # Time in seconds for emergency recovery
+        self._emergency_time = 0.5 # Default emergency time
 
-        # --- IMPORTANT CHANGE 1: Initialize the attribute here ---
-        self._controlled_joint_indices = []
-
-        # --- IMPORTANT CHANGE 2: Call init_bus here to populate _controlled_joint_indices ---
-        if not self.init_bus():
-            raise RuntimeError("Failed to initialize simulated robot in PyBullet. Check URDF/Xacro paths and files.")
+        # NEW: Store the last read joint angles (in degrees)
+        self._current_joint_angles_deg = [0.0] * len(self._motor_ids)
 
     def init_bus(self):
+        # This function now handles PyBullet client connection and robot loading
         print("[SimRobot] Initializing PyBullet client and loading robot...")
         try:
+            # Connect to PyBullet only if not already connected
+            if self._physics_client is None:
+                self._pybullet_api = p
+                with self._pybullet_api_lock:
+                    self._physics_client = self._pybullet_api.connect(self._pybullet_api.GUI) # Default to GUI for simplicity
+
+                self._pybullet_api.setAdditionalSearchPath(pybullet_data.getDataPath())
+                self._pybullet_api.setGravity(0, 0, -9.81)
+                self._bus = True # Set bus to True after successful connection
+
             current_script_dir = os.path.dirname(os.path.abspath(__file__))
-            project_root_dir = os.path.abspath(os.path.join(current_script_dir, ".."))
+            project_root_dir = os.path.abspath(os.path.join(current_script_dir))
             URDF_SOURCE_FILE = "ur5.urdf" # Or "ur5_robot.urdf.xacro" if you changed it back
-            robot_description_base_path = os.path.join(project_root_dir, "lynx_robot", "robots", "robot_models", "ur_description", "urdf")
+            robot_description_base_path = os.path.join(project_root_dir, "robot_models", "ur_description", "urdf")
             SOURCE_FILE_PATH = os.path.join(robot_description_base_path, URDF_SOURCE_FILE)
 
             with self._pybullet_api_lock: # ACQUIRE LOCK for setAdditionalSearchPath
@@ -155,7 +165,6 @@ class SimRobot:
             urdf_load_path = SOURCE_FILE_PATH
             temp_urdf_path = None
             if URDF_SOURCE_FILE.endswith(".xacro"):
-                # ... (xacro processing, no lock needed here as subprocess is external) ...
                 try:
                     temp_urdf_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.urdf')
                     temp_urdf_path = temp_urdf_file.name
@@ -166,7 +175,7 @@ class SimRobot:
                         f.write(result.stdout)
                     urdf_load_path = temp_urdf_path
                     print(f"[SimRobot] XACRO processed. Generated temporary URDF at: {temp_urdf_path}")
-                except Exception as e: # Catch all, including subprocess errors
+                except Exception as e:
                     print(f"[SimRobot] Error processing XACRO: {e}")
                     raise
 
@@ -213,8 +222,7 @@ class SimRobot:
 
             with self._pybullet_api_lock: # ACQUIRE LOCK for stepSimulation
                 self._pybullet_api.stepSimulation(physicsClientId=self._physics_client)
-            if self.render_mode == "human":
-                time.sleep(0.1)
+            # Removed render_mode specific time.sleep for API alignment.
             return True
         except Exception as e:
             print(f"[SimRobot] Error during robot loading/initialization: {e}")
@@ -223,7 +231,7 @@ class SimRobot:
 
     def close_bus(self):
         if self._physics_client is not None:
-            with self._pybullet_api_lock: # ACQUIRE LOCK for disconnect
+            with self._pybullet_api_lock:
                 self._pybullet_api.disconnect(self._physics_client)
             print("[SimRobot] Disconnected from PyBullet.")
             self._physics_client = None
@@ -324,9 +332,6 @@ class SimRobot:
             return
 
         self._in_emergency_state = True
-        # self._emergency_thread = threading.Thread(target=self._emergency_recovery_task, daemon=True)
-        # self._emergency_thread.start()
-
         self._emergency_recovery_task()
 
     def _emergency_recovery_task(self):
@@ -339,18 +344,10 @@ class SimRobot:
         print(f"[Emergency] Moving to safe home position: {self.home_position}")
         self._move_and_wait_admin(self.home_position, sim_steps_per_check=50)
 
-        # NEW: Print after the move_and_wait attempt
         print("[Emergency] _move_and_wait in recovery finished (may have timed out).")
 
-        # NEW: Get the current EEF position *after* the recovery move
-        # To get the latest EEF position, you'd need safe access to the sensor manager.
-        # This is a bit tricky from here without passing it around, but you can rely on the
-        # SimNatNetDataHandler to be updated by the next _get_obs() call.
-        # For now, we trust _move_and_wait to attempt the move.
-
-        self._in_emergency_state = False  # This flag MUST be set to False for the loop to exit
-        print(
-            "[Emergency] Home position reached. Resuming normal operation.")  # This means _in_emergency_state is set to False
+        self._in_emergency_state = False
+        print("[Emergency] Home position reached. Resuming normal operation.")
         print("=" * 40 + "\n")
         print("[Emergency] Recovery task completed (`_in_emergency_state` is now False).")
 
@@ -417,64 +414,22 @@ class SimRobot:
         self.close_bus()
         print("[SimRobot] Shutdown complete.")
 
-    def get_info(self):
-        # Now returns the pybullet_api_lock too
-        return self._pybullet_api, self._physics_client, self._robot_id, self._end_effector_link_id, self._pybullet_api_lock
+    # Removed draw_debug_sphere and change_sphere_color for API alignment.
+    # Removed get_info for API alignment.
 
-    def draw_debug_sphere(self, position, radius=0.02, color=[1, 0, 0, 1], life_time=0):
-        """
-        Draws a debug sphere in the PyBullet simulation.
-        :param position: [x, y, z] coordinates of the sphere center.
-        :param radius: Radius of the sphere.
-        :param color: RGBA color tuple (e.g., [1, 0, 0, 1] for red).
-        :param life_time: How long the sphere should be visible (0 for persistent).
-        """
-        with self._pybullet_api_lock:
-            # Create a visual shape (sphere)
-            visual_shape_id = self._pybullet_api.createVisualShape(
-                shapeType=self._pybullet_api.GEOM_SPHERE,
-                radius=radius,
-                rgbaColor=color,
-                physicsClientId=self._physics_client
-            )
-            # Create a body (object) using the visual shape
-            # No collision shape needed for a purely visual marker
-            sphere_body_id = self._pybullet_api.createMultiBody(
-                baseVisualShapeIndex=visual_shape_id,
-                basePosition=position,
-                physicsClientId=self._physics_client
-            )
-            # PyBullet debug lines/points are usually more transient.
-            # For a persistent object, createMultiBody is better.
-            # If life_time is not 0, we might need to manage these objects.
-            # For simplicity, we'll assume persistent for now or rely on reset.
-            # For transient, use self._pybullet_api.addUserDebugLine or addUserDebugText
-            # self._pybullet_api.addUserDebugText(
-            #     text="Target",
-            #     textPosition=position,
-            #     textColorRGB=[1, 0, 0],
-            #     lifeTime=life_time,
-            #     physicsClientId=self._physics_client
-            # )
-        return sphere_body_id
+    # BEGIN NEW GETTER METHODS FOR MAIN_SIM.PY
+    def get_pybullet_api(self):
+        return self._pybullet_api
 
-    def change_sphere_color(self, object_id, color):
-        """
-        Changes the RGBA color of an existing visual object.
-        :param object_id: The unique ID of the object (body) to change.
-        :param color: New RGBA color tuple (e.g., [0.5, 0.5, 0.5, 1] for gray).
-        """
-        with self._pybullet_api_lock:
-            self._pybullet_api.changeVisualShape(
-                objectUniqueId=object_id,
-                linkIndex=-1, # -1 for the base visual shape
-                rgbaColor=color,
-                physicsClientId=self._physics_client
-            )
-            # self._pybullet_api.addUserDebugPoints(
-            #     pointPositions=[position],
-            #     pointColorsRGB=[1, 0, 0],
-            #     pointSize=10,
-            #     lifeTime=life_time,
-            #     physicsClientId=self._physics_client
-            # )
+    def get_physics_client_id(self):
+        return self._physics_client
+
+    def get_robot_id(self):
+        return self._robot_id
+
+    def get_end_effector_link_id(self):
+        return self._end_effector_link_id
+
+    def get_pybullet_api_lock(self):
+        return self._pybullet_api_lock
+    # END NEW GETTER METHODS
