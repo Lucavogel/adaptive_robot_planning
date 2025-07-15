@@ -5,7 +5,8 @@ import pygame
 
 def speak(text, lang="en"):
     if not text or not text.strip():
-        raise AssertionError("No text to speak")
+        # Do nothing if text is empty or only whitespace
+        return
     # Create temp file and close it before playback
     fp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
     try:
@@ -45,4 +46,9 @@ def speak_text_realistic(
     print("✅", status)
     print("🎧 Lecture en cours :", audio_path)
     playsound(audio_path)
+
+if __name__ == "__main__":
+    # Exemple d'utilisation
+    speak("Hello, how are you today?")
+    speak_text_realistic("Hello, how are you today?", voice="alloy", emotion="happy")
 

@@ -96,8 +96,8 @@
     "Banana": {
       "type": "Object",
       "relations": {
-        "affords": "QuickEnergyBoost",
-        "at_location": "OnTable",
+        "affords": "EatBanana",
+        "used_for": "QuickEnergyBoost",
         "is_relevant_when": "Fatigue",
         "is_a": "Food"
       }
@@ -128,6 +128,22 @@
       "relations": {
         "increases": "BodyTemperature",
         "motivates": "DrinkWater"
+      }
+    },
+    "Rainy": {
+      "type": "Environment",
+      "relations": {
+        "motivates": "StayIndoors",
+        "increases": "Discomfort"
+
+      }
+    },
+    "Cold": {
+      "type": "Environment",
+      "relations": {
+        "motivates": "WearWarmClothes",
+        "increases": "BodyTension"
+
       }
     },
     "Observation": {
@@ -203,6 +219,87 @@
     "AbstractConcept": {
       "type": "MetaType",
       "relations": {}
+    },
+    "Coffee": {
+      "type": "Object",
+      "relations": {
+        "affords": "DrinkCoffee",
+        "used_for": "EnergyBoost",
+        "is_relevant_when": "Tired"
+      }
+    },
+    "Tired": {
+      "type": "PhysicalState",
+      "relations": {
+        "motivates": "DrinkCoffee",
+        "is_a": "Fatigue"
+      }
+    },
+    "Thirsty": {
+      "type": "PhysicalState",
+      "relations": {
+        "motivates": "DrinkWater",
+        "is_a": "Need"
+      }
+    },
+    "InPain": {
+      "type": "PhysicalState",
+      "relations": {
+        "motivates": "StopExercise",
+        "is_a": "Discomfort"
+      }
+    },
+    "DrinkCoffee": {
+      "type": "Action",
+      "relations": {
+        "requires": "Coffee",
+        "provides": "EnergyBoost",
+        "motivated_by": "Tired"
+      }
+    },
+    "EatBanana": {
+      "type": "Action",
+      "relations": {
+        "requires": "Banana",
+        "provides": "QuickEnergyBoost",
+        "motivated_by": "Fatigue"
+      }
+    },
+    "EnergyBoost": {
+      "type": "Benefit",
+      "relations": {
+        "alleviates": "Tired"
+      }
+    },
+    "Chair": {
+      "type": "Object",
+      "relations": {
+        "affords": "TakeASeat",
+        "used_for": "Rest",
+        "is_relevant_when": ["Fatigue", "NeedRest"],
+        "at_location": "OnFloor"
+      }
+    },
+    "TakeASeat": {
+      "type": "Action",
+      "relations": {
+        "requires": "Chair",
+        "provides": "Rest",
+        "motivated_by": ["Fatigue", "NeedRest"]
+      }
+    },
+    "Rest": {
+      "type": "Benefit",
+      "relations": {
+        "alleviates": ["Fatigue", "Discomfort"]
+      }
+    },
+    "NeedRest": {
+      "type": "PhysicalState",
+      "relations": {
+        "motivates": "TakeASeat",
+        "is_a": "Need"
+      }
     }
   }
 }

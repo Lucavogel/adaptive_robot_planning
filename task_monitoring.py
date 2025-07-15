@@ -129,17 +129,17 @@ def check_exercise(exercise, landmarks, state, dt=0.033):
 
     reset_if_timed_out()
 
-    if exercise == "Stretch your arms above your head":
+    if exercise == "Stretch your arms above your head for 5 seconds":
         if is_arms_stretched(landmarks):
             update_timers()
         return ("success" if state.get("held_time", 0) >= 5.0 else "not yet"), state
 
-    elif exercise == "Touch your toes":
+    elif exercise == "Touch your toes for 5 seconds":
         if is_touching_toes_simple(landmarks):
             update_timers()
         return ("success" if state.get("held_time", 0) >= 5.0 else "not yet"), state
 
-    elif exercise == "lean left and right":
+    elif exercise == "Lean left and right for 5 seconds on each side":
         direction = detect_lean_direction(landmarks)
         if direction in ["left", "right"]:
             update_timers(direction)
@@ -156,9 +156,9 @@ def check_exercise(exercise, landmarks, state, dt=0.033):
 
 if __name__ == "__main__":
     exercise_sequence = [
-        "Stretch your arms above your head",
-        "Touch your toes",
-        "lean left and right",
+        "Stretch your arms above your head for 5 seconds",
+        "Touch your toes for 5 seconds",
+        "Lean left and right for 5 seconds on each side",
     ]
     exercise_idx = 0
 

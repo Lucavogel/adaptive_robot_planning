@@ -1,7 +1,10 @@
 import json
 from openai import OpenAI
-from config import API_KEY, MODEL, BASE_URL
-
+from config import API_KEY
+import requests
+from perception import get_environment_context_test
+MODEL = "deepseek/deepseek-r1-0528-qwen3-8b:free"
+BASE_URL = "https://openrouter.ai/api/v1"
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 def load_knowledge_graph(path="knowledge_graph.json"):
@@ -16,7 +19,7 @@ def format_kg(kg: dict) -> str:
             lines.append(f"{subject} --{predicate}--> {obj}")
     return "\n".join(lines)
 
-def reason_with_context(context_description, current_exercise, next_exercise, dialogue_history=None):
+def reason_with_context(context_description, current_exercise, next_exercise, dialogue_history="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"):
     kg = load_knowledge_graph()
     formatted_kg = format_kg(kg)
 
@@ -90,3 +93,82 @@ Output: <what the robot should say or ask next in 1–2 sentences>
         return "Sorry, I can't answer right now (API error or rate limit)."
 
     return response.choices[0].message.content
+
+# Appel au LLM avec prompt basé sur les relations
+def query_llm_about_entities(concepts_relations,user_state, user_answer = "",current_exercise="Stretch your arms above your head for 5 seconds"
+                        , next_exercise="Touch your toes for 5 seconds", history_str=[], context_description="",
+                        detected_objects=[]):
+    print(history_str)
+    relations_text = "Voici les relations dans le graphe de connaissances :\n\n"
+    for concept, rels in concepts_relations.items():
+        relations_text += f"[{concept}]\n"
+        relations_text += "\n".join(rels) + "\n\n"
+
+    prompt = f"""
+You are StretchBot, a friendly robot that helps a human with their morning stretching routine. Your job is to support them with kind words, suggestions, and simple help.
+
+Context:
+- Current stretch: {current_exercise}
+- Next stretch: {next_exercise}
+- Situation: {context_description}
+- User state: {user_state}
+- the differents objects in front of you are: {detected_objects}
+- Dialogue history: {history_str}
+- Helpful knowledge: 
+{concepts_relations}
+
+the user has respnded: {user_answer}
+
+What to do:
+
+- If the user completed the current stretch,and is feeling well start your response with: NEXT_EXERCISE and explain the next stretch briefly.
+- If the user is tired, confused, or needs support, you can offer help like water, food, or a break.
+- If you want to point to an object in front of you to offer it (like a glass, banana, or towel), start your response with: POINT_<OBJECT>. Then continue normally.
+- If the current exercise status is "not yet", encourage the user to keep trying and give helpful advice. 
+- If you are sure the user wants to skip, start your output with NEXT_EXERCISE followed by a brief explanation of the next stretch.
+- If the user wants to stop or it’s better to stop the routine or it is the last exercice, start with: STOP_ROUTINE.
+- Otherwise: Just speak naturally and supportively.
+
+Examples:
+1. If the user says "That was hard but I did it!", and status = "success":
+   Reasoning:
+   The user completed the task. Status confirms success. It's time to proceed.
+   Output: NEXT_EXERCISE Great job! Now, let's touch our toes. Keep your knees soft and reach gently.
+
+2. If the user says "I can't bend that far…" and gives up after two tries:
+   Reasoning:
+   User has clearly said they can't complete the stretch. It's best to move on.
+   Output: NEXT_EXERCISE That's okay! Let's lean left and right next. Just sway gently side to side.
+
+3. If the user looks tired but hasn't refused help yet:
+   Reasoning:
+   User seems fatigued. A gentle offer of support might help.
+   Output: POINT_GLASS Want a sip of water before we continue? Or would you prefer the banana?
+
+Answer like this:
+Reasoning: <short explanation of why you say what you say>
+Output: <short, friendly response (1–2 sentences)>
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Tu es un expert en bien-être et raisonnement basé sur graphe de connaissances."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            extra_body={}
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as e:
+        print("⚠️ ERREUR:", e)
+        return "[ERROR] API call failed."
+# Entrée principale

@@ -1,17 +1,11 @@
 from ultralytics import YOLO
 import cv2
 
-def get_environment_context(show_window=True):
-    # Charger le modèle YOLO pré-entraîné (par exemple, yolov8n.pt)
-    model = YOLO("yolov8n.pt")  # Téléchargé automatiquement si absent
+model = YOLO("yolov8n.pt")  # Téléchargé automatiquement si absent
 
-    # Ouvre la webcam
-    cap = cv2.VideoCapture(0)
-    ret, frame = cap.read()
-    cap.release()
-
-    if not ret:
-        return "- The robot sees: nothing (camera error)."
+def get_environment_context(frame, show_window=True):
+    if frame is None:
+        return "- The robot sees: nothing (no image provided)."
 
     # Détection d'objets
     results = model(frame)
@@ -35,19 +29,15 @@ def get_environment_context(show_window=True):
 
     if show_window:
         cv2.imshow("YOLO Detection", annotated_frame)
-        cv2.waitKey(2000)  # Affiche 2 secondes
+        cv2.waitKey(2000)
         cv2.destroyAllWindows()
 
-    if detected:
-        obj_list = ", ".join(detected)
-        return f"- The robot sees: {obj_list}."
-    else:
-        return "- The robot sees: nothing."
+    return list(detected)
 
 def get_environment_context_test():
 
     return (
-        "- The robot sees: a glass of water , a towel, and a banana."
+        "GlassOfWater, Towel, Banana, Coffee, Chair"
     )
 import time
 from collections import deque
