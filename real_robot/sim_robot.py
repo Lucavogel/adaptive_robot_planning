@@ -8,6 +8,16 @@ import threading
 import numpy as np
 import subprocess
 import tempfile
+import logging
+import numpy as np
+import time
+import random
+import threading
+
+from robot import Robot
+from safety import SafetyWatchdog
+from optitrack import NatNetDataHandler, run_natnet_client_in_thread
+import rl_config # Import the configuration file
 
 
 # Mimic motor_cmd constants needed by Robot class.
@@ -144,44 +154,27 @@ class SimRobot:
         print("[SimRobot] Initializing PyBullet client and loading robot...")
         try:
             current_script_dir = os.path.dirname(os.path.abspath(__file__))
-            project_root_dir = os.path.abspath(os.path.join(current_script_dir, ".."))
-            URDF_SOURCE_FILE = "ur5.urdf" # Or "ur5_robot.urdf.xacro" if you changed it back
-            robot_description_base_path = os.path.join(project_root_dir, "lynx_robot", "robots", "robot_models", "ur_description", "urdf")
-            SOURCE_FILE_PATH = os.path.join(robot_description_base_path, URDF_SOURCE_FILE)
+            urdf_load_path = os.path.join(current_script_dir, "ur5.urdf")
 
-            with self._pybullet_api_lock: # ACQUIRE LOCK for setAdditionalSearchPath
-                self._pybullet_api.setAdditionalSearchPath(robot_description_base_path)
+            if not os.path.exists(urdf_load_path):
+                raise FileNotFoundError(f"URDF file not found at: {urdf_load_path}")
 
-            urdf_load_path = SOURCE_FILE_PATH
-            temp_urdf_path = None
-            if URDF_SOURCE_FILE.endswith(".xacro"):
-                # ... (xacro processing, no lock needed here as subprocess is external) ...
-                try:
-                    temp_urdf_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.urdf')
-                    temp_urdf_path = temp_urdf_file.name
-                    temp_urdf_file.close()
-                    cmd = ["xacro", "--inorder", SOURCE_FILE_PATH]
-                    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-                    with open(temp_urdf_path, 'w') as f:
-                        f.write(result.stdout)
-                    urdf_load_path = temp_urdf_path
-                    print(f"[SimRobot] XACRO processed. Generated temporary URDF at: {temp_urdf_path}")
-                except Exception as e: # Catch all, including subprocess errors
-                    print(f"[SimRobot] Error processing XACRO: {e}")
-                    raise
+            with self._pybullet_api_lock:
+                self._pybullet_api.setAdditionalSearchPath(current_script_dir)
 
             with self._pybullet_api_lock: # ACQUIRE LOCK for loadURDF
                 URDF_SPAWN_HEIGHT = 0.0  # Example value, adjust as needed
 
                 self._robot_id = self._pybullet_api.loadURDF(
                     urdf_load_path,
-                    [0, 0, URDF_SPAWN_HEIGHT],  # <- MODIFIED: Increased Z-coordinate
+                    [0, 0, URDF_SPAWN_HEIGHT],
                     useFixedBase=True,
                     physicsClientId=self._physics_client
                 )
-            if temp_urdf_path and os.path.exists(temp_urdf_path):
-                os.remove(temp_urdf_path)
-                print(f"[SimRobot] Cleaned up temporary URDF: {temp_urdf_path}")
+            # REMOVE or COMMENT OUT the following lines:
+            # if temp_urdf_path and os.path.exists(temp_urdf_path):
+            #     os.remove(temp_urdf_path)
+            #     print(f"[SimRobot] Cleaned up temporary URDF: {temp_urdf_path}")
 
             with self._pybullet_api_lock: # ACQUIRE LOCK for getNumJoints, getJointInfo
                 num_joints = self._pybullet_api.getNumJoints(self._robot_id, physicsClientId=self._physics_client)
@@ -482,10 +475,30 @@ if __name__ == "__main__":
     # Create the simulated robot in GUI mode (window will open)
     sim = SimRobot(render_mode="human")
     sim.init_motors()
+    for i in range(rl_config.STRESS_TEST_ITERS):
+        cmd = []  # ← ajouter cette ligne ici !
+        for j_idx, (min_l, max_l) in enumerate(rl_config.JOINT_LIMITS):
+            span = max(abs(min_l), abs(max_l)) * 1.5
+            angle = random.uniform(-span, span)
+            cmd.append(angle)
 
+        sim.move_abs_with_speed(cmd, speed=rl_config.MAX_SPEED)
     # Exemple : bouger le robot vers une position home
-    home = [0, 0, 0, 0, 0, 0]
-    sim.move_abs(home)
+
+
+    # NEW: Define a sequence of positions to move the robot through
+    positions = [
+        [0, 0, 0, 0, 0, 0],
+        [30, 0, 0, 0, 0, 0],
+        [30, 30, 0, 0, 0, 0],
+        [30, 30, 30, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0]
+    ]
+
+    # Move through the defined positions with a delay
+    for pos in positions:
+        sim.move_abs_with_speed(pos, speed=100)
+        time.sleep(2)  # Wait 2 seconds between moves
 
     print("Simulation running. Press Ctrl+C to exit.")
     try:
