@@ -4,7 +4,12 @@ import time
 import threading
 import numpy as np
 
-from optitrack import END_EFFECTOR_RB_ID, TABLE_RB_ID
+# Removed OptiTrack imports as they're not needed for simulation
+# from optitrack import END_EFFECTOR_RB_ID, TABLE_RB_ID
+
+# Define constants for backward compatibility (not used in simulation)
+END_EFFECTOR_RB_ID = 1
+TABLE_RB_ID = 2
 
 
 class BoundingBox:

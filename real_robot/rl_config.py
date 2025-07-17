@@ -4,8 +4,8 @@
 PORT = '/dev/ttyACM0'  # Serial port for your robot
 JOINT_LIMITS = [
     (-180, 180),  # Joint 0 (Base Rotation)
-    (-40, 40),   # Joint 1 (Shoulder)
-    (-40, 40), # Joint 2 (Elbow)
+    (-110, 110),   # Joint 1 (Shoulder)
+    (-110, 110), # Joint 2 (Elbow)
     (-180, 180), # Joint 3 (Wrist Yaw)
     (-180, 180), # Joint 4 (Wrist Pitch)
     (-180, 180), # Joint 5 (Gripper Rotation)
