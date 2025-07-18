@@ -1,0 +1,405 @@
+ Étape 1 : Détection ArUco
+
+ #!/usr/bin/env python3
+"""
+ArUco marker detection and pose estimation for robot targeting.
+"""
+
+import cv2
+import numpy as np
+import json
+import time
+import threading
+from cv2 import aruco
+
+class ArUcoDetector:
+    """
+    Detects ArUco markers and estimates their 3D positions.
+    """
+    
+    def __init__(self, camera_matrix, dist_coeffs, marker_size=0.05):
+        """
+        Args:
+            camera_matrix: Camera intrinsic matrix (3x3)
+            dist_coeffs: Distortion coefficients
+            marker_size: Physical size of markers in meters
+        """
+        self.camera_matrix = camera_matrix
+        self.dist_coeffs = dist_coeffs
+        self.marker_size = marker_size
+        
+        # ArUco dictionary and parameters
+        self.aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+        self.aruco_params = aruco.DetectorParameters_create()
+        
+        # Detected markers storage
+        self.detected_markers = {}
+        self.detection_lock = threading.Lock()
+        
+        # Camera capture
+        self.cap = cv2.VideoCapture(0)  # Adjust camera index
+        self.running = False
+        self.detection_thread = None
+        
+    def start_detection(self):
+        """Start marker detection in a separate thread."""
+        if not self.running:
+            self.running = True
+            self.detection_thread = threading.Thread(target=self._detection_loop, daemon=True)
+            self.detection_thread.start()
+            print("[ArUco] Detection started")
+            
+    def stop_detection(self):
+        """Stop marker detection."""
+        self.running = False
+        if self.detection_thread:
+            self.detection_thread.join()
+        self.cap.release()
+        print("[ArUco] Detection stopped")
+        
+    def _detection_loop(self):
+        """Main detection loop."""
+        while self.running:
+            ret, frame = self.cap.read()
+            if not ret:
+                continue
+                
+            # Convert to grayscale
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            
+            # Detect markers
+            corners, ids, _ = aruco.detectMarkers(
+                gray, self.aruco_dict, parameters=self.aruco_params
+            )
+            
+            if ids is not None:
+                # Estimate poses
+                rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(
+                    corners, self.marker_size, self.camera_matrix, self.dist_coeffs
+                )
+                
+                # Store detected markers
+                with self.detection_lock:
+                    self.detected_markers.clear()
+                    for i, marker_id in enumerate(ids.flatten()):
+                        # Convert to robot coordinates
+                        marker_pos = self._camera_to_robot_coords(tvecs[i][0])
+                        self.detected_markers[marker_id] = {
+                            'position': marker_pos,
+                            'timestamp': time.time()
+                        }
+                        
+                # Draw markers on frame (optional, for debugging)
+                frame = aruco.drawDetectedMarkers(frame, corners, ids)
+                for i in range(len(ids)):
+                    aruco.drawAxis(frame, self.camera_matrix, self.dist_coeffs, 
+                                 rvecs[i], tvecs[i], 0.1)
+                    
+            # Display frame (optional)
+            cv2.imshow('ArUco Detection', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+                
+        cv2.destroyAllWindows()
+        
+    def _camera_to_robot_coords(self, camera_coords):
+        """
+        Transform camera coordinates to robot base coordinates.
+        This requires calibration between camera and robot base.
+        """
+        # IMPORTANT: This transformation matrix must be calibrated!
+        # Example transformation (you need to calibrate this)
+        camera_to_robot_transform = np.array([
+            [0, -1, 0, 0.5],   # Camera X -> Robot -Y
+            [0, 0, -1, 0.3],   # Camera Y -> Robot -Z  
+            [1, 0, 0, 0.2],    # Camera Z -> Robot X
+            [0, 0, 0, 1]       # Homogeneous coordinates
+        ])
+        
+        # Convert to homogeneous coordinates
+        camera_homogeneous = np.append(camera_coords, 1)
+        
+        # Apply transformation
+        robot_coords = camera_to_robot_transform @ camera_homogeneous
+        
+        return robot_coords[:3]  # Return only X, Y, Z
+        
+    def get_marker_position(self, marker_id):
+        """Get the position of a specific marker."""
+        with self.detection_lock:
+            if marker_id in self.detected_markers:
+                return self.detected_markers[marker_id]['position']
+            return None
+            
+    def get_all_markers(self):
+        """Get all detected markers."""
+        with self.detection_lock:
+            return self.detected_markers.copy()
+
+Étape 2 : Calibration caméra
+
+#!/usr/bin/env python3
+"""
+Camera calibration for ArUco detection.
+"""
+
+import cv2
+import numpy as np
+import json
+
+def calibrate_camera():
+    """
+    Calibrate camera using a chessboard pattern.
+    """
+    # Chessboard parameters
+    CHESSBOARD_SIZE = (9, 6)  # Adjust to your chessboard
+    square_size = 0.025  # 2.5cm squares (adjust to your chessboard)
+    
+    # Prepare object points
+    objp = np.zeros((CHESSBOARD_SIZE[0] * CHESSBOARD_SIZE[1], 3), np.float32)
+    objp[:, :2] = np.mgrid[0:CHESSBOARD_SIZE[0], 0:CHESSBOARD_SIZE[1]].T.reshape(-1, 2)
+    objp *= square_size
+    
+    # Arrays to store object points and image points
+    objpoints = []  # 3D points in real world space
+    imgpoints = []  # 2D points in image plane
+    
+    cap = cv2.VideoCapture(0)
+    print("Press SPACE to capture calibration images, ESC to finish")
+    
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+            
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
+        # Find chessboard corners
+        ret_corners, corners = cv2.findChessboardCorners(gray, CHESSBOARD_SIZE, None)
+        
+        if ret_corners:
+            # Draw corners
+            cv2.drawChessboardCorners(frame, CHESSBOARD_SIZE, corners, ret_corners)
+            
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord(' '):  # Space to capture
+                objpoints.append(objp)
+                imgpoints.append(corners)
+                print(f"Captured {len(objpoints)} calibration images")
+                
+        cv2.imshow('Calibration', frame)
+        
+        if cv2.waitKey(1) & 0xFF == 27:  # ESC to exit
+            break
+            
+    cap.release()
+    cv2.destroyAllWindows()
+    
+    if len(objpoints) > 10:
+        print("Calibrating camera...")
+        ret, camera_matrix, dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(
+            objpoints, imgpoints, gray.shape[::-1], None, None
+        )
+        
+        # Save calibration
+        calibration_data = {
+            'camera_matrix': camera_matrix.tolist(),
+            'dist_coeffs': dist_coeffs.tolist(),
+            'calibration_error': ret
+        }
+        
+        with open('camera_calibration.json', 'w') as f:
+            json.dump(calibration_data, f, indent=2)
+            
+        print(f"Camera calibrated! Error: {ret}")
+        print("Calibration saved to camera_calibration.json")
+        
+        return camera_matrix, dist_coeffs
+    else:
+        print("Not enough calibration images captured")
+        return None, None
+
+if __name__ == '__main__':
+    calibrate_camera()
+
+
+ Étape 3 : Intégration avec MoveIt
+
+
+#!/usr/bin/env python3
+"""
+ArUco-guided robot controller that points to detected markers.
+"""
+
+import json
+import time
+import numpy as np
+from your_main import *  # Import your existing main.py classes
+
+class ArUcoGuidedRobotController:
+    """
+    Controls robot to point at ArUco markers detected by camera.
+    """
+    
+    def __init__(self, camera_calibration_file='camera_calibration.json'):
+        # Load camera calibration
+        with open(camera_calibration_file, 'r') as f:
+            cal_data = json.load(f)
+        
+        self.camera_matrix = np.array(cal_data['camera_matrix'])
+        self.dist_coeffs = np.array(cal_data['dist_coeffs'])
+        
+        # Initialize ArUco detector
+        self.aruco_detector = ArUcoDetector(
+            self.camera_matrix, self.dist_coeffs, marker_size=0.05  # 5cm markers
+        )
+        
+        # Initialize robot (your existing code)
+        self.robo = Robot(portname=rl_config.PORT)
+        self.robo.init_bus()
+        self.robo.init_motors()
+        
+        # Initialize safety watchdog
+        self.watchdog = SafetyWatchdog(
+            robot_controller=self.robo,
+            natnet_data_handler=None,
+            joint_limits=rl_config.JOINT_LIMITS,
+            marker_radii=rl_config.MARKER_RADII,
+        )
+        self.robo.joint_watchdog = self.watchdog
+        self.watchdog.start(check_interval=rl_config.WATCHDOG_INTERVAL)
+        
+    def start_aruco_tracking(self):
+        """Start ArUco detection and robot tracking."""
+        self.aruco_detector.start_detection()
+        print("[ArUco] Tracking started. Robot will point to detected markers.")
+        
+        try:
+            while True:
+                # Get all detected markers
+                markers = self.aruco_detector.get_all_markers()
+                
+                if markers:
+                    # Choose which marker to point to (e.g., closest or specific ID)
+                    target_marker = self._choose_target_marker(markers)
+                    
+                    if target_marker:
+                        target_pos = target_marker['position']
+                        print(f"[ArUco] Target position: X={target_pos[0]:.3f}, Y={target_pos[1]:.3f}, Z={target_pos[2]:.3f}")
+                        
+                        # Calculate robot joint angles to point to target
+                        joint_angles = self._calculate_pointing_angles(target_pos)
+                        
+                        if joint_angles:
+                            # Send command to robot
+                            self._move_robot_to_point(joint_angles, target_pos)
+                            
+                time.sleep(0.1)  # 10Hz update rate
+                
+        except KeyboardInterrupt:
+            print("\n[ArUco] Stopping...")
+        finally:
+            self.aruco_detector.stop_detection()
+            self.watchdog.stop()
+            self.robo.shutdown()
+            
+    def _choose_target_marker(self, markers):
+        """Choose which marker to target."""
+        # Strategy 1: Target marker with specific ID
+        if 0 in markers:  # Target marker ID 0
+            return markers[0]
+            
+        # Strategy 2: Target closest marker
+        closest_marker = None
+        min_distance = float('inf')
+        
+        for marker_id, marker_data in markers.items():
+            pos = marker_data['position']
+            distance = np.linalg.norm(pos)
+            if distance < min_distance:
+                min_distance = distance
+                closest_marker = marker_data
+                
+        return closest_marker
+        
+    def _calculate_pointing_angles(self, target_pos):
+        """
+        Calculate joint angles to point end-effector toward target.
+        This is a simplified approach - you might want to use proper IK.
+        """
+        x, y, z = target_pos
+        
+        # Simple pointing calculation (adjust based on your robot configuration)
+        # This assumes the robot base is at origin and we want to point toward target
+        
+        # Base rotation (around Z-axis)
+        base_angle = np.arctan2(y, x)
+        
+        # Distance from base to target
+        distance_xy = np.sqrt(x**2 + y**2)
+        distance_3d = np.sqrt(x**2 + y**2 + z**2)
+        
+        # Elevation angle
+        elevation = np.arctan2(z, distance_xy)
+        
+        # Convert to degrees
+        joint_angles = [
+            np.degrees(base_angle),           # Base rotation
+            np.degrees(elevation),            # Shoulder lift
+            0,                                # Elbow (adjust as needed)
+            np.degrees(-elevation),           # Wrist 1 (compensate for shoulder)
+            0,                                # Wrist 2
+            0                                 # Wrist 3
+        ]
+        
+        # Apply safety limits
+        for i, angle in enumerate(joint_angles):
+            if i < len(rl_config.JOINT_LIMITS):
+                min_limit, max_limit = rl_config.JOINT_LIMITS[i]
+                joint_angles[i] = np.clip(angle, min_limit, max_limit)
+                
+        return joint_angles
+        
+    def _move_robot_to_point(self, joint_angles, target_pos):
+        """Move robot to point at target position."""
+        try:
+            print(f"[ArUco] Pointing to target: {[f'{angle:.1f}°' for angle in joint_angles]}")
+            self.robo.move_abs_with_speed(joint_angles, speed=rl_config.MAX_SPEED)
+            
+            # Log current position
+            current_angles = self.robo.get_Position()
+            if current_angles:
+                angles_str = [f'{angle[0]:.1f}°' if angle[0] is not None else 'N/A' 
+                            for angle in current_angles]
+                print(f"[ArUco] Current angles: {angles_str}")
+                
+        except Exception as e:
+            print(f"[ArUco] Error moving robot: {e}")
+
+if __name__ == '__main__':
+    controller = ArUcoGuidedRobotController()
+    controller.start_aruco_tracking()
+
+🎯 Étape 4 : Script de lancement pour ArUco
+#!/bin/bash
+# launch_aruco_robot.sh
+
+echo "🎯 Lancement du système ArUco + Robot"
+echo "===================================="
+
+# Vérifications
+if [ ! -f "camera_calibration.json" ]; then
+    echo "❌ Camera calibration file not found!"
+    echo "   Run: python3 camera_calibration.py first"
+    exit 1
+fi
+
+echo "📷 Calibration caméra trouvée"
+echo "🎯 Démarrage du tracking ArUco..."
+
+# Activer l'environnement Python
+source .venv/bin/activate
+
+# Lancer le système ArUco
+cd real_robot
+python3 aruco_robot_controller.py

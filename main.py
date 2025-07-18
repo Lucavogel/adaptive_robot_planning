@@ -19,7 +19,7 @@ from speech_to_text import listen_until_silent
 from text_to_speech import speak, speak_text_realistic
 from Query_knowledge_graph import  get_multiple_entities_relations, load_knowledge_graph
 emotion_of_voice = "happy"  # Par défaut, on utilise une émotion neutre
-user_states = ["InPain"]#"Tired","InPain","happy"
+user_states = ["Tired"]#"Tired","InPain","happy"
 wether_conditions = ["Rainy"]# "Rainy", "Cold", "HotDay"
 
 YOLO_OBJECT_MAP = {
@@ -27,7 +27,6 @@ YOLO_OBJECT_MAP = {
     "Banana": "BANANA",
     "Coffee": "CUP",  # ou "COFFEE" si tu as entraîné YOLO dessus
     "Chair": "CHAIR",
-    # Ajoute d'autres mappings si besoin
 }
 
 class LLMCommander(Node):
