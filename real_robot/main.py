@@ -13,7 +13,8 @@ import os
 
 from robot import Robot
 from safety import SafetyWatchdog
-from optitrack import NatNetDataHandler, run_natnet_client_in_thread
+# Removed NatNet/OptiTrack imports - not needed
+# from optitrack import NatNetDataHandler, run_natnet_client_in_thread
 import rl_config # Import the configuration file
 
 class ROSBridgeDataReader:
@@ -21,7 +22,7 @@ class ROSBridgeDataReader:
     Reads joint position data from the ROS bridge data file for the real robot.
     """
     
-    def __init__(self, data_file_path='/tmp/joint_states.json'):
+    def __init__(self, data_file_path='/tmp/moveit_to_pybullet_data.json'):
         self.data_file_path = data_file_path
         self.latest_joint_positions = None
         self.latest_joint_names = []
@@ -143,27 +144,10 @@ if __name__ == '__main__':
         exit(1)
     robo.init_motors()
 
-    # Initialize OptiTrack (optional)
-    natnet_data_manager = NatNetDataHandler(verbose=False)
-    natnet_client_thread = threading.Thread(target=run_natnet_client_in_thread,
-                                            args=(natnet_data_manager, rl_config.NATNET_SERVER_IP),
-                                            daemon=True)
-    natnet_client_thread.start()
-    print("[Main] Waiting for NatNet client to connect and receive initial data (max 10s)...")
-    connect_timeout = rl_config.NATNET_CONNECT_TIMEOUT
-    start_time = time.time()
-    while not natnet_data_manager.is_connected and (time.time() - start_time < connect_timeout):
-        time.sleep(0.5)
-    
-    if not natnet_data_manager.is_connected:
-        print("[Main] NatNet client failed to connect within timeout. Proceeding without OptiTrack data.")
-    else:
-        print("[Main] NatNet client connected and received initial data.")
-
-    # Initialize safety watchdog
+    # Initialize safety watchdog (without NatNet)
     watchdog = SafetyWatchdog(
         robot_controller=robo,
-        natnet_data_handler=natnet_data_manager,
+        natnet_data_handler=None,  # No OptiTrack needed
         joint_limits=rl_config.JOINT_LIMITS,
         marker_radii=rl_config.MARKER_RADII,
     )
@@ -174,7 +158,7 @@ if __name__ == '__main__':
     ros_bridge = ROSBridgeDataReader()
     ros_bridge.start_reading(update_interval=0.05)  # Read at 20Hz
     
-    print("[Main] Real robot initialized. Waiting for MoveIt commands...")
+    print("[Main] Real robot initialized (without OptiTrack). Waiting for MoveIt commands...")
     print("[Main] Start your MoveIt planning and the robot will follow!")
     
     try:
@@ -222,11 +206,6 @@ if __name__ == '__main__':
                             print(f"[Main] move_abs_with_speed completed.")
                             last_command_time = time.time()
                             last_moveit_positions = moveit_positions.copy()
-                            
-                            # Show current end-effector position (if OptiTrack available)
-                            if natnet_data_manager.latest_relative_pos is not None:
-                                pos = natnet_data_manager.latest_relative_pos
-                                print(f'[Main] EEF position: X={pos[0]:.4f}, Y={pos[1]:.4f}, Z={pos[2]:.4f}')
                                 
                             # Show current joint angles
                             current_joint_angles = robo.get_Position()

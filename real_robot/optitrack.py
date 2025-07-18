@@ -4,9 +4,6 @@ import threading
 from scipy.spatial.transform import Rotation as R
 import logging
 
-import natnet
-from natnet.protocol.MocapFrameMessage import LabelledMarker, RigidBody
-from natnet.comms import TimestampAndLatency # Correct import for the timing object
 
 
 END_EFFECTOR_RB_ID = 12
