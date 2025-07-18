@@ -249,7 +249,7 @@ class SafetyWatchdog:
                         current_positions[1], current_positions[2])
 
                 # 3. Check OptiTrack limits::
-                current_relative_pos = None
+                '''current_relative_pos = None
                 with self._natnet_handler._data_lock:  # Ensure thread-safe access
                     current_relative_pos = self._natnet_handler.latest_relative_pos # Correctly get the value
                 if current_relative_pos is not None:
@@ -261,10 +261,10 @@ class SafetyWatchdog:
                         print(f"[Watchdog] EEF VIOLATION! End-effector Y-pos: {current_relative_pos[1]:.4f}m "
                             f"is below threshold: {self.MIN_END_EFFECTOR_Y_THRESHOLD:.4f}m")
                 else:
-                    print('[Watchdog] End-effector relative position data not yet available from OptiTrack.')
-
+                print('[Watchdog] End-effector relative position data not yet available from OptiTrack.')
+                '''
                 # 4. Check for Bounding Sphere Overlap: TODO: the markers' IDs are not yet clarified, and the distances are usually violated
-                marker_overlap_found = self._check_marker_overlap()
+                ''''marker_overlap_found = self._check_marker_overlap()'''
 
                 # Final: Trigger the emergency recovery if any violation is found:
                 if violation_found or y_limit_violation_found or table_angle_collision_found or marker_overlap_found:

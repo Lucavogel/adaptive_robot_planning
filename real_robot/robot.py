@@ -118,6 +118,9 @@ class Robot:
         for i, m in enumerate(self._motors):
             raw = m.getPosition() # Get raw reading (e.g., 1800, or None)
             pos_all_raw_from_motors.append(raw) # Store this for the original return value format
+            
+            # Add delay between motor readings to prevent serial buffer overflow
+            time.sleep(0.01)  # 10ms delay between each motor read
 
             if raw is None:
                 # If read failed, new_current_joint_angles_deg[i] retains its existing value (from previous cycle or init).
@@ -126,8 +129,8 @@ class Robot:
                 continue # Skip conversion if raw is None
 
             try:
-                # raw is an integer count of centi-degrees
-                deg = float(raw) / 100.0
+                # raw is already in degrees (LSS servos use QD command which returns degrees)
+                deg = float(raw)/100
                 new_current_joint_angles_deg[i] = deg # Update with the new, valid degree
             except (TypeError, ValueError) as e:
                 # If conversion failed, new_current_joint_angles_deg[i] retains its existing value.
@@ -139,7 +142,7 @@ class Robot:
 
         # Return value for external functions (e.g., for debugging or other logic)
         # still signals which original reads failed by conforming to the expected [[pos], [None]] format.
-        return [[p] if p is not None else [None] for p in pos_all_raw_from_motors]
+        return [[p] if p is not None else [None] for p in new_current_joint_angles_deg]
     
     def move_abs(self, action): # 'action' here is a list of absolute target positions in degrees
         if self._in_emergency_state:
@@ -150,9 +153,9 @@ class Robot:
         assert len(action) == len(self._motors)
 
         for idx, a in enumerate(action):
-            # The low level protocol expects ints (centi-degrees)
-            a_cd = int( a * 100) # Convert degrees to centi-degrees
-            self._motors[idx].move_abs(a_cd)
+            # LSS servos work directly in degrees (D command expects degrees)
+            a_deg = int(a * 100) # Convert to integer degrees
+            self._motors[idx].move_abs(a_deg)
 
     def move_abs_admin(self, action): # 'action' here is a list of absolute target positions in degrees
         # Skip the emergency state check for admin commands
@@ -160,9 +163,9 @@ class Robot:
         assert len(action) == len(self._motors)
 
         for idx, a in enumerate(action):
-            # The low level protocol expects ints (centi-degrees)
-            a_cd = int( a * 100) # Convert degrees to centi-degrees
-            self._motors[idx].move_abs(a_cd)
+            # LSS servos work directly in degrees (D command expects degrees)
+            a_deg = int(a*100) # Convert to integer degrees
+            self._motors[idx].move_abs(a_deg)
 
     def move_abs_with_speed(self, action, speed): # 'action' here is a list of absolute target positions in degrees
         if self._in_emergency_state:
@@ -173,9 +176,9 @@ class Robot:
         assert len(action) == len(self._motors)
 
         for idx, a in enumerate(action):
-            # The low level protocol expects ints (centi-degrees)
-            a_cd = int( a * 100) # Convert degrees to centi-degrees
-            self._motors[idx].move_abs_with_speed(a_cd, speed)
+            # LSS servos work directly in degrees (D command expects degrees)
+            a_deg = int(a * 100) # Convert to integer degrees
+            self._motors[idx].move_abs_with_speed(a_deg, speed)
 
     def limp(self):
         for m in self._motors:

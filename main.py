@@ -78,12 +78,13 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
         if human_input:
             print(f"You (speech): {human_input}")
             dialogue_history.append(f"Human: {human_input}")
+            dialogue_history = trim_dialogue_history(dialogue_history)
 
         if human_input or latest_status == "success":
             kg = load_knowledge_graph()
             #concepts = [obj.capitalize() for obj in detected_objects]
             
-            concepts = ["Coffee", "Banana", "GlassOfWater","HotDay","Towel","Chair"] + user_states
+            concepts = ["Coffee", "Banana", "GlassOfWater","Towel","Chair"] + user_states + wether_conditions
             concepts_relations = get_multiple_entities_relations(concepts, kg)
             print("✅ Relations extraites :")
             for k, v in concepts_relations.items():
@@ -107,6 +108,7 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
             clean_action = clean_llm_response(action)
             speak(clean_action)
             dialogue_history.append(f"Robot: {action}")
+            dialogue_history = trim_dialogue_history(dialogue_history)
 
             if "STOP_ROUTINE" in action:
                 stop_flag['stop'] = True
@@ -117,6 +119,27 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
                 break
 
 
+
+
+def trim_dialogue_history(dialogue_history, max_per_role=3):
+    # Sépare les messages par rôle
+    robot_msgs = [m for m in dialogue_history if m.startswith("Robot:")]
+    human_msgs = [m for m in dialogue_history if m.startswith("Human:")]
+    # Prend les N derniers de chaque
+    robot_msgs = robot_msgs[-max_per_role:]
+    human_msgs = human_msgs[-max_per_role:]
+    # Reconstitue l’historique en alternant (ordre chronologique)
+    trimmed = []
+    # Fusionne et trie par ancienneté (optionnel, sinon juste robot puis humain)
+    for m in dialogue_history:
+        if m in robot_msgs and m not in trimmed:
+            trimmed.append(m)
+        if m in human_msgs and m not in trimmed:
+            trimmed.append(m)
+        if len([x for x in trimmed if x.startswith("Robot:")]) >= max_per_role and \
+           len([x for x in trimmed if x.startswith("Human:")]) >= max_per_role:
+            break
+    return trimmed
 
 
 def main():
@@ -155,6 +178,7 @@ def main():
     print("✅ Introduction :", intro_response)
     print("\n🧠 Introduction from LLM: " + action)
     speak(clean_llm_response(action))
+    #speak_text_realistic(clean_llm_response(action))
     dialogue_history.append(f"Robot: {action}")
 
     perception_context = get_environment_context_test()

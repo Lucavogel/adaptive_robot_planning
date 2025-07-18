@@ -16,27 +16,26 @@ def clean_llm_response(text: str) -> str:
 
 
 def extract_action_from_response(llm_response: str) -> str:
-    # Enlève tous les ** et espaces superflus AVANT le parsing
+    # Clean up ** and strip lines
     cleaned = "\n".join(line.replace("**", "").strip() for line in llm_response.strip().splitlines())
     lines = [line for line in cleaned.splitlines()]
-    output_found = False
 
     for i, line in enumerate(lines):
-        # Cas Output: (inchangé)
+        # Case: Output: (on its own line)
         if re.match(r"output\s*[:：]?\s*$", line, flags=re.IGNORECASE):
-            output_found = True
+            # Return the first non-empty line after Output:
             for next_line in lines[i+1:]:
                 next_line = next_line.strip()
-                if next_line and not next_line.lower().startswith("✅ robot action"):
+                if next_line:
                     return next_line
         else:
-            # Cas Output: sur la même ligne (inchangé)
+            # Case: Output: on the same line
             match = re.match(r"output\s*[:：]?\s*(.+)", line, flags=re.IGNORECASE)
             if match:
                 content = match.group(1).strip()
                 if content:
                     return content
-            # Détecte "✅ Robot Action:" même avec des étoiles ou espaces
+            # Case: "✅ Robot Action:" (with or without stars/spaces)
             match_action = re.match(r"✅\s*robot action\s*[:：]?\s*(.*)", line, flags=re.IGNORECASE)
             if match_action:
                 content = match_action.group(1).strip()

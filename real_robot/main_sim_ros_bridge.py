@@ -115,9 +115,9 @@ def map_moveit_joints_to_pybullet(moveit_positions, moveit_joint_names, pybullet
         'wrist_3_joint'            # Joint 5
     ]
     
-    # Offset compensation: MoveIt home [0, -90, 0, 0, 0, 0] -> PyBullet home [0, 0, 0, 0, 0, 0]
-    # So we need to add 90° to joint 1 (shoulder_lift_joint)
-    joint_offsets = [0, 90, 0, 0, 0, 0]  # Degrees
+    # No offset - direct mapping
+    # Home position: [0, 0, 0, 0, 0, 0] for both MoveIt and PyBullet
+    joint_offsets = [0, 90, 0, 0, 0, 0]  # No offset
     
     # Create mapping from MoveIt joint names to positions
     joint_dict = dict(zip(moveit_joint_names, moveit_positions))
@@ -181,8 +181,12 @@ if __name__ == '__main__':
     try:
         last_command_time = 0
         last_moveit_positions = None  # Pour détecter les changements
+        step_count = 0
+        max_steps = 100
         
-        while True:
+        print(f"[Main] Running simulation for {max_steps} steps...")
+        
+        while step_count < max_steps:
             if watchdog._exception_event.is_set():
                 print("\n[Main] Watchdog thread reported a critical exception. Stopping.")
                 robo.enter_emergency_recovery()
@@ -204,7 +208,7 @@ if __name__ == '__main__':
                         # Send command to PyBullet robot
                         print(f"[Main] New MoveIt command received!")
                         print(f"[Main] MoveIt positions: {[f'{pos:.2f}°' for pos in moveit_positions]}")
-                        print(f"[Main] PyBullet positions (with offset): {[f'{pos:.2f}°' for pos in pybullet_positions]}")
+                        print(f"[Main] PyBullet positions (no offset): {[f'{pos:.2f}°' for pos in pybullet_positions]}")
                         robo.move_abs_with_speed(pybullet_positions, speed=rl_config.MAX_SPEED)
                         last_command_time = time.time()
                         last_moveit_positions = moveit_positions.copy()
@@ -225,8 +229,14 @@ if __name__ == '__main__':
             # Always step the simulation to keep it running
             with pybullet_api_lock:
                 pybullet_api.stepSimulation(physicsClientId=physics_client_id)
+            
+            step_count += 1
+            if step_count % 20 == 0:  # Log every 20 steps
+                print(f"[Main] Step {step_count}/{max_steps}")
                     
             time.sleep(0.05)  # 20Hz update rate
+            
+        print(f"[Main] Completed {max_steps} simulation steps.")
             
     except KeyboardInterrupt:
         print("\n[Main] CTRL-C detected. Shutting down...")

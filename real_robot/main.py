@@ -191,6 +191,7 @@ if __name__ == '__main__':
                                 min_limit, max_limit = rl_config.JOINT_LIMITS[j]
                                 clamped_angle = np.clip(angle, min_limit, max_limit)
                                 cmd.append(float(clamped_angle))
+                                
                                 if abs(clamped_angle - angle) > 0.1:
                                     print(f"[Main] WARNING: Joint {j} clamped from {angle:.2f}° to {clamped_angle:.2f}°")
                             else:

@@ -125,6 +125,7 @@ Instructions:
 - If the current exercise status is "not yet", encourage the user to keep trying and give helpful advice. 
 - If you are sure the user wants to skip, start your output with NEXT_EXERCISE followed by a brief explanation of the next stretch.
 - If the user wants to stop or it’s better to stop the routine or it is the last exercice, start with: STOP_ROUTINE.
+- dont repeat the same offer more than once unless the user asks for it again.
 - Otherwise, feel free to encourage, advise, or chat as you see fit.
 
 Examples:
