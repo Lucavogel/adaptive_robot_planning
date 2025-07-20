@@ -155,29 +155,54 @@ class SimRobot:
 
             current_script_dir = os.path.dirname(os.path.abspath(__file__))
             project_root_dir = os.path.abspath(os.path.join(current_script_dir))
-            URDF_SOURCE_FILE = "ur5.urdf" # Or "ur5_robot.urdf.xacro" if you changed it back
-            robot_description_base_path = os.path.join(project_root_dir, "robot_models", "ur_description", "urdf")
+            URDF_SOURCE_FILE = "lynx_ses900_optimized.urdf"  # Switched to Lynx SES900 robot
+            robot_description_base_path = os.path.join(project_root_dir, "robot_models", "URDF_description", "urdf")
             SOURCE_FILE_PATH = os.path.join(robot_description_base_path, URDF_SOURCE_FILE)
 
             with self._pybullet_api_lock: # ACQUIRE LOCK for setAdditionalSearchPath
                 self._pybullet_api.setAdditionalSearchPath(robot_description_base_path)
 
-            urdf_load_path = SOURCE_FILE_PATH
-            temp_urdf_path = None
+            # Create a temporary URDF with resolved package paths for PyBullet
+            temp_urdf_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.urdf')
+            temp_urdf_path = temp_urdf_file.name
+            temp_urdf_file.close()
+            
+            # Resolve package:// URIs to absolute paths
+            if not self._resolve_package_paths(SOURCE_FILE_PATH, temp_urdf_path):
+                print("[SimRobot] Failed to resolve package paths, trying original URDF...")
+                urdf_load_path = SOURCE_FILE_PATH
+            else:
+                urdf_load_path = temp_urdf_path
             if URDF_SOURCE_FILE.endswith(".xacro"):
                 try:
-                    temp_urdf_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.urdf')
-                    temp_urdf_path = temp_urdf_file.name
-                    temp_urdf_file.close()
+                    # For XACRO files, we still need to process them first
+                    xacro_temp_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.urdf')
+                    xacro_temp_path = xacro_temp_file.name
+                    xacro_temp_file.close()
+                    
                     cmd = ["xacro", "--inorder", SOURCE_FILE_PATH]
                     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-                    with open(temp_urdf_path, 'w') as f:
+                    with open(xacro_temp_path, 'w') as f:
                         f.write(result.stdout)
-                    urdf_load_path = temp_urdf_path
-                    print(f"[SimRobot] XACRO processed. Generated temporary URDF at: {temp_urdf_path}")
+                    
+                    # Now resolve package paths from the processed XACRO
+                    if not self._resolve_package_paths(xacro_temp_path, temp_urdf_path):
+                        print("[SimRobot] Failed to resolve package paths from XACRO, using processed XACRO...")
+                        urdf_load_path = xacro_temp_path
+                    
+                    # Clean up the intermediate XACRO file
+                    if os.path.exists(xacro_temp_path):
+                        os.remove(xacro_temp_path)
+                        
+                    print(f"[SimRobot] XACRO processed and package paths resolved. Final URDF at: {urdf_load_path}")
                 except Exception as e:
                     print(f"[SimRobot] Error processing XACRO: {e}")
                     raise
+
+            # NEW: Resolve package:// URIs in URDF for PyBullet compatibility
+            package_resolved = self._resolve_package_paths(urdf_load_path, temp_urdf_path or urdf_load_path)
+            if not package_resolved:
+                print("[SimRobot] Warning: Package path resolution failed. URDF may not load correctly.")
 
             with self._pybullet_api_lock: # ACQUIRE LOCK for loadURDF
                 URDF_SPAWN_HEIGHT = 0.0  # Example value, adjust as needed
@@ -203,13 +228,13 @@ class SimRobot:
                         controlled_joint_indices.append(i)
                 self._controlled_joint_indices = controlled_joint_indices[:6]
                 if len(self._controlled_joint_indices) != 6:
-                    print(f"[SimRobot] Warning: Expected 6 controlled joints for UR5-like arm, found {len(self._controlled_joint_indices)}.")
+                    print(f"[SimRobot] Warning: Expected 6 controlled joints for Lynx SES900 arm, found {len(self._controlled_joint_indices)}.")
 
                 self._end_effector_link_id = -1
                 for i in range(num_joints):
                     info = self._pybullet_api.getJointInfo(self._robot_id, i, physicsClientId=self._physics_client)
                     link_name = info[12].decode("utf-8")
-                    if "tool0" in link_name or "ee_link" in link_name or "wrist_3_link" in link_name:
+                    if "tool_link" in link_name or "tcp" in link_name or "tool0" in link_name:
                         self._end_effector_link_id = i
                         print(f"[SimRobot] Identified End-Effector Link: {link_name} (PyBullet Link ID: {i})")
                         break
@@ -433,3 +458,33 @@ class SimRobot:
     def get_pybullet_api_lock(self):
         return self._pybullet_api_lock
     # END NEW GETTER METHODS
+
+    def _resolve_package_paths(self, urdf_path, output_path):
+        """
+        Resolve package:// URIs in URDF file for PyBullet compatibility.
+        PyBullet doesn't understand ROS package URIs, so we replace them with absolute paths.
+        """
+        try:
+            with open(urdf_path, 'r') as file:
+                urdf_content = file.read()
+            
+            # Define the package path for URDF_description
+            current_script_dir = os.path.dirname(os.path.abspath(__file__))
+            package_path = os.path.join(current_script_dir, "robot_models", "URDF_description")
+            
+            # Replace package:// references
+            urdf_content = urdf_content.replace(
+                'package://URDF_description',
+                f'file://{package_path}'
+            )
+            
+            # Write the modified URDF
+            with open(output_path, 'w') as file:
+                file.write(urdf_content)
+                
+            print(f"[SimRobot] Resolved package paths. Modified URDF saved to: {output_path}")
+            return True
+            
+        except Exception as e:
+            print(f"[SimRobot] Error resolving package paths: {e}")
+            return False

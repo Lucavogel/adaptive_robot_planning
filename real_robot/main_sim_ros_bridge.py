@@ -105,14 +105,14 @@ def map_moveit_joints_to_pybullet(moveit_positions, moveit_joint_names, pybullet
     if not moveit_positions or not moveit_joint_names:
         return None
         
-    # Expected UR5 joint names in MoveIt (adjust if different)
-    ur5_joint_names = [
-        'shoulder_pan_joint',      # Joint 0
-        'shoulder_lift_joint',     # Joint 1
-        'elbow_joint',             # Joint 2
-        'wrist_1_joint',           # Joint 3
-        'wrist_2_joint',           # Joint 4
-        'wrist_3_joint'            # Joint 5
+    # Expected Lynx SES900 joint names in MoveIt (adjust if different)
+    lynx_joint_names = [
+        'joint_1',      # Joint 0 (Base rotation)
+        'joint_2',      # Joint 1 (Shoulder)
+        'joint_3',      # Joint 2 (Elbow)
+        'joint_4',      # Joint 3 (Wrist 1)
+        'joint_5',      # Joint 4 (Wrist 2)
+        'joint_6'       # Joint 5 (Wrist 3)
     ]
     
     # No offset - direct mapping
@@ -124,7 +124,7 @@ def map_moveit_joints_to_pybullet(moveit_positions, moveit_joint_names, pybullet
     
     # Map to PyBullet order with offset compensation
     pybullet_positions = []
-    for i, joint_name in enumerate(ur5_joint_names):
+    for i, joint_name in enumerate(lynx_joint_names):
         if joint_name in joint_dict:
             # Apply offset compensation
             compensated_position = joint_dict[joint_name] + joint_offsets[i]

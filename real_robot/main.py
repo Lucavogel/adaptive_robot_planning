@@ -118,7 +118,7 @@ def map_moveit_joints_to_real_robot(moveit_positions, moveit_joint_names, real_r
     
     # Offset compensation for real robot home position
     # Adjust these values based on your real robot's actual home position
-    joint_offsets = [0, 90, 0, 0, 0, 0]  # Degrees - adjust as needed
+    joint_offsets = [0, 0, 0, 0, 0, 0]  # Degrees - adjust as needed
     
     # Create mapping from MoveIt joint names to positions
     joint_dict = dict(zip(moveit_joint_names, moveit_positions))
