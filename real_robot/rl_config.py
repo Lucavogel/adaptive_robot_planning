@@ -67,4 +67,4 @@ MARKER_RADII = {
     # Add more markers as needed. Markers NOT in this dict will be ignored for sphere checks.
 }
 STRESS_TEST_ITERS = 2000 # Max number of random commands for stress test
-STRESS_TEST_INTERVAL = 2 # Seconds between commands (i.e. 2 Hz)
+STRESS_TEST_INTERVAL = 1 # Seconds between commands (i.e. 2 Hz)

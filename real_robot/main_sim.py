@@ -52,55 +52,52 @@ if __name__ == '__main__':
     watchdog.start(check_interval=rl_config.WATCHDOG_INTERVAL)
 
     print(f"[Main] Starting random stress test: up to {rl_config.STRESS_TEST_ITERS} commands @ {1/rl_config.STRESS_TEST_INTERVAL:.1f} Hz...")
-
+    stress_test_iters = 0
+    # PyBullet's default physics delta time is 1/240th of a second
+    sim_steps_per_interval = int(rl_config.STRESS_TEST_INTERVAL / (1.0/240.0))
+    # Ensure at least one step is taken
+    sim_steps_per_interval = max(1, sim_steps_per_interval)
     try:
-        for i in range(rl_config.STRESS_TEST_ITERS):
-            if watchdog._exception_event.is_set():
-                print("\n[Main] Watchdog thread reported a critical exception. Stopping main loop.")
-                robo.enter_emergency_recovery()
-                break
+        while stress_test_iters < rl_config.STRESS_TEST_ITERS:
+            for i in range(sim_steps_per_interval):
+                if watchdog._exception_event.is_set():
+                    print("\n[Main] Watchdog thread reported a critical exception. Stopping main loop.")
+                    robo.enter_emergency_recovery()
+                    break
 
-            cmd = []
-            for j_idx, (min_l, max_l) in enumerate(rl_config.JOINT_LIMITS):
-                # Generate random angle, then clamp it to actual joint limits
-                span = max(abs(min_l), abs(max_l)) * 1.5
-                angle = random.uniform(-span, span)
-                # Clamp the angle to stay within the joint limits defined in rl_config.py
-                clamped_angle = np.clip(angle, min_l, max_l)
-                cmd.append(clamped_angle)
+                if i == 0:
+                    cmd = []
+                    for j_idx, (min_l, max_l) in enumerate(rl_config.JOINT_LIMITS):
+                        # Generate random angle, then clamp it to actual joint limits
+                        span = max(abs(min_l), abs(max_l)) * 1.5
+                        angle = random.uniform(-span, span)
+                        # Clamp the angle to stay within the joint limits defined in rl_config.py
+                        clamped_angle = np.clip(angle, min_l, max_l)
+                        cmd.append(clamped_angle)
 
-            # cmd = [12., 0., 90., 0., 0., 0.]  # Example command for testing
+                    # cmd = [12., 0., 90., 0., 0., 0.]  # Example command for testing
 
-            # TODO: develop a thread/ROS node to transfer the joint angle topic to the 'cmd' var.
-            print(f"[Main] [{i+1}/{rl_config.STRESS_TEST_ITERS}] -> move_abs: {cmd}")
-            robo.move_abs_with_speed(cmd, speed=rl_config.MAX_SPEED)
-            # Step the simulation forward for PyBullet to apply the movement
-            # We want to continuously run steps during the waiting time, not just one.
-            # Number of simulation steps to run during the stress test interval
-            # PyBullet's default physics delta time is 1/240th of a second
-            sim_steps_per_interval = int(rl_config.STRESS_TEST_INTERVAL / (1.0/240.0))
-            # Ensure at least one step is taken
-            sim_steps_per_interval = max(1, sim_steps_per_interval)
+                    # TODO: develop a thread/ROS node to transfer the joint angle topic to the 'cmd' var.
+                    print(f"[Main] [{i+1}/{rl_config.STRESS_TEST_ITERS}] -> move_abs: {cmd}")
+                    robo.move_abs_with_speed(cmd, speed=rl_config.MAX_SPEED)
+                    stress_test_iters += 1
 
-            for _ in range(sim_steps_per_interval):
+                    if sim_data_manager.latest_relative_pos is not None:
+                        print(f'[Main] eef relative pos X={sim_data_manager.latest_relative_pos[0]:.4f}, Y={sim_data_manager.latest_relative_pos[1]:.4f}, Z={sim_data_manager.latest_relative_pos[2]:.4f}')
+                    else:
+                        print('[Main] eef relative pos: Data not available.')
+
+                    # --- ADDED LOGGING ---
+                    current_joint_angles = robo.get_Position()
+                    if current_joint_angles:
+                        print(f"[Main] Current Joint Angles (deg): {[f'{angle[0]:.2f}' if angle[0] is not None else 'N/A' for angle in current_joint_angles]}")
+                    # ---------------------
+
                 with pybullet_api_lock: # Ensure thread safety for PyBullet API calls
                     pybullet_api.stepSimulation(physicsClientId=physics_client_id)
                 # Introduce a small sleep to yield control and prevent busy-waiting
                 time.sleep(0.001)
 
-            if sim_data_manager.latest_relative_pos is not None:
-                print(f'[Main] eef relative pos X={sim_data_manager.latest_relative_pos[0]:.4f}, Y={sim_data_manager.latest_relative_pos[1]:.4f}, Z={sim_data_manager.latest_relative_pos[2]:.4f}')
-            else:
-                print('[Main] eef relative pos: Data not available.')
-
-            # The overall time.sleep is now replaced by the loop above, so remove it.
-            # time.sleep(rl_config.STRESS_TEST_INTERVAL) # REMOVED
-
-            # --- ADDED LOGGING ---
-            current_joint_angles = robo.get_Position()
-            if current_joint_angles:
-                print(f"[Main] Current Joint Angles (deg): {[f'{angle[0]:.2f}' if angle[0] is not None else 'N/A' for angle in current_joint_angles]}")
-            # ---------------------
 
         print("[Main] Test loop complete.")
     except KeyboardInterrupt:
