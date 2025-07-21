@@ -28,7 +28,7 @@ def check_exercise(exercise, landmarks, state, dt=0.033):
 
     def update_timers(direction=None):
         now = time.time()
-        if exercise == "lean left and right":
+        if exercise == "Lean left and right for 5 seconds on each side":
             if direction == "left":
                 state["held_time_left"] = min(state.get("held_time_left", 0) + dt, 5.0)
                 state["last_valid_left"] = now
@@ -41,7 +41,7 @@ def check_exercise(exercise, landmarks, state, dt=0.033):
 
     def reset_if_timed_out():
         now = time.time()
-        if exercise == "lean left and right":
+        if exercise == "Lean left and right for 5 seconds on each side":
             last_left = state.get("last_valid_left", 0)
             if last_left != 0 and (now - last_left) > tolerance_reset:
                 state["held_time_left"] = 0.0

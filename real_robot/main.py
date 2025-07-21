@@ -93,7 +93,7 @@ class ROSBridgeDataReader:
 
 def map_moveit_joints_to_real_robot(moveit_positions, moveit_joint_names, real_robot_joint_count=6):
     """
-    Maps MoveIt joint positions to real robot joint order with offset compensation.
+    Maps MoveIt joint positions to real robot joint order (Lynx SES900) with offset compensation.
     
     Args:
         moveit_positions: List of joint positions from MoveIt (in degrees)
@@ -106,14 +106,14 @@ def map_moveit_joints_to_real_robot(moveit_positions, moveit_joint_names, real_r
     if not moveit_positions or not moveit_joint_names:
         return None
         
-    # Expected UR5 joint names in MoveIt (adjust if different)
-    ur5_joint_names = [
-        'shoulder_pan_joint',      # Joint 0
-        'shoulder_lift_joint',     # Joint 1
-        'elbow_joint',             # Joint 2
-        'wrist_1_joint',           # Joint 3
-        'wrist_2_joint',           # Joint 4
-        'wrist_3_joint'            # Joint 5
+    # Expected Lynx SES900 joint names in MoveIt
+    lynx_joint_names = [
+        'joint_1',      # Joint 0 (Base rotation)
+        'joint_2',      # Joint 1 (Shoulder)
+        'joint_3',      # Joint 2 (Upper arm)
+        'joint_4',      # Joint 3 (Forearm)
+        'joint_5',      # Joint 4 (Wrist)
+        'joint_6'       # Joint 5 (End-effector rotation)
     ]
     
     # Offset compensation for real robot home position
@@ -125,7 +125,7 @@ def map_moveit_joints_to_real_robot(moveit_positions, moveit_joint_names, real_r
     
     # Map to real robot order with offset compensation
     real_robot_positions = []
-    for i, joint_name in enumerate(ur5_joint_names):
+    for i, joint_name in enumerate(lynx_joint_names):
         if joint_name in joint_dict:
             # Apply offset compensation
             compensated_position = joint_dict[joint_name] + joint_offsets[i]

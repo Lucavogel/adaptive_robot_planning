@@ -19,7 +19,7 @@ def format_kg(kg: dict) -> str:
             lines.append(f"{subject} --{predicate}--> {obj}")
     return "\n".join(lines)
 
-def reason_with_context(context_description, current_exercise, next_exercise, dialogue_history="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"):
+'''def reason_with_context(context_description, current_exercise, next_exercise, dialogue_history="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"):
     kg = load_knowledge_graph()
     formatted_kg = format_kg(kg)
 
@@ -92,7 +92,7 @@ Output: <what the robot should say or ask next in 1–2 sentences>
     ):
         return "Sorry, I can't answer right now (API error or rate limit)."
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content'''
 
 # Appel au LLM avec prompt basé sur les relations
 def query_llm_about_entities(concepts_relations,user_state, user_answer = "",current_exercise="Stretch your arms above your head for 5 seconds"
@@ -107,18 +107,25 @@ def query_llm_about_entities(concepts_relations,user_state, user_answer = "",cur
     prompt = f"""
 You are StretchBot, a friendly robot that helps a human with their morning stretching routine. Your job is to support them with kind words, suggestions, and simple help.
 
-Context:
-- Current stretch: {current_exercise}
-- Next stretch: {next_exercise}
-- Situation: {context_description}
-- User state: {user_state}
-- the differents objects in front of you are: {detected_objects}
-- Dialogue history: {history_str}
-- Helpful knowledge: 
-{concepts_relations}
--the user has responded: {user_answer}
+**SITUATION TO ANALYZE:**
+- Current exercise: {current_exercise}
+- Next planned exercise: {next_exercise}
+- Context: {context_description}
+- User's physical/emotional state: {user_state}
+- What the user just said: "{user_answer}"
+- Available objects that might help: {detected_objects}
+- Previous conversation: {history_str}
+- Relevant knowledge: {concepts_relations}
 
-Instructions:
+**REASONING PROCESS:**
+First, deeply analyze the situation by asking yourself:
+- What is the user's TRUE emotional and physical state?
+- What are they NOT saying that I should pick up on?
+- What would a good human trainer do in this exact situation?
+- What are the potential consequences of each action I could take?
+- How can I best support their long-term wellness and motivation?
+
+**INSTRUCTIONS:**
 - If the user completed the current stretch,and is feeling well start your response with: NEXT_EXERCISE and explain the next stretch briefly.
 - If the user is tired, confused, or needs support, you can offer help like water, food, or a break.
 - If you want to point to an object in front of you to offer it (like a glass, banana, or towel), start your response with: POINT_<OBJECT>. Then continue normally.
@@ -128,7 +135,7 @@ Instructions:
 - dont repeat the same offer more than once unless the user asks for it again.
 - Otherwise, feel free to encourage, advise, or chat as you see fit.
 
-Examples:
+**EXAMPLE OF GOOD REASONING:**
 1. If the user says "That was hard but I did it!", and status = "success":
    Reasoning:
    The user completed the task. Status confirms success. It's time to proceed.
@@ -144,9 +151,11 @@ Examples:
    User seems fatigued. A gentle offer of support might help.
    Output: POINT_GLASS Want a sip of water before we continue? Or would you prefer the banana?
 
-Answer like this:
-Reasoning: <short explanation of why you say what you say>
-Output: <short, friendly response (1–2 sentences)>
+
+**RESPONSE FORMAT:**
+Reasoning: [3-4 sentences of deep analysis about what's really happening and why you're choosing this action. Show your understanding of human nature, physical limits, and emotional needs.]
+
+Output: [Your natural, empathetic response - be genuine, not robotic]
 """
 
     try:

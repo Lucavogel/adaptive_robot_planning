@@ -12,7 +12,7 @@ import mediapipe as mp
 #from verification_loop import verify_with_hf_llm  # ta fonction de vérification avec LLM
 
 from task_monitoring import check_exercise  # ta fonction avec timers
-from reasoning import reason_with_context,query_llm_about_entities
+from reasoning import query_llm_about_entities
 from Text_cleaning import extract_action_from_response, clean_llm_response
 from perception import get_environment_context_test, get_environment_context
 from speech_to_text import listen_until_silent
@@ -41,7 +41,7 @@ class LLMCommander(Node):
         self.get_logger().info(f'Command sent: {command}')
 
 
-def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_node, stop_flag, dialogue_history, get_status_func, perception_context, state, exercise_done):
+def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_node, stop_flag, dialogue_history, get_status_func, perception_context, state, exercise_done, exercise_idx, exercise_sequence):
     while not stop_flag['stop']:
         """
         audio_queue = queue.Queue()
@@ -65,7 +65,7 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
         latest_status = get_status_func()
         
         # Récupération temps
-        if exercise == "lean left and right":
+        if "lean left and right" in exercise.lower():
             current_time_left = state.get("held_time_left", 0.0)
             current_time_right = state.get("held_time_right", 0.0)
             time_info = f"Current hold times: Left {current_time_left:.1f}s, Right {current_time_right:.1f}s"
@@ -73,12 +73,26 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
             current_time = state.get("held_time", 0.0)
             time_info = f"Current hold time: {current_time:.1f}s"
 
-        context_description = f"courrent Exercise status: {latest_status}\nthe time the user hold the exercice :{time_info}\nthe objects in front of you are: {perception_context}"
+        # ✅ AMÉLIORATION: Contexte plus détaillé pour le LLM
+        exercise_progress = f"Exercise {exercise_idx + 1} of {len(exercise_sequence)}"
+        remaining_exercises = len(exercise_sequence) - exercise_idx - 1
+        
+        if next_exercise == "None":
+            next_info = "This is the FINAL exercise of the routine. After completion, congratulate the user and end with STOP_ROUTINE."
+        else:
+            next_info = f"Next exercise will be: {next_exercise} ({remaining_exercises} exercises remaining after current)"
+
+        context_description = f"""Current Exercise status: {latest_status}
+        Exercise Progress: {exercise_progress}
+        Time held: {time_info}
+        {next_info}
+        Objects available: {perception_context}
+        User seems to be: {"engaged and following along" if latest_status != "not yet" else "still working on the current exercise"}"""
 
         if human_input:
             print(f"You (speech): {human_input}")
             dialogue_history.append(f"Human: {human_input}")
-            dialogue_history = trim_dialogue_history(dialogue_history)
+            # On ne tronque plus l'historique
 
         if human_input or latest_status == "success":
             kg = load_knowledge_graph()
@@ -108,7 +122,7 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
             clean_action = clean_llm_response(action)
             speak(clean_action)
             dialogue_history.append(f"Robot: {action}")
-            dialogue_history = trim_dialogue_history(dialogue_history)
+            # On ne tronque plus l'historique
 
             if "STOP_ROUTINE" in action:
                 stop_flag['stop'] = True
@@ -204,7 +218,7 @@ def main():
         # ✅ Lancer le thread LLM
         llm_thread = threading.Thread(
             target=llm_interaction_thread,
-            args=(exercice, detected_objects, next_exercise, commander_node, stop_flag, dialogue_history, get_status, perception_context, state, exercise_done)
+            args=(exercice, detected_objects, next_exercise, commander_node, stop_flag, dialogue_history, get_status, perception_context, state, exercise_done, exercise_idx, exercise_sequence)
         )
         llm_thread.start()
 
@@ -231,7 +245,7 @@ def main():
                 )
 
                 # Affichage temps
-                if exercice == "lean left and right":
+                if "lean left and right" in exercice.lower():
                     cv2.putText(image, f"Lean Left: {state['held_time_left']:.1f}s", (30, 40),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 0, 200), 2)
                     cv2.putText(image, f"Lean Right: {state['held_time_right']:.1f}s", (30, 70),
