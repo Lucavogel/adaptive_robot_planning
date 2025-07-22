@@ -191,8 +191,8 @@ def main():
     action = extract_action_from_response(intro_response)
     print("✅ Introduction :", intro_response)
     print("\n🧠 Introduction from LLM: " + action)
-    speak(clean_llm_response(action))
-    #speak_text_realistic(clean_llm_response(action))
+    #speak(clean_llm_response(action))
+    speak_text_realistic(clean_llm_response(action), emotion=emotion_of_voice)
     dialogue_history.append(f"Robot: {action}")
 
     perception_context = get_environment_context_test()

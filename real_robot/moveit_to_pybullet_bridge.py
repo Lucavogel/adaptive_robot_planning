@@ -48,6 +48,12 @@ class MoveItToPyBulletBridge(Node):
         self.latest_joint_positions = None
         self.latest_target_pose = None
         self.joint_names = []
+        self.previous_joint_positions = None
+        
+        # Add startup delay to ignore initial joint states
+        self.startup_time = time.time()
+        self.startup_delay = 3.0  # seconds
+        self.ready_for_commands = False
         
         # File path for sharing data with PyBullet simulation
         self.data_file_path = '/tmp/moveit_to_pybullet_data.json'
@@ -55,16 +61,29 @@ class MoveItToPyBulletBridge(Node):
         # Initialize the data file
         self._init_data_file()
         
+        # Create timer to enable command processing after startup delay
+        self.startup_timer = self.create_timer(self.startup_delay, self._enable_command_processing)
+        
         self.get_logger().info('MoveIt to PyBullet Bridge started for Lynx SES900 robot')
         self.get_logger().info(f'Expected joint names: {self.expected_lynx_joint_names}')
+        self.get_logger().info(f'Startup delay: {self.startup_delay}s - ignoring initial joint states')
+    
+    def _enable_command_processing(self):
+        """Enable command processing after startup delay"""
+        self.ready_for_commands = True
+        self.startup_timer.cancel()  # Cancel the timer
+        self.get_logger().info('🟢 Bridge ready to process MoveIt commands')
         
     def _init_data_file(self):
-        """Initialize the shared data file"""
+        """Initialize the shared data file without any position data"""
         initial_data = {
-            'joint_positions': None,
+            'joint_positions': None,  # No initial positions
             'joint_names': [],
             'target_pose': None,
-            'timestamp': time.time()
+            'timestamp': 0,  # Old timestamp so it gets ignored
+            'robot_model': 'lynx_ses900',
+            'total_joints': 6,
+            'bridge_ready': False  # Indicates bridge is not ready yet
         }
         
         try:
@@ -76,6 +95,10 @@ class MoveItToPyBulletBridge(Node):
     def joint_state_callback(self, msg):
         """Callback for joint state messages from MoveIt"""
         try:
+            # Ignore commands during startup delay
+            if not self.ready_for_commands:
+                return
+            
             # Store joint names and positions
             new_joint_names = list(msg.name)
             new_joint_positions = list(msg.position)
@@ -139,11 +162,18 @@ class MoveItToPyBulletBridge(Node):
                 'target_pose': self.latest_target_pose,
                 'timestamp': time.time(),
                 'robot_model': 'lynx_ses900',
-                'total_joints': len(joint_positions_deg)
+                'total_joints': len(joint_positions_deg),
+                'bridge_ready': True  # Mark that bridge is providing real data
             }
             
-            with open(self.data_file_path, 'w') as f:
-                json.dump(data, f)
+            # Write to temporary file first, then move to avoid partial reads
+            temp_file = self.data_file_path + '.tmp'
+            with open(temp_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            
+            # Atomic move to final location
+            import os
+            os.rename(temp_file, self.data_file_path)
                 
         except Exception as e:
             self.get_logger().error(f'Failed to update data file: {e}')
@@ -186,10 +216,19 @@ def main(args=None):
     try:
         rclpy.spin(bridge_node)
     except KeyboardInterrupt:
-        pass
+        print("\n[Bridge] Ctrl+C received. Shutting down...")
+    except Exception as e:
+        print(f"[Bridge] Exception during execution: {e}")
     finally:
-        bridge_node.destroy_node()
-        rclpy.shutdown()
+        try:
+            bridge_node.destroy_node()
+        except:
+            pass
+        try:
+            if rclpy.ok():
+                rclpy.shutdown()
+        except:
+            pass
 
 
 if __name__ == '__main__':

@@ -22,7 +22,7 @@ def write_simple_move_test():
         },
         # Position 2: Small base rotation
         {
-            'positions': [0, 20.0, 0.0, 0.0, 0.0, 0.0],
+            'positions': [0, 0, 0.0, 0.0, 20, 0.0],
             'description': 'Base rotation 20°'
         },
         # Position 3: Back to home
@@ -32,7 +32,7 @@ def write_simple_move_test():
         },
         # Position 4: Small shoulder movement
         {
-            'positions': [0.0, -20.0, 0.0, 0.0, 0.0, 0.0],
+            'positions': [0, 0, 0.0, 0.0, -20, 0.0],
             'description': 'Shoulder up 15°'
         },
         # Position 5: Back to home
@@ -42,7 +42,7 @@ def write_simple_move_test():
         },
         # Position 6: Small elbow movement
         {
-            'positions': [0.0, 0.0, 20.0, 0.0, 0.0, 0.0],
+            'positions': [0.0, 0.0, 0, 0, 0.0, 20],
             'description': 'Elbow 20°'
         },
         # Position 7: Final home
@@ -53,12 +53,12 @@ def write_simple_move_test():
     ]
     
     joint_names = [
-        'shoulder_pan_joint',
-        'shoulder_lift_joint', 
-        'elbow_joint',
-        'wrist_1_joint',
-        'wrist_2_joint',
-        'wrist_3_joint'
+        'joint_1',  # Base rotation
+        'joint_2',  # Shoulder
+        'joint_3',  # Upper arm
+        'joint_4',  # Forearm
+        'joint_5',  # Wrist 
+        'joint_6'   # End-effector rotation
     ]
     
     print("🤖 Starting simple move test...")

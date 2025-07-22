@@ -5,12 +5,12 @@ PORT = '/dev/ttyACM0'  # Serial port for your robot
 JOINT_LIMITS = [
     (-180, 180),  # Joint 0 (Base Rotation)
     (-80, 80),   # Joint 1 (Shoulder)
-    (-80, 80), # Joint 2 (Elbow)
+    (-150, 150), # Joint 2 (Elbow)
     (-180, 180), # Joint 3 (Wrist Yaw)
     (-180, 180), # Joint 4 (Wrist Pitch)
     (-180, 180), # Joint 5 (Gripper Rotation)
 ]
-MAX_SPEED = 500 # Max speed for robot movements
+MAX_SPEED = 1300 # Max speed for robot movements
 
 # --- OptiTrack Configuration ---
 NATNET_SERVER_IP = '192.168.1.132'  # IP address of the machine running Motive/OptiTrack

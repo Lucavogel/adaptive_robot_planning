@@ -8,7 +8,7 @@
         <mesh filename="package://URDF_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="base_material">
-        <color rgba="0.1 0.1 0.1 1.0"/>
+        <color rgba="0.2 0.2 0.2 1.0"/>
       </material>
     </visual>
     <collision>
@@ -30,7 +30,7 @@
         <mesh filename="package://URDF_description/meshes/link1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="shoulder_material">
-        <color rgba="0.2 0.2 0.8 1.0"/>
+        <color rgba="0.2 0.2 0.2 1.0"/>
       </material>
     </visual>
     <collision>
@@ -52,7 +52,7 @@
         <mesh filename="package://URDF_description/meshes/link2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="upper_arm_material">
-        <color rgba="0.8 0.2 0.2 1.0"/>
+        <color rgba="0.2 0.2 0.2 1.0"/>
       </material>
     </visual>
     <collision>
@@ -74,7 +74,7 @@
         <mesh filename="package://URDF_description/meshes/link3.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="forearm_material">
-        <color rgba="0.2 0.8 0.2 1.0"/>
+        <color rgba="0.2 0.2 0.2 1.0"/>
       </material>
     </visual>
     <collision>
@@ -96,7 +96,7 @@
         <mesh filename="package://URDF_description/meshes/link4.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="wrist_material">
-        <color rgba="0.2 0.2 0.8 1.0"/>
+        <color rgba="0.2 0.2 0.2 1.0"/>
       </material>
     </visual>
     <collision>
@@ -118,7 +118,7 @@
         <mesh filename="package://URDF_description/meshes/link5.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="hand_material">
-        <color rgba="0.8 0.8 0.2 1.0"/>
+        <color rgba="0.2 0.2 0.2 1.0"/>
       </material>
     </visual>
     <collision>
@@ -140,7 +140,7 @@
         <mesh filename="package://URDF_description/meshes/link6.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="tool_material">
-        <color rgba="0.2 0.8 0.8 1.0"/>
+        <color rgba="1 0.6 0 1.0"/>
       </material>
     </visual>
     <collision>
@@ -160,8 +160,8 @@
     <parent link="base_link"/>
     <child link="shoulder_link"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit lower="-2.967" upper="2.967" effort="50" velocity="1.5"/>
+    <axis xyz="0 0 -1"/>
+    <limit lower="-3.1416" upper="3.1416" effort="50" velocity="1.5"/>
     <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
@@ -171,7 +171,7 @@
     <child link="upper_arm_link"/>
     <origin xyz="-0.04 0 0.1" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-2.0" upper="2.0" effort="50" velocity="1.5"/>
+    <limit lower="-3.1416" upper="3.1416" effort="50" velocity="1.5"/>
     <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
@@ -181,7 +181,7 @@
     <child link="forearm_link"/>
     <origin xyz="-0.045 0 0.415" rpy="0 0 3.1416"/> <!-- 180° autour de Z -->
     <axis xyz="1 0 0"/>
-    <limit lower="-2.0" upper="2.0" effort="40" velocity="1.5"/>
+    <limit lower="-3.1416" upper="3.1416" effort="40" velocity="1.5"/>
     <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
@@ -190,8 +190,8 @@
     <parent link="forearm_link"/>
     <child link="wrist_link"/>
     <origin xyz="-0.05 0 0.05" rpy="0 0 3.1416"/>
-    <axis xyz="0 0 1"/>
-    <limit lower="-2.0" upper="2.0" effort="30" velocity="1.5"/>
+    <axis xyz="0 0 -1"/>
+    <limit lower="-3.1416" upper="3.1416" effort="30" velocity="1.5"/>
     <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
@@ -201,7 +201,7 @@
     <child link="hand_link"/>
     <origin xyz="-0.06 0 0.335" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-2.0" upper="2.0" effort="20" velocity="1.5"/>
+    <limit lower="-3.1416" upper="3.1416" effort="20" velocity="1.5"/>
     <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
