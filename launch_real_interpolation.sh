@@ -1,3 +1,4 @@
+@@ -1,92 +0,0 @@
 #!/bin/bash
 
 echo "🤖 Starting INTERPOLATED MoveIt to REAL ROBOT System..."
@@ -56,7 +57,7 @@ sleep 2
 
 echo "🤖 Starting INTERPOLATED real robot controller..."
 cd /home/luca/Documents/GitHub/adaptive_robot_planning/real_robot
-python3 main_real_interpolation.py &
+python3 main_block_interpolation.py &
 REAL_ROBOT_PID=$!
 sleep 2
 

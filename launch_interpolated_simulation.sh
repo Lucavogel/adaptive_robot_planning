@@ -41,7 +41,7 @@ sleep 2
 
 echo "🎯 Starting INTERPOLATED PyBullet simulation..."
 cd /home/luca/Documents/GitHub/adaptive_robot_planning/real_robot
-python3 main_sim_interpolated.py &
+python3 sim_block_interpolation.py &
 PYBULLET_PID=$!
 sleep 1
 
