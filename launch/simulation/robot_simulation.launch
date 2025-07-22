@@ -1,0 +1,28 @@
+<launch>
+  <!-- Load UR5 robot description - CORRECTED -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find ur_description)/urdf/ur5.xacro" />
+  
+  <!-- Start robot state publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  
+  <!-- Start joint state publisher with GUI -->
+  <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+  
+  <!-- Launch MoveIt! -->
+  <include file="$(find ur5_moveit_config)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="fake_execution" value="true"/>
+    <arg name="info" value="true"/>
+  </include>
+  
+  <!-- Launch RViz with MoveIt! config - CORRECTED -->
+  <include file="$(find ur5_moveit_config)/launch/moveit_rviz.launch"/>
+  
+  <!-- TF static transforms for ArUco markers -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="aruco_0_tf" 
+        args="0.5 0.2 0.3 0 0 0 base_link aruco_marker_0" />
+        
+  <!-- Camera transform -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="camera_tf" 
+        args="0.8 0 0.5 0 0 0 base_link usb_cam" />
+</launch>

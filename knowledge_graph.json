@@ -1,4 +1,45 @@
 {
+  "entities": {
+    "Coffee": {
+      "relations": {
+        "UsedFor": "EnergyBoost",
+        "Causes": "Alertness",
+        "HasProperty": "Hot",
+        "MotivatedBy": "Fatigue"
+      }
+    },
+    "Banana": {
+      "relations": {
+        "UsedFor": "QuickEnergyBoost",
+        "HasProperty": "Nutritious",
+        "MotivatedBy": "Hunger",
+        "IsA": "Fruit"
+      }
+    },
+    "GlassOfWater": {
+      "relations": {
+        "UsedFor": "Hydration",
+        "Causes": "ThirstRelief",
+        "MotivatedBy": "Thirst",
+        "IsA": "Object"
+      }
+    },
+    "HotDay": {
+      "relations": {
+        "Causes": "Sweating",
+        "MotivatedBy": "HighTemperature",
+        "UsedFor": "Discomfort"
+      }
+    },
+    "Towel": {
+      "relations": {
+        "UsedFor": "DrySweat",
+        "HasProperty": "Absorbent",
+        "MotivatedBy": "Sweating",
+        "IsA": "Object"
+      }
+    }
+  },
   "Stretching": {
     "increases": "BodyTemperature",
     "requires": "CalmEnvironment"
@@ -55,37 +96,10 @@
     "can_be": ["Tired", "Thirsty", "Motivated", "InPain"],
     "can_change_due_to": ["Stretching", "EnvironmentalFactors"]
   },
-  "HotDay": {
-    "increases": "BodyTemperature",
-    "motivates": "DrinkWater"
-  },
   "Observation": {
     "TouchingLowerBack": "IndicatesBackPain",
     "Yawn": "IndicatesFatigue",
     "HoldingNeck": "IndicatesNeckTension"
-  },
-  "GlassOfWater": {
-    "is_a": "Object",
-    "affords": "DrinkWater",
-    "location_hint": "OnTable",
-    "is_relevant_when": "Thirst",
-    "actions": ["pointedto", "Drink"]
-  },
-  "Towel": {
-    "is_a": "Object",
-    "affords": "DrySweat",
-    "location_hint": "OnTable",
-    "is_relevant_when": "Sweating",
-    "can_indicate": "Exertion",
-    "actions": ["pointedto", "Use"]
-
-  },
-  "Banana": {
-    "is_a": "Object",
-    "affords": "QuickEnergyBoost",
-    "location_hint": "OnTable",
-    "is_relevant_when": "Fatigue",
-    "actions": ["Pointedto", "Eat"]
   },
   "DrySweat": {
     "requires": "Towel",
