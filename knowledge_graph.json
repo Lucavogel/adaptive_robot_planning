@@ -48,10 +48,11 @@
       "type": "Object",
       "relations": {
         "affords": "DrinkWater",
-        "at_location": "OnTable",
-        "used_for": "Hydration",
-        "has_property": "Liquid",
-        "is_relevant_when": "Thirst"
+        "used_for": ["Hydration", "CoolingDown", "PreventDehydration"],
+        "is_relevant_when": ["Thirst", "AfterStretching", "HotDay"],
+        "contains": "Water",
+        "helps_with": ["Hydration", "Comfort"],
+        "is_a": "Drink"
       }
     },
     "Hydration": {
@@ -97,8 +98,10 @@
       "type": "Object",
       "relations": {
         "affords": "EatBanana",
-        "used_for": "QuickEnergyBoost",
-        "is_relevant_when": "Fatigue",
+        "used_for": ["QuickEnergyBoost", "PreventCramps", "MuscleRecovery"],
+        "is_relevant_when": ["Fatigue", "MuscleFatigue", "AfterStretching"],
+        "contains": "Potassium",
+        "helps_with": "MuscleRecovery",
         "is_a": "Food"
       }
     },
@@ -224,15 +227,21 @@
       "type": "Object",
       "relations": {
         "affords": "DrinkCoffee",
-        "used_for": "EnergyBoost",
-        "is_relevant_when": "Tired"
+        "used_for": ["EnergyBoost", "IncreaseAlertness", "WarmUpMotivation"],
+        "is_relevant_when": ["Tired", "LowMotivation", "MorningRoutine"],
+        "contains": "Caffeine",
+        "can_cause": "Jitters",
+        "helps_with": "Focus"
       }
     },
     "Tired": {
       "type": "PhysicalState",
       "relations": {
-        "motivates": "DrinkCoffee",
-        "is_a": "Fatigue"
+        "motivates": ["DrinkCoffee", "TakeBreak", "EatBanana", "Rest"],
+        "is_a": "Fatigue",
+        "can_be_detected_by": ["Yawning", "SlowMovements", "DroopingEyelids"],
+        "is_relevant_when": ["MorningRoutine", "AfterExercise", "LackOfSleep"],
+        "alleviated_by": ["EnergyBoost", "QuickEnergyBoost", "Rest", "Hydration"]
       }
     },
     "Thirsty": {

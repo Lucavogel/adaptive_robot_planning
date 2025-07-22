@@ -9,7 +9,7 @@ from std_msgs.msg import String
 
 import cv2
 import mediapipe as mp
-#from verification_loop import verify_with_hf_llm  # ta fonction de vérification avec LLM
+from verification_loop import verify_with_hf_llm
 
 from task_monitoring import check_exercise  # ta fonction avec timers
 from reasoning import query_llm_about_entities
@@ -19,7 +19,7 @@ from speech_to_text import listen_until_silent
 from text_to_speech import speak, speak_text_realistic
 from Query_knowledge_graph import  get_multiple_entities_relations, load_knowledge_graph
 emotion_of_voice = "happy"  # Par défaut, on utilise une émotion neutre
-user_states = ["Tired"]#"Tired","InPain","happy"
+user_states = ["Unknown"]#"Tired","InPain","happy"
 wether_conditions = ["Rainy"]# "Rainy", "Cold", "HotDay"
 
 YOLO_OBJECT_MAP = {
@@ -98,17 +98,31 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
             kg = load_knowledge_graph()
             #concepts = [obj.capitalize() for obj in detected_objects]
             
-            concepts = ["Coffee", "Banana", "GlassOfWater","Towel","Chair"] + user_states + wether_conditions
+            concepts = ["Coffee", "Banana", "GlassOfWater","Towel","Chair","Tired"] + user_states + wether_conditions
             concepts_relations = get_multiple_entities_relations(concepts, kg)
             print("✅ Relations extraites :")
             for k, v in concepts_relations.items():
                 print(f"{k} → {len(v)} relations")
 
-            llm_response = query_llm_about_entities(concepts_relations,user_states, human_input, exercise, next_exercise, dialogue_history,context_description,detected_objects )
+            llm_response = query_llm_about_entities(concepts_relations, user_states, human_input, exercise, next_exercise, dialogue_history, context_description, detected_objects)
             print("\n🧠 Réponse du LLM :")
             print(llm_response)
 
-            action = extract_action_from_response(llm_response)
+            # Add verification step
+            verified = verify_with_hf_llm(
+                llm1_output=llm_response,
+                context_description=context_description,
+                current_exercise=exercise,
+                next_exercise=next_exercise,
+                dialogue_history=dialogue_history,
+                concepts_relations=concepts_relations
+            )
+            
+            print("\n✅ Vérification du LLM :")
+            print(verified)
+            
+
+            action = extract_action_from_response(verified)
             print("✅ Robot Action:", action)
 
             if "POINT_" in action:
@@ -191,8 +205,8 @@ def main():
     action = extract_action_from_response(intro_response)
     print("✅ Introduction :", intro_response)
     print("\n🧠 Introduction from LLM: " + action)
-    #speak(clean_llm_response(action))
-    speak_text_realistic(clean_llm_response(action), emotion=emotion_of_voice)
+    speak(clean_llm_response(action))
+    #speak_text_realistic(clean_llm_response(action), emotion=emotion_of_voice)
     dialogue_history.append(f"Robot: {action}")
 
     perception_context = get_environment_context_test()
