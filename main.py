@@ -114,10 +114,18 @@ def extract_action_from_response(response):
     return None
 
 def execute_llm_decision(action):
-    """Exécuter une décision LLM avec le contrôleur de bras"""
+    """Exécuter une décision LLM avec le contrôleur de bras - VERSION LYNX"""
     # Initialiser le contrôleur si nécessaire
     if not hasattr(execute_llm_decision, 'controller'):
+        # NOUVEAU : Limites de sécurité basées sur l'analyse MoveIt Lynx
+        workspace_limits = {
+            'x_safe': [-0.60, 0.56],
+            'y_safe': [-0.60, 0.56],
+            'z_safe': [0.00, 0.52],
+            'radius_max': 0.75
+        }
         execute_llm_decision.controller = ArucoArmController()
+        rospy.loginfo("🤖 Contrôleur Lynx SES900 initialisé avec limites validées")
     
     # Extraire l'objet à pointer
     if "POINT_" in action:
@@ -141,6 +149,7 @@ def execute_llm_decision(action):
             }
             yolo_name = object_mapping.get(obj_name, obj_name.replace('_', ' '))
             print(f"🎯 Mapping: {obj_name} → {yolo_name}")
+            print(f"📍 Zone de sécurité Lynx: X[-0.60,0.56] Y[-0.60,0.56] Z[0.00,0.52]")
 
             return execute_llm_decision.controller.point_to_object_with_aruco(yolo_name)
     

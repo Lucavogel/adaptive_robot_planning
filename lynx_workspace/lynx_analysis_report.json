@@ -1,0 +1,464 @@
+{
+  "robot_model": "lynx_ses900",
+  "analysis_type": "URDF_geometric_analysis",
+  "robot_data": {
+    "name": "lynx_ses900",
+    "links": {
+      "base_link": {
+        "name": "base_link",
+        "mass": 1.5,
+        "inertia": null,
+        "center_of_mass": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "shoulder_link": {
+        "name": "shoulder_link",
+        "mass": 0.8,
+        "inertia": null,
+        "center_of_mass": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "upper_arm_link": {
+        "name": "upper_arm_link",
+        "mass": 0.6,
+        "inertia": null,
+        "center_of_mass": [
+          0.2,
+          0.0,
+          0.0
+        ]
+      },
+      "forearm_link": {
+        "name": "forearm_link",
+        "mass": 0.4,
+        "inertia": null,
+        "center_of_mass": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "wrist_link": {
+        "name": "wrist_link",
+        "mass": 0.3,
+        "inertia": null,
+        "center_of_mass": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "hand_link": {
+        "name": "hand_link",
+        "mass": 0.2,
+        "inertia": null,
+        "center_of_mass": [
+          0.0,
+          0.0,
+          0.4
+        ]
+      },
+      "tool_link": {
+        "name": "tool_link",
+        "mass": 0.1,
+        "inertia": null,
+        "center_of_mass": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "tcp": {
+        "name": "tcp",
+        "mass": 0.0,
+        "inertia": null
+      }
+    },
+    "joints": {
+      "joint_1": {
+        "name": "joint_1",
+        "type": "revolute",
+        "parent": "base_link",
+        "child": "shoulder_link",
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 50.0,
+          "velocity": 1.5
+        },
+        "axis": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "origin": {
+          "xyz": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rpy": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "joint_2": {
+        "name": "joint_2",
+        "type": "revolute",
+        "parent": "shoulder_link",
+        "child": "upper_arm_link",
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 50.0,
+          "velocity": 1.5
+        },
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "origin": {
+          "xyz": [
+            -0.04,
+            0.0,
+            0.1
+          ],
+          "rpy": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "joint_3": {
+        "name": "joint_3",
+        "type": "revolute",
+        "parent": "upper_arm_link",
+        "child": "forearm_link",
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 40.0,
+          "velocity": 1.5
+        },
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "origin": {
+          "xyz": [
+            -0.045,
+            0.0,
+            0.415
+          ],
+          "rpy": [
+            0.0,
+            0.0,
+            3.1416
+          ]
+        }
+      },
+      "joint_4": {
+        "name": "joint_4",
+        "type": "revolute",
+        "parent": "forearm_link",
+        "child": "wrist_link",
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 30.0,
+          "velocity": 1.5
+        },
+        "axis": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "origin": {
+          "xyz": [
+            -0.05,
+            0.0,
+            0.05
+          ],
+          "rpy": [
+            0.0,
+            0.0,
+            3.1416
+          ]
+        }
+      },
+      "joint_5": {
+        "name": "joint_5",
+        "type": "revolute",
+        "parent": "wrist_link",
+        "child": "hand_link",
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 20.0,
+          "velocity": 1.5
+        },
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "origin": {
+          "xyz": [
+            -0.06,
+            0.0,
+            0.335
+          ],
+          "rpy": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "joint_6": {
+        "name": "joint_6",
+        "type": "revolute",
+        "parent": "hand_link",
+        "child": "tool_link",
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 10.0,
+          "velocity": 2.0
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "origin": {
+          "xyz": [
+            -0.05,
+            0.0,
+            -0.07
+          ],
+          "rpy": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "kinematic_chain": [
+      {
+        "joint_name": "joint_1",
+        "parent_link": "base_link",
+        "child_link": "shoulder_link",
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 50.0,
+          "velocity": 1.5
+        }
+      },
+      {
+        "joint_name": "joint_2",
+        "parent_link": "shoulder_link",
+        "child_link": "upper_arm_link",
+        "translation": [
+          -0.04,
+          0.0,
+          0.1
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 50.0,
+          "velocity": 1.5
+        }
+      },
+      {
+        "joint_name": "joint_3",
+        "parent_link": "upper_arm_link",
+        "child_link": "forearm_link",
+        "translation": [
+          -0.045,
+          0.0,
+          0.415
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          3.1416
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 40.0,
+          "velocity": 1.5
+        }
+      },
+      {
+        "joint_name": "joint_4",
+        "parent_link": "forearm_link",
+        "child_link": "wrist_link",
+        "translation": [
+          -0.05,
+          0.0,
+          0.05
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          3.1416
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 30.0,
+          "velocity": 1.5
+        }
+      },
+      {
+        "joint_name": "joint_5",
+        "parent_link": "wrist_link",
+        "child_link": "hand_link",
+        "translation": [
+          -0.06,
+          0.0,
+          0.335
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 20.0,
+          "velocity": 1.5
+        }
+      },
+      {
+        "joint_name": "joint_6",
+        "parent_link": "hand_link",
+        "child_link": "tool_link",
+        "translation": [
+          -0.05,
+          0.0,
+          -0.07
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "limits": {
+          "lower": -3.1416,
+          "upper": 3.1416,
+          "effort": 10.0,
+          "velocity": 2.0
+        }
+      }
+    ],
+    "workspace_specs": {
+      "num_joints": 6,
+      "total_mass": 3.9,
+      "link_lengths": [
+        0.0,
+        0.1077032961426901,
+        0.41743262929483604,
+        0.07071067811865477,
+        0.34033072150483273,
+        0.08602325267042628
+      ],
+      "max_reach": 1.02220057773144,
+      "joint_ranges": {
+        "joint_1": {
+          "range_rad": 6.2832,
+          "range_deg": 360.00114591655813
+        },
+        "joint_2": {
+          "range_rad": 6.2832,
+          "range_deg": 360.00114591655813
+        },
+        "joint_3": {
+          "range_rad": 6.2832,
+          "range_deg": 360.00114591655813
+        },
+        "joint_4": {
+          "range_rad": 6.2832,
+          "range_deg": 360.00114591655813
+        },
+        "joint_5": {
+          "range_rad": 6.2832,
+          "range_deg": 360.00114591655813
+        },
+        "joint_6": {
+          "range_rad": 6.2832,
+          "range_deg": 360.00114591655813
+        }
+      },
+      "estimated_workspace_radius": 0.8177604621851521
+    }
+  },
+  "recommendations": {
+    "optimal_work_radius": 0.715540404412008,
+    "max_safe_radius": 0.919980519958296,
+    "calibration_required": true,
+    "collision_avoidance": true
+  }
+}

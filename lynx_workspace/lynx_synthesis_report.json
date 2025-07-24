@@ -1,0 +1,38 @@
+{
+  "robot_model": "lynx_ses900",
+  "synthesis_type": "complete_workspace_analysis",
+  "summary": {
+    "samples_analyzed": 20000,
+    "max_reach": 0.9819843911057103,
+    "workspace_volume": 5.348433682414699,
+    "spatial_bounds": {
+      "x": {
+        "min": -0.8775239979617171,
+        "max": 0.8729660311238053,
+        "range": 1.7504900290855225
+      },
+      "y": {
+        "min": -0.8662300681478823,
+        "max": 0.8765173190842158,
+        "range": 1.742747387232098
+      },
+      "z": {
+        "min": -0.7762120199604619,
+        "max": 0.9769923057459946,
+        "range": 1.7532043257064565
+      }
+    }
+  },
+  "recommendations": {
+    "optimal_work_radius": 0.6873890737739972,
+    "safe_work_radius": 0.8346867324398538,
+    "max_reach": 0.9819843911057103,
+    "safety_considerations": [
+      "\u00c9viter les singularit\u00e9s aux limites des joints",
+      "Surveiller les couples lors de charges importantes",
+      "Calibration requise avant utilisation",
+      "V\u00e9rifier les collisions dans l'environnement"
+    ]
+  },
+  "comparisons": {}
+}

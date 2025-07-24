@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# filepath: /home/soltani/catkin_ws/src/adaptive_robot_planning/aruco_detector.py
 
 import rospy
 import cv2
@@ -11,7 +10,6 @@ from std_msgs.msg import String
 import json
 import tf
 from collections import deque
-import rospkg
 import os
 import sys
 
@@ -24,14 +22,16 @@ class ArucoDetector:
         rospy.init_node("aruco_detector", anonymous=True)
         self.bridge = CvBridge()
 
-        # Vérifie que le dictionnaire est dispo
-        if not hasattr(aruco, "getPredefinedDictionary"):
-            rospy.logerr("cv2.aruco module not available. Make sure opencv-contrib-python is installed.")
-            exit(1)
-
-        self.parameters = aruco.DetectorParameters_create()
+        # ✅ NOUVELLE SYNTAXE OpenCV 4.12.0
+        rospy.loginfo("Utilisation d'OpenCV 4.12.0 - Nouvelle syntaxe ArUco")
         
-        # Paramètres de détection améliorés
+        # Dictionnaire ArUco
+        self.aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_100)
+        
+        # Paramètres du détecteur (nouvelle syntaxe)
+        self.parameters = aruco.DetectorParameters()
+        
+        # Configuration des paramètres
         self.parameters.adaptiveThreshWinSizeMin = 3
         self.parameters.adaptiveThreshWinSizeMax = 23
         self.parameters.adaptiveThreshWinSizeStep = 10
@@ -43,12 +43,14 @@ class ArucoDetector:
         self.parameters.minDistanceToBorder = 3
         self.parameters.errorCorrectionRate = 0.6
         
+        # ✅ CRÉER LE DÉTECTEUR (obligatoire en OpenCV 4.x)
+        self.detector = aruco.ArucoDetector(self.aruco_dict, self.parameters)
+        
         # Historique des poses pour lissage
         self.pose_history = {}
         
         # Charger les paramètres de calibration
         try:
-            # Chemin direct sans rospkg
             calib_path = "/home/soltani/catkin_ws/src/adaptive_robot_planning/calibration_data.npz"
             data = np.load(calib_path)
             self.camera_matrix = data['camera_matrix']
@@ -72,19 +74,22 @@ class ArucoDetector:
         # Compteur de frames
         self.frame_count = 0
         
-        rospy.loginfo("ArUco Detector initialized")
+        rospy.loginfo("ArUco Detector initialized avec OpenCV 4.12.0")
 
     def callback(self, data):
         self.frame_count += 1
         frame = self.bridge.imgmsg_to_cv2(data, "bgr8")
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
-        corners, ids, _ = aruco.detectMarkers(gray, aruco_dict, parameters=self.parameters)
+        
+        # ✅ NOUVELLE SYNTAXE DÉTECTION OpenCV 4.12.0
+        corners, ids, _ = self.detector.detectMarkers(gray)
 
         markers_data = []
         if ids is not None:
-            print(f"✅ Marqueurs détectés: {ids.flatten()}")  # Visible immédiatement
-            rospy.loginfo(f"ArUco détecté: {ids.flatten()}")   # Dans les logs ROS aussi
+            print(f"✅ Marqueurs détectés: {ids.flatten()}")
+            rospy.loginfo(f"ArUco détecté: {ids.flatten()}")
+            
+            # ✅ NOUVELLE SYNTAXE DRAWING
             aruco.drawDetectedMarkers(frame, corners, ids)
             
             for i in range(len(ids)):
@@ -97,18 +102,17 @@ class ArucoDetector:
                 
                 # Publier la transformation TF pour chaque marqueur
                 self.tf_broadcaster.sendTransform(
-                    (0.5, 0.2, 0.3),  # Position simulée (à ajuster selon vos besoins)
-                    (0.0, 0.0, 0.0, 1.0),  # Orientation
+                    (0.5, 0.2, 0.3),
+                    (0.0, 0.0, 0.0, 1.0),
                     rospy.Time.now(),
                     f"aruco_marker_{marker_info['id']}",
-                    "usb_cam"  # Frame parent
+                    "usb_cam"
                 )
         else:
-            # Optionnel: afficher quand aucun marqueur (pour debug)
-            if self.frame_count % 30 == 0:  # Toutes les 30 frames seulement
+            if self.frame_count % 30 == 0:
                 print(f"🔍 Frame {self.frame_count}: Aucun marqueur détecté")
 
-        # Publier avec le format correct
+        # Publier les données
         aruco_msg = String()
         aruco_msg.data = json.dumps({
             'frame_id': self.frame_count,
@@ -118,7 +122,7 @@ class ArucoDetector:
         })
         self.aruco_pub.publish(aruco_msg)
 
-        cv2.imshow("TEST", frame)
+        cv2.imshow("ArUco Detection OpenCV 4.12", frame)
         cv2.waitKey(1)
 
     def rotation_matrix_to_quaternion(self, R):

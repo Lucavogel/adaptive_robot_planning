@@ -1,0 +1,30 @@
+<launch>
+  <!-- Caméra optimisée pour Lynx -->
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+    <param name="video_device" value="/dev/video0" />
+    <param name="image_width" value="1280" />
+    <param name="image_height" value="720" />
+    <param name="pixel_format" value="mjpeg" />
+    <param name="camera_frame_id" value="usb_cam" />
+    <param name="io_method" value="mmap"/>
+    <param name="fps" value="30" />
+  </node>
+
+  <!-- Détecteur ArUco -->
+  <node name="aruco_detector" pkg="adaptive_robot_planning" type="aruco_detector.py" output="screen" />
+
+  <!-- Détecteur d'objets YOLO -->
+  <node name="camera_detection" pkg="adaptive_robot_planning" type="camera_detection_node.py" output="screen" />
+
+  <!-- Transformations TF pour ArUco (adaptées à l'espace de travail Lynx) -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="aruco_0_tf" 
+        args="0.3 0.0 0.3 0 0 0 base_link aruco_marker_0" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="aruco_1_tf" 
+        args="0.2 0.2 0.4 0 0 0 base_link aruco_marker_1" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="aruco_2_tf" 
+        args="0.4 -0.1 0.3 0 0 0 base_link aruco_marker_2" />
+        
+  <!-- Caméra transform optimisée pour Lynx -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="camera_tf" 
+        args="0.6 0 0.5 0 0 0 base_link usb_cam" />
+</launch>

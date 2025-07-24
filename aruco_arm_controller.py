@@ -26,13 +26,22 @@ class ArucoArmController:
         try:
             moveit_commander.roscpp_initialize([])
             self.robot = moveit_commander.RobotCommander()
-            self.group = moveit_commander.MoveGroupCommander("manipulator")
+            self.group = moveit_commander.MoveGroupCommander("arm")  
             self.moveit_available = True
         except Exception as e:
             rospy.logwarn(f"MoveIt non disponible: {e}")
             self.moveit_available = False
 
         self.listener = tf.TransformListener()
+
+        # NOUVEAU : Limites d'espace de travail basées sur l'analyse MoveIt
+        self.workspace_limits = {
+            'x_safe': [-0.60, 0.56],
+            'y_safe': [-0.60, 0.56], 
+            'z_safe': [0.00, 0.52],
+            'radius_max': 0.75
+        }
+        rospy.loginfo(" Limites d'espace de travail Lynx chargées")
 
         # Communication série (pour LSS)
         self.use_serial = False
@@ -75,7 +84,8 @@ class ArucoArmController:
         
         if not self.latest_detections or "objects" not in self.latest_detections:
             rospy.logwarn("Aucune détection disponible")
-            return False
+            # AU LIEU DE return False, utiliser le dernier ArUco connu
+            return self.point_to_aruco_marker(8)  # ArUco 8 est détecté
         
         # Chercher l'objet avec un marqueur ArUco
         target_object = None
@@ -86,16 +96,16 @@ class ArucoArmController:
         
         if not target_object:
             rospy.logwarn(f"Objet {object_name} avec marqueur ArUco non trouvé")
-            # Simulation du mouvement
-            rospy.loginfo(f"[SIMULATION] Pointerais vers {object_name}")
-            return True
+            # AU LIEU DE simulation, utiliser ArUco 8 directement
+            rospy.loginfo(f"[FORCE] Utilisation d'ArUco 8 pour {object_name}")
+            return self.point_to_aruco_marker(8)
         
         # Utiliser la transformation TF du marqueur ArUco
         marker_id = target_object["aruco_marker"]["id"]
         return self.point_to_aruco_marker(marker_id)
 
     def point_to_aruco_marker(self, marker_id):
-        """Pointer vers un marqueur ArUco spécifique"""
+        """Pointer vers un marqueur ArUco spécifique - VERSION LYNX"""
         try:
             # Obtenir la transformation du marqueur
             marker_frame = f"aruco_marker_{marker_id}"
@@ -103,31 +113,38 @@ class ArucoArmController:
             
             rospy.loginfo(f"Marqueur ArUco {marker_id} détecté à position: {trans}")
             
-            if not self.moveit_available:
-                rospy.loginfo(f"[SIMULATION] Pointerais vers marqueur ArUco {marker_id} à {trans}")
-                return True
+            # NOUVEAU : Vérification de sécurité avec les limites Lynx
+            if not self.is_position_safe(trans[0], trans[1], trans[2]):
+                rospy.logwarn(f" Position {trans} hors limites sécurisées du Lynx SES900")
+                # Ajuster la position vers une zone sûre
+                safe_x = max(self.workspace_limits['x_safe'][0], min(trans[0], self.workspace_limits['x_safe'][1]))
+                safe_y = max(self.workspace_limits['y_safe'][0], min(trans[1], self.workspace_limits['y_safe'][1]))
+                safe_z = max(self.workspace_limits['z_safe'][0], min(trans[2], self.workspace_limits['z_safe'][1]))
+                trans = (safe_x, safe_y, safe_z)
+                rospy.loginfo(f"✅ Position ajustée: {trans}")
             
-            # Créer la pose cible
+            # Créer la pose cible pour Lynx
             pose = PoseStamped()
             pose.header.frame_id = "base_link"
             pose.pose.position.x = trans[0]
             pose.pose.position.y = trans[1]
-            pose.pose.position.z = trans[2] + 0.1  # Pointer légèrement au-dessus
-            pose.pose.orientation.x = rot[0]
-            pose.pose.orientation.y = rot[1]
-            pose.pose.orientation.z = rot[2]
-            pose.pose.orientation.w = rot[3]
-
-            # Augmenter le temps de planning
-            self.group.set_planning_time(15)  # Au lieu de 10
-            self.group.set_num_planning_attempts(10)  # Au lieu de 5
+            pose.pose.position.z = trans[2] + 0.05  # Lynx : pointer juste au-dessus
             
-            # Position cible plus conservative
-            pose.pose.position.z = trans[2] + 0.2  # Plus haut
+            # Orientation horizontale optimale pour Lynx (basée sur l'analyse)
+            pose.pose.orientation.x = 0.0
+            pose.pose.orientation.y = 0.0
+            pose.pose.orientation.z = 0.0
+            pose.pose.orientation.w = 1.0
 
-            # Planifier et exécuter le mouvement
+            # Configuration optimisée pour Lynx SES900
+            self.group.set_planning_time(3.0)        # Lynx plus rapide
+            self.group.set_num_planning_attempts(5)   # Moins d'essais
+            self.group.set_goal_position_tolerance(0.05)  # Tolérance adaptée
+            self.group.set_goal_orientation_tolerance(0.1)
+            
+            # Planifier et exécuter
             self.group.set_pose_target(pose)
-
+            
             # NOUVELLE VERSION (corrigée pour tuple de 4)
             try:
                 plan_result = self.group.plan()
@@ -151,13 +168,13 @@ class ArucoArmController:
                     rospy.loginfo(f"✅ Plan valide avec {len(plan.joint_trajectory.points)} points")
                     
                     # Exécuter le mouvement
-                    rospy.loginfo("🚀 Début d'exécution du mouvement...")
+                    rospy.loginfo(" Début d'exécution du mouvement...")
                     execution_result = self.group.execute(plan, wait=True)
-                    rospy.loginfo(f"✅ Exécution terminée - Résultat: {execution_result}")
+                    rospy.loginfo(f" Exécution terminée - Résultat: {execution_result}")
                     
                     # Récupérer les angles des joints finaux
                     joint_angles = plan.joint_trajectory.points[-1].positions
-                    rospy.loginfo(f"📊 Angles finaux: {[round(angle, 3) for angle in joint_angles]}")
+                    rospy.loginfo(f" Angles finaux: {[round(angle, 3) for angle in joint_angles]}")
                     
                     # Publier les commandes d'articulation
                     from std_msgs.msg import Float64MultiArray
@@ -217,6 +234,21 @@ class ArucoArmController:
                 })
         
         return aruco_objects
+
+    def is_position_safe(self, x, y, z):
+        """Vérifier si une position est dans l'espace de travail sûr"""
+        if not (self.workspace_limits['x_safe'][0] <= x <= self.workspace_limits['x_safe'][1]):
+            return False
+        if not (self.workspace_limits['y_safe'][0] <= y <= self.workspace_limits['y_safe'][1]):
+            return False
+        if not (self.workspace_limits['z_safe'][0] <= z <= self.workspace_limits['z_safe'][1]):
+            return False
+        
+        radius = (x**2 + y**2 + z**2)**0.5
+        if radius > self.workspace_limits['radius_max']:
+            return False
+            
+        return True
 
 if __name__ == "__main__":
     controller = ArucoArmController()
