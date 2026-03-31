@@ -1,0 +1,5 @@
+# MoveIt trajectory execution parameters
+trajectory_execution:
+  allowed_start_tolerance: 0.1  # Augmenter la tolérance à 0.1 au lieu de 0.01
+  allowed_goal_tolerance: 0.1
+  allowed_goal_duration_margin: 2.0

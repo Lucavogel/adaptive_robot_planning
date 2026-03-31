@@ -1,3 +1,14 @@
+# ROS 2 workspace (Ros2_projects) build artifacts
+Ros2_projects/LYNX_WS/build/
+Ros2_projects/LYNX_WS/install/
+Ros2_projects/LYNX_WS/log/
+Ros2_projects/LYNX_WS/*.log
+Ros2_projects/LYNX_WS/*.pyc
+Ros2_projects/LYNX_WS/*.egg-info/
+Ros2_projects/.colcon/
+Ros2_projects/.DS_Store
+Ros2_projects/.vscode/
+Ros2_projects/__pycache__/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
