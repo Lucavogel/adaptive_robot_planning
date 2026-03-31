@@ -24,7 +24,7 @@ import mediapipe as mp
 mp_pose = mp.solutions.pose
 
 def check_exercise(exercise, landmarks, state, dt=0.033):
-    tolerance_reset = 40.0  # secondes max sans posture avant reset timers
+    tolerance_reset = 40.0 
 
     def update_timers(direction=None):
         now = time.time()
@@ -64,17 +64,17 @@ def check_exercise(exercise, landmarks, state, dt=0.033):
         right_elbow = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value]
         nose = landmarks[mp_pose.PoseLandmark.NOSE.value]
 
-        # Les poignets doivent être au-dessus du nez
+     
         left_above = left_wrist.y < nose.y
         right_above = right_wrist.y < nose.y
 
-        # Les coudes aussi, pour éviter que les bras soient pliés vers le bas
+      
         left_elbow_above = left_elbow.y < nose.y
         right_elbow_above = right_elbow.y < nose.y
 
-        # Distance horizontale entre les deux poignets (pour s'assurer qu'ils sont proches)
+       
         wrist_dist = abs(left_wrist.x - right_wrist.x)
-        near_center = wrist_dist < 0.3  # À ajuster
+        near_center = wrist_dist < 0.3  
 
         return left_above and right_above and left_elbow_above and right_elbow_above and near_center
 
@@ -88,7 +88,7 @@ def check_exercise(exercise, landmarks, state, dt=0.033):
             mp_pose.PoseLandmark.RIGHT_ANKLE.value
         ]
 
-        seuil_distance = 0.4  # tolérance large
+        seuil_distance = 0.4  
 
         for idx_main in main_points:
             main = landmarks[idx_main]
@@ -105,20 +105,20 @@ def check_exercise(exercise, landmarks, state, dt=0.033):
         l_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP.value]
         r_hip = landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value]
 
-        # Milieux du torse
+      
         shoulder_x = (l_shoulder.x + r_shoulder.x) / 2
         shoulder_y = (l_shoulder.y + r_shoulder.y) / 2
         hip_x = (l_hip.x + r_hip.x) / 2
         hip_y = (l_hip.y + r_hip.y) / 2
 
-        # Vecteur torse
+     
         dx = shoulder_x - hip_x
-        dy = hip_y - shoulder_y  # inversé car l'origine Y est en haut dans OpenCV
+        dy = hip_y - shoulder_y  
 
         angle_rad = math.atan2(dx, dy)
         angle_deg = math.degrees(angle_rad)
 
-        seuil = 15  # degrés, plus strict que 15 mais toujours faisable
+        seuil = 15  
 
         if angle_deg > seuil:
             return "right"
@@ -197,7 +197,7 @@ if __name__ == "__main__":
             result, state = check_exercise(exercise, results.pose_landmarks.landmark, state, dt)
 
             if result == "success":
-                message = f"✅ {exercise} réussi !"
+                message = f"{exercise} réussi !"
                 color = (0, 255, 0)
                 exercise_idx += 1
                 state = {
@@ -212,7 +212,7 @@ if __name__ == "__main__":
                 message = f"Fais : {exercise}"
                 color = (0, 0, 255)
 
-        # Affichage principal
+   
         cv2.putText(image, message, (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 
         if exercise_idx < len(exercise_sequence):

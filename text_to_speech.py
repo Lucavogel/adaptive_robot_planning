@@ -43,8 +43,8 @@ def speak_text_realistic(
         specific_seed=specific_seed,
         api_name="/text_to_speech_app"
     )
-    print("✅", status)
-    print("🎧 Lecture en cours :", audio_path)
+    print("", status)
+    print(" Lecture en cours :", audio_path)
     playsound(audio_path)
 
 if __name__ == "__main__":

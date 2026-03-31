@@ -8,21 +8,21 @@ from reasoning import query_llm_about_entities
 context_description = get_environment_context_test()
 MODEL = "deepseek/deepseek-r1-0528-qwen3-8b:free"
 BASE_URL = "https://openrouter.ai/api/v1"
-# Initialiser le client OpenAI avec OpenRouter
+
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
-# Relations jugées utiles
+
 USEFUL_CN_RELATIONS = {
     "UsedFor", "Causes", "HasProperty",
     "MotivatedBy", "IsA"
 }
 
-# Charger le knowledge graph local
+
 def load_knowledge_graph(path="knowledge_graph.json"):
     with open(path, "r") as f:
         return json.load(f)
 
-# Extraire les relations d’un concept
+
 def get_entity_relations(keyword, kg_json):
     entities = kg_json.get("entities", {})
     entity = None
@@ -46,7 +46,7 @@ def get_entity_relations(keyword, kg_json):
 
     return relations_list
 
-# Fallback ConceptNet si concept manquant
+# Fallback ConceptNet 
 def query_conceptnet_filtered(keyword, lang="en", limit=50):
     url = f"http://api.conceptnet.io/c/{lang}/{keyword.lower()}"
     try:
@@ -76,7 +76,7 @@ def query_conceptnet_filtered(keyword, lang="en", limit=50):
     except Exception as e:
         return [f"[ERROR] ConceptNet query failed: {e}"]
 
-# Extraire les relations pour plusieurs concepts
+
 def get_multiple_entities_relations(keywords, kg_json):
     result = {}
     for word in keywords:
@@ -90,8 +90,8 @@ if __name__ == "__main__":
     question = "im starting to sweat"
     classifier = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
     emotion = classifier(question)
-    label = emotion[0]['label']  # '3 stars'
-    stars = int(label[0])       # Extract the number of stars
+    label = emotion[0]['label']  
+    stars = int(label[0])      
     if stars <= 2:
         emotion = "negative"
     elif stars == 3:

@@ -2,9 +2,9 @@ import cv2
 import numpy as np
 
 def draw_axis(img, camera_matrix, dist_coeffs, rvec, tvec, length=0.01):
-    # Origine (coin du marqueur)
+
     origin = np.array([[0, 0, 0]], dtype=np.float32)
-    # Points des axes X, Y, Z dans le repère du marqueur
+   
     axis_points = np.array([[length, 0, 0],
                             [0, length, 0],
                             [0, 0, length]], dtype=np.float32)
@@ -17,12 +17,12 @@ def draw_axis(img, camera_matrix, dist_coeffs, rvec, tvec, length=0.01):
     y_axis = tuple(imgpts[1].ravel().astype(int))
     z_axis = tuple(imgpts[2].ravel().astype(int))
 
-    # Dessiner les 3 axes avec des couleurs différentes
-    cv2.line(img, corner, x_axis, (0, 0, 255), 3)  # X en rouge
-    cv2.line(img, corner, y_axis, (0, 255, 0), 3)  # Y en vert
-    cv2.line(img, corner, z_axis, (255, 0, 0), 3)  # Z en bleu
+   
+    cv2.line(img, corner, x_axis, (0, 0, 255), 3) 
+    cv2.line(img, corner, y_axis, (0, 255, 0), 3)  
+    cv2.line(img, corner, z_axis, (255, 0, 0), 3)  #
 
-# --- Code principal ---
+
 camera_matrix = np.array([[873.35237059, 0., 687.97693455],
                           [0., 872.25271636, 362.30701839],
                           [0., 0., 1.]])

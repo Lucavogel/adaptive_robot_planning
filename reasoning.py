@@ -82,7 +82,6 @@ Output: <what the robot should say or ask next in 1–2 sentences>
         extra_body={}
     )
 
-    # Ajout de la vérification de None et du contenu attendu
     if (
         response is None or
         not hasattr(response, "choices") or
@@ -94,7 +93,6 @@ Output: <what the robot should say or ask next in 1–2 sentences>
 
     return response.choices[0].message.content
 
-# Appel au LLM avec prompt basé sur les relations
 def query_llm_about_entities(concepts_relations,user_state, user_answer = "",current_exercise="Stretch your arms above your head for 5 seconds"
                         , next_exercise="Touch your toes for 5 seconds", history_str=[], context_description="",
                         detected_objects=[]):
@@ -167,6 +165,5 @@ Output: <short, friendly response (1–2 sentences)>
         return response.choices[0].message.content
 
     except Exception as e:
-        print("⚠️ ERREUR:", e)
+        print("ERREUR:", e)
         return "[ERROR] API call failed."
-# Entrée principale

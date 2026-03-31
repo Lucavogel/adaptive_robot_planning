@@ -6,8 +6,8 @@ import time
 
 q = queue.Queue()
 
-# Load your Vosk model (download and place the folder if needed)
-model = vosk.Model("vosk-model-small-en-us-0.15")  # or 'vosk-model-small-fr-0.22' for French
+
+model = vosk.Model("vosk-model-small-en-us-0.15") 
 
 def _callback(indata, frames, time_info, status):
     if status:

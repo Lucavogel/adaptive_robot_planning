@@ -15,7 +15,7 @@ def estimate_marker_pose(corners, marker_length, camera_matrix, dist_coeffs):
     Returns:
         (rvec, tvec): Vecteurs de rotation et de translation, ou (None, None) si échec.
     """
-    # Coins du marqueur dans le référentiel monde
+ 
     obj_points = np.array([
         [-marker_length / 2, marker_length / 2, 0],
         [marker_length / 2, marker_length / 2, 0],
@@ -49,8 +49,7 @@ aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 parameters = aruco.DetectorParameters()
 detector = aruco.ArucoDetector(aruco_dict, parameters)
 
-# Points 3D du carré ArUco (en coord. monde)
-# Dans l'ordre : coin en haut à gauche, en haut à droite, en bas à droite, en bas à gauche
+
 obj_points = np.array([
     [-marker_length / 2, marker_length / 2, 0],
     [marker_length / 2, marker_length / 2, 0],

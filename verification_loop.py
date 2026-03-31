@@ -1,14 +1,14 @@
 import os
 from huggingface_hub import InferenceClient
-#export HF_TOKEN="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"
-# Récupération du token Hugging Face depuis les variables d'environnement
+
+
 HF_TOKEN = os.environ.get("HF_TOKEN")
 if not HF_TOKEN:
     raise ValueError("Set your HF_TOKEN environment variable with your Hugging Face API key.")
 
-# Création du client Inference HF
+
 hf_client = InferenceClient(
-    provider="nscale",  # adapte selon ton provider (ou supprime si pas besoin)
+    provider="nscale",  
     api_key=HF_TOKEN
 )
 
@@ -64,7 +64,6 @@ Reasoning: <explanation of the correctness or correction>
     return response.choices[0].message.content
 
 
-# Exemple d'utilisation simple
 """
 if __name__ == "__main__":
     # Exemple de variables à remplacer par ton contexte réel

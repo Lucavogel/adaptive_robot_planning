@@ -1,17 +1,17 @@
 from ultralytics import YOLO
 import cv2
 
-model = YOLO("yolov8n.pt")  # Téléchargé automatiquement si absent
+model = YOLO("yolov8n.pt")  
 
 def get_environment_context(frame, show_window=True):
     if frame is None:
         return "- The robot sees: nothing (no image provided)."
 
-    # Détection d'objets
+   
     results = model(frame)
     detected = set()
 
-    # Annoter l'image avec les détections
+    
     annotated_frame = frame.copy()
     for r in results:
         boxes = r.boxes
@@ -19,12 +19,12 @@ def get_environment_context(frame, show_window=True):
             cls_id = int(box.cls[0])
             label = model.names[cls_id]
             detected.add(label)
-            # Dessiner la boîte et le label
+            
             xyxy = box.xyxy[0].cpu().numpy().astype(int)
             cv2.rectangle(annotated_frame, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (0,255,0), 2)
             cv2.putText(annotated_frame, label, (xyxy[0], xyxy[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 2)
 
-    # Print detected objects
+   
     print("Detected objects:", ", ".join(detected) if detected else "None")
 
     if show_window:
@@ -49,7 +49,7 @@ def detect_emotion_print():
     print("Appuie sur Ctrl+C pour arrêter")
 
     last_analysis_time = 0
-    emotion_buffer = deque(maxlen=5)  # mémorise les 5 dernières émotions
+    emotion_buffer = deque(maxlen=5) 
 
     try:
         while True:
@@ -65,7 +65,7 @@ def detect_emotion_print():
                     emotion = result[0]['dominant_emotion']
                     emotion_buffer.append(emotion)
 
-                    # Trouve l'émotion la plus fréquente sur la fenêtre glissante
+                   
                     most_common_emotion = max(set(emotion_buffer), key=emotion_buffer.count)
                     print(f"Emotion détectée (stabilisée) : {most_common_emotion}")
 
