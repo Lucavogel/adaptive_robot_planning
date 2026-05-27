@@ -10,6 +10,27 @@ This repository provides a complete framework for adaptive robot planning and co
 - Support research in neuro-symbolic AI, knowledge-graph reasoning, and LLM-based planning
 - Enable reproducible experiments in assistive and collaborative robotics
 
+## Project Structure
+```text
+adaptive_robot_planning/
+├── README.md
+├── requirements.txt
+├── .gitignore
+├── src/
+│   ├── main.py
+│   ├── config.py
+│   ├── perception/
+│   ├── reasoning/
+│   ├── interaction/
+│   └── utils/
+├── data/
+│   ├── knowledge_graph.json
+│   └── models/
+├── tests/
+├── ros2_ws/
+└── calibrage/
+```
+
 ## System Architecture
 The project is organized into several core modules:
 - **Perception:** Real-time object detection (YOLO), pose estimation (MediaPipe), and optional emotion recognition
@@ -43,22 +64,22 @@ The project is organized into several core modules:
 
 
 
-# System Launch: Full Adaptive Pipeline (with Ros2_projects workspace)
+# System Launch: Full Adaptive Pipeline (with ros2_ws workspace)
 
-This project uses the `Ros2_projects` ROS 2 workspace as the central environment for simulation, robot control, and integration with the adaptive planning pipeline. All launch and build commands below assume you are working with this workspace.
+This project uses the `ros2_ws` ROS 2 workspace as the central environment for simulation, robot control, and integration with the adaptive planning pipeline. All launch and build commands below assume you are working with this workspace.
 
 To run the full adaptive system (perception, reasoning, action, and optional speech/dialogue), make sure you have:
 - The knowledge graph file (`knowledge_graph.json`) present in the root folder
 - All required models (YOLO, MediaPipe, Vosk, etc.) downloaded and placed in the correct directories
-- The `Ros2_projects` workspace built and sourced (see below)
+- The `ros2_ws` workspace built and sourced (see below)
 
 
-## 1. Build the ROS 2 workspace (Ros2_projects)
+## 1. Build the ROS 2 workspace (ros2_ws)
 
 Open a terminal and go to the workspace folder:
 
 ```bash
-cd /home/luca/Documents/GitHub/adaptive_robot_planning/Ros2_projects
+cd ros2_ws
 source /opt/ros/humble/setup.bash
 colcon build
 ```
@@ -74,7 +95,7 @@ source install/setup.bash
 In a first terminal:
 
 ```bash
-cd /home/luca/Documents/GitHub/adaptive_robot_planning/Ros2_projects
+cd ros2_ws
 source install/setup.bash
 ros2 launch ur_simulation_gazebo ur_sim_moveit.launch.py
 ```
@@ -86,7 +107,7 @@ This opens Gazebo with the UR robot and MoveIt for motion planning.
 In a **second terminal**:
 
 ```bash
-cd /home/luca/Documents/GitHub/adaptive_robot_planning/Ros2_projects
+cd ros2_ws
 source install/setup.bash
 ros2 run ik_move_cpp ik_move_cpp_node
 ```
@@ -98,9 +119,10 @@ This node listens for position commands on the `/target_point` topic.
 In a **third terminal** (after launching the simulation and arm node):
 
 ```bash
-cd /home/luca/Documents/GitHub/adaptive_robot_planning
-source Ros2_projects/install/setup.bash
-python3 main.py
+# From the root of the project:
+cd adaptive_robot_planning
+source ros2_ws/install/setup.bash
+python3 src/main.py
 ```
 
 This script orchestrates perception (object detection, pose, etc.), context retrieval, knowledge graph querying, LLM-based reasoning, and sends symbolic commands to the arm.
@@ -116,10 +138,10 @@ For camera calibration and dynamic object localization, use the scripts in the `
 ## 4. (Optional) Test Individual Modules
 
 You can test individual modules:
-- Perception: `python3 perception.py`
-- Reasoning/knowledge graph: `python3 Query_knowledge_graph.py`
-- Task monitoring: `python3 task_monitoring.py`
-- Response verification: `python3 verification_loop.py`
+- Perception: `python3 src/perception/perception.py`
+- Reasoning/knowledge graph: `python3 src/reasoning/Query_knowledge_graph.py`
+- Task monitoring: `python3 src/perception/task_monitoring.py`
+- Response verification: `python3 src/reasoning/verification_loop.py`
 
 ---
 
@@ -134,7 +156,7 @@ ros2 launch ur_simulation_gazebo ur_sim_moveit.launch.py
 ros2 run ik_move_cpp ik_move_cpp_node
 
 # Terminal 3: Adaptive pipeline (perception, reasoning, etc.)
-python3 main.py
+python3 src/main.py
 ```
 
 ---

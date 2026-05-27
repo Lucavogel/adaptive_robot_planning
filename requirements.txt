@@ -1,0 +1,13 @@
+opencv-python-headless
+mediapipe
+ultralytics
+openai
+sounddevice
+vosk
+transformers
+deepface
+gTTS
+pygame
+gradio_client
+playsound
+requests
