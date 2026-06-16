@@ -101,7 +101,7 @@ Acceptance criteria:
 | ✅      | Fix `from utils.config import API_KEY` in `Query_knowledge_graph.py` | Luca  | currently broken           |
 | ✅      | Run `python -m compileall src`                                       | Luca  | catch syntax/import errors |
 | ✅      | Add missing `__init__.py` if needed                                  | Luca  | package cleanliness        |
-| ⬜      | Test `python src/main.py` until first interaction                    | Luca  | no import crash            |
+| ✅      | Test `python src/main.py` until first interaction                    | Luca  | no import crash            |
 
 Acceptance criteria:
 
