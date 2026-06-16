@@ -1,174 +1,400 @@
+# TODO_REVISION.md — StretchBot KI Revision
 
-* 🔄 In progress
-* ✅ Done
-* 
-Owner convention:
+## Status convention
+| 🔄     | In progress |
+| ✅      | Done        |
+## Owner convention
 
-* Mehdi
-* Luca
+| Owner | Meaning                      |
+| ----- | ---------------------------- |
+| Mehdi | Mehdi handles it             |
+| Luca  | Luca handles it              |
+| Both  | Both should review / discuss |
 
-revision split into work packages that can run in parallel:
+---
+
+# Global priority order
 
 ```text
-WP1 Code fixes        || WP3 Figures
-WP2 Experiments       || WP4 Paper restructuring
-WP5 Tables            || WP6 Manuscript writing
-WP7 Rebuttal          after WP6 mostly complete
+[CRITICAL]  Must be done first
+[HIGH]      Strongly needed to satisfy reviewers
+[MEDIUM]    Useful if time allows
+[FINAL]     Depends on previous work
+```
+
+## Parallel workflow
+
+```text
+Sprint 1:
+Luca  → WP1 Code stabilization
+Mehdi → WP2 Manuscript restructuring
+Both  → WP3 Figures / setup material
+
+Sprint 2:
+Luca  → WP4 Reviewer experiments
+Mehdi → WP5 Draft rebuttal + paper sections
+
+Sprint 3:
+Both  → WP6 Results tables + interpretation
+Mehdi → WP7 Final manuscript integration
+Both  → WP8 Final checks + submission
 ```
 
 ---
 
-# WP0 — Coordination and repository setup
+# WP0 — [CRITICAL] Coordination and repository setup
 
-Goal: avoid conflicts between Mehdi and Luca.
+Goal: avoid conflicts and prepare clean revision material.
 
-| Status | Task                                    | Owner | Notes                                |
-| ------ | --------------------------------------- | ----- | ------------------------------------ |
-| ⬜      | Create branch `revision-kuin-2026`      |       | `git checkout -b revision-kuin-2026` |
-| ⬜      | Create folder `revision_materials/`     |       | figures, logs, experiments, rebuttal |
-| ⬜      | Create `experiments/` folder            |       | baseline + long-session scripts      |
-| ⬜      | Create `paper_revision/` folder         |       | revised manuscript sections          |
-| ⬜      | Create `REBUTTAL_DRAFT.md`              |       | point-by-point response              |
-| ⬜      | Assign owners to each WP                |       | Mehdi / Luca                         |
-| ⬜      | Agree on naming conventions for objects |       | Water, Banana, Coffee, Towel, Chair  |
+| Status | Task                                | Owner | Notes                                |
+| ------ | ----------------------------------- | ----- | ------------------------------------ |
+| ⬜      | Create branch `revision-kuin-2026`  |       | `git checkout -b revision-kuin-2026` |
+| ⬜      | Create folder `revision_materials/` |       | figures, logs, experiments, rebuttal |
+| ⬜      | Create folder `experiments/`        |       | baseline + long-session scripts      |
+| ⬜      | Create folder `paper_revision/`     |       | rewritten sections                   |
+| ⬜      | Create `REBUTTAL_DRAFT.md`          |       | point-by-point response              |
+| ⬜      | Create `CHANGELOG_REVIEWERS.md`     |       | list of manuscript changes           |
+| ⬜      | Assign owners for each WP           | Both  | Mehdi / Luca                         |
+| ⬜      | Agree on official object names      | Both  | Water, Banana, Coffee, Towel, Chair  |
 
-Can be done in parallel with: nothing.
-Dependency: first step.
+Acceptance criteria:
+
+* Revision branch exists.
+* Owners are assigned.
+* Folder structure is ready.
+* Object naming convention is fixed.
 
 ---
 
-# WP1 — Minimal code stabilization
+# WP1 — [CRITICAL] Code stabilization
 
-Goal: make the system consistent enough to run tests and support paper claims.
+Goal: make the repo coherent enough to support the revised paper and reviewer experiments.
 
-Can be done in parallel with: WP3 figures, WP4 paper structure.
+Recommended owner: Luca
+Can run in parallel with: WP2, WP3
 
-## WP1.1 Security and config
+---
 
-| Status | Task                                                | Owner | Notes                  |
-| ------ | --------------------------------------------------- | ----- | ---------------------- |
-| ⬜      | Revoke leaked OpenRouter API key                    |       | critical               |
-| ⬜      | Remove API key from `src/config.py`                 |       | no secret in Git       |
-| ⬜      | Load API key with `os.getenv("OPENROUTER_API_KEY")` |       | `.env` or terminal env |
-| ⬜      | Add `.env` to `.gitignore`                          |       | prevent future leak    |
-| ⬜      | Add `.env.example`                                  |       | fake values only       |
-| ⬜      | Test LLM call with local env variable               |       | must work              |
+## WP1.1 — [CRITICAL] Security and config
 
-## WP1.2 Imports and launchability
+| Status | Task                                                | Owner | Notes                   |
+| ------ | --------------------------------------------------- | ----- | ----------------------- |
+| ⬜      | Revoke leaked OpenRouter API key                    | Luca  | critical security issue |
+| ⬜      | Remove API key from `src/config.py`                 | Luca  | no secret in Git        |
+| ⬜      | Load API key with `os.getenv("OPENROUTER_API_KEY")` | Luca  | use env variable        |
+| ⬜      | Add `.env` to `.gitignore`                          | Luca  | avoid future leak       |
+| ⬜      | Add `.env.example`                                  | Luca  | fake values only        |
+| ⬜      | Test LLM call with local env variable               | Luca  | must work               |
+
+Acceptance criteria:
+
+* No real API key in the repo.
+* LLM call works through environment variable.
+
+---
+
+## WP1.2 — [CRITICAL] Imports and launchability
 
 | Status | Task                                                                 | Owner | Notes                      |
 | ------ | -------------------------------------------------------------------- | ----- | -------------------------- |
-| ⬜      | Fix `from utils.config import API_KEY` in `reasoning.py`             |       | currently broken           |
-| ⬜      | Fix `from utils.config import API_KEY` in `Query_knowledge_graph.py` |       | currently broken           |
-| ⬜      | Run `python -m compileall src`                                       |       | catch import/syntax errors |
-| ⬜      | Add missing `__init__.py` if needed                                  |       | package cleanliness        |
-| ⬜      | Test `python src/main.py` until first interaction                    |       | no import crash            |
+| ⬜      | Fix `from utils.config import API_KEY` in `reasoning.py`             | Luca  | currently broken           |
+| ⬜      | Fix `from utils.config import API_KEY` in `Query_knowledge_graph.py` | Luca  | currently broken           |
+| ⬜      | Run `python -m compileall src`                                       | Luca  | catch syntax/import errors |
+| ⬜      | Add missing `__init__.py` if needed                                  | Luca  | package cleanliness        |
+| ⬜      | Test `python src/main.py` until first interaction                    | Luca  | no import crash            |
 
-## WP1.3 Model loading robustness
+Acceptance criteria:
 
-| Status | Task                                          | Owner | Notes               |
-| ------ | --------------------------------------------- | ----- | ------------------- |
-| ⬜      | Avoid loading Vosk model at import time       |       | lazy loading        |
-| ⬜      | Add clean error if Vosk model missing         |       | avoid obscure crash |
-| ⬜      | Avoid loading YOLO at import time if possible |       | lazy loading        |
-| ⬜      | Add configurable model paths                  |       | no hardcoded paths  |
-| ⬜      | Document model download steps briefly         |       | README or notes     |
+* `src/` compiles.
+* `main.py` starts without import crash.
 
-## WP1.4 Main loop and verifier
+---
 
-| Status | Task                                            | Owner | Notes                 |
-| ------ | ----------------------------------------------- | ----- | --------------------- |
-| ⬜      | Remove blocking `input()` problem in `main.py`  |       | queue/timeout/event   |
-| ⬜      | Allow routine to continue after task success    |       | no waiting forever    |
-| ⬜      | Connect verifier LLM to main loop               |       | paper claims verifier |
-| ⬜      | Add fallback if verifier rejects multiple times |       | scripted safe answer  |
-| ⬜      | Log verifier corrections                        |       | needed for results    |
+## WP1.3 — [HIGH] Model loading robustness
 
-## WP1.5 Perception/context consistency
+| Status | Task                                                | Owner | Notes                |
+| ------ | --------------------------------------------------- | ----- | -------------------- |
+| ⬜      | Avoid loading Vosk model at import time             | Luca  | lazy loading         |
+| ⬜      | Add clean error if Vosk model is missing            | Luca  | avoid obscure crash  |
+| ⬜      | Avoid loading YOLO model at import time if possible | Luca  | lazy loading         |
+| ⬜      | Add configurable model paths                        | Luca  | no hardcoded paths   |
+| ⬜      | Document model download steps                       | Luca  | short README section |
+
+Acceptance criteria:
+
+* Missing models do not crash the whole project at import time.
+* User gets clear setup instructions.
+
+---
+
+## WP1.4 — [CRITICAL] Main loop and verifier
+
+| Status | Task                                            | Owner | Notes                        |
+| ------ | ----------------------------------------------- | ----- | ---------------------------- |
+| ⬜      | Remove blocking `input()` issue in `main.py`    | Luca  | queue / timeout / event      |
+| ⬜      | Allow routine to continue after task success    | Luca  | no infinite waiting          |
+| ⬜      | Connect verifier LLM to main loop               | Luca  | paper claims verifier        |
+| ⬜      | Add fallback if verifier rejects multiple times | Luca  | safe scripted answer         |
+| ⬜      | Log verifier corrections                        | Luca  | needed for objective metrics |
+
+Acceptance criteria:
+
+* Routine can continue without being stuck.
+* Verifier is actually called.
+* Verifier failures are logged.
+
+---
+
+## WP1.5 — [CRITICAL] Perception and context consistency
 
 | Status | Task                                                 | Owner | Notes                            |
 | ------ | ---------------------------------------------------- | ----- | -------------------------------- |
-| ⬜      | Remove hardcoded `user_states = ["InPain"]`          |       | fake adaptation                  |
-| ⬜      | Replace with real or explicitly simulated user state |       | must be clear                    |
-| ⬜      | Replace or rename `get_environment_context_test()`   |       | avoid pretending real perception |
-| ⬜      | Log detected/simulated objects sent to LLM           |       | needed for experiments           |
-| ⬜      | Log emotional state sent to LLM                      |       | needed for failure analysis      |
+| ⬜      | Remove hardcoded `user_states = ["InPain"]`          | Luca  | fake adaptation                  |
+| ⬜      | Replace with real or explicitly simulated user state | Luca  | must be honest                   |
+| ⬜      | Replace or rename `get_environment_context_test()`   | Luca  | avoid pretending real perception |
+| ⬜      | Log objects sent to the LLM                          | Luca  | needed for experiments           |
+| ⬜      | Log emotional state sent to the LLM                  | Luca  | needed for failure analysis      |
+| ⬜      | Log user utterance / STT input                       | Luca  | needed for traceability          |
 
-## WP1.6 Object/action consistency
+Acceptance criteria:
 
-| Status | Task                                                                      | Owner | Notes                                 |
-| ------ | ------------------------------------------------------------------------- | ----- | ------------------------------------- |
-| ⬜      | Define official object list                                               |       | Water, Banana, Coffee, Towel, Chair   |
-| ⬜      | Unify names between YOLO, KG, LLM, C++                                    |       | no `GlassOfWater` vs `glass` mismatch |
-| ⬜      | Ensure every `POINT_OBJECT` has either robot execution or verbal fallback |       | no silent failure                     |
-| ⬜      | Prevent pointing to absent objects                                        |       | important reviewer issue              |
-| ⬜      | Add user confirmation before physical pointing                            |       | collaborative protocol                |
-| ⬜      | Store refused suggestions                                                 |       | do not repeat                         |
-
-WP1 acceptance criteria:
-
-* `main.py` launches.
-* LLM call works.
-* Verifier is called.
-* No hardcoded pain state.
-* Actions are logged.
-* Physical action requires confirmation or is clearly disabled in experiment mode.
+* No fake hardcoded pain state.
+* Context sent to LLM is logged.
+* Simulated perception is clearly named if used.
 
 ---
 
-# WP2 — Reviewer experiments
+## WP1.6 — [CRITICAL] Object/action consistency
 
-Goal: generate extra evidence requested by reviewers.
+| Status | Task                                                         | Owner | Notes                               |
+| ------ | ------------------------------------------------------------ | ----- | ----------------------------------- |
+| ⬜      | Define official object list                                  | Both  | Water, Banana, Coffee, Towel, Chair |
+| ⬜      | Unify names between YOLO, KG, LLM, and C++                   | Luca  | avoid `GlassOfWater` vs `glass`     |
+| ⬜      | Ensure every `POINT_OBJECT` has execution or verbal fallback | Luca  | no silent failure                   |
+| ⬜      | Prevent pointing to absent objects                           | Luca  | reviewer issue                      |
+| ⬜      | Add user confirmation before physical pointing               | Luca  | collaborative protocol              |
+| ⬜      | Store refused suggestions                                    | Luca  | do not repeat rejected offers       |
 
-Can start after: WP1.1, WP1.2, and basic reasoning pipeline working.
-Can run in parallel with: WP4 manuscript restructuring.
+Acceptance criteria:
+
+* No unsupported object is silently executed.
+* Robot only points to detected/supported objects.
+* Physical action requires confirmation or is disabled in experiment mode.
 
 ---
 
-## WP2.1 LLM-only vs KG+LLM baseline
+# WP2 — [CRITICAL] Manuscript restructuring
 
-Goal: show whether the Knowledge Graph helps.
+Goal: fix the main methodological and framing issues while Luca stabilizes the code.
+
+Recommended owner: Mehdi
+Can start immediately.
+Can run in parallel with: WP1, WP3, WP4
+
+---
+
+## WP2.1 — [CRITICAL] Reframe as pilot / proof-of-concept
+
+| Status | Task                                             | Owner | Notes                     |
+| ------ | ------------------------------------------------ | ----- | ------------------------- |
+| ⬜      | Reframe abstract as pilot/proof-of-concept       | Mehdi | very important            |
+| ⬜      | Reframe introduction                             | Mehdi | no strong empirical claim |
+| ⬜      | Reframe evaluation section                       | Mehdi | exploratory only          |
+| ⬜      | Reframe discussion                               | Mehdi | no overclaim              |
+| ⬜      | Reframe conclusion                               | Mehdi | pilot evidence only       |
+| ⬜      | Replace “shows/proves” with “suggests/indicates” | Mehdi | cautious language         |
+
+Acceptance criteria:
+
+* N=3 is never presented as strong evidence.
+* The paper clearly says this is a pilot/prototype study.
+
+---
+
+## WP2.2 — [CRITICAL] Research questions and competency questions
+
+| Status | Task                                              | Owner | Notes                                    |
+| ------ | ------------------------------------------------- | ----- | ---------------------------------------- |
+| ⬜      | Rewrite RQ1–RQ3 clearly                           | Mehdi | introduction                             |
+| ⬜      | Create section `Competency Questions`             | Mehdi | before/in evaluation                     |
+| ⬜      | Define 8–10 competency questions                  | Mehdi | fatigue, pain, refusal, object relevance |
+| ⬜      | Add expected behavior for each CQ                 | Mehdi | table                                    |
+| ⬜      | Add evidence column                               | Mehdi | logs/results                             |
+| ⬜      | Create section `Answering the Research Questions` | Mehdi | discussion                               |
+| ⬜      | Answer RQ1 directly                               | Mehdi | architecture/adaptation                  |
+| ⬜      | Answer RQ2 directly                               | Mehdi | KG baseline                              |
+| ⬜      | Answer RQ3 directly                               | Mehdi | pilot perception                         |
+
+Acceptance criteria:
+
+* Each RQ has a direct answer.
+* Reviewer does not need to reconstruct the answers.
+
+---
+
+## WP2.3 — [CRITICAL] Evaluation rationale
+
+| Status | Task                                              | Owner | Notes                       |
+| ------ | ------------------------------------------------- | ----- | --------------------------- |
+| ⬜      | Rename section to `Exploratory Pilot Evaluation`  | Mehdi | clearer                     |
+| ⬜      | Justify why N=3                                   | Mehdi | prototype feasibility       |
+| ⬜      | State no statistical generalization               | Mehdi | important                   |
+| ⬜      | Justify custom questionnaire                      | Mehdi | adaptivity/object relevance |
+| ⬜      | Mention limitation of non-validated questionnaire | Mehdi | honest                      |
+| ⬜      | Add future work with SUS/Godspeed/Trust scales    | Mehdi | reviewer 2                  |
+| ⬜      | Add objective metrics subsection placeholder      | Mehdi | filled after WP4            |
+| ⬜      | Add baseline subsection placeholder               | Mehdi | filled after WP4            |
+
+Acceptance criteria:
+
+* Evaluation weakness is acknowledged.
+* The paper explains why the evaluation still has value as a pilot.
+
+---
+
+## WP2.4 — [HIGH] Reduce repetition and clean claims
+
+| Status | Task                                           | Owner | Notes                         |
+| ------ | ---------------------------------------------- | ----- | ----------------------------- |
+| ⬜      | Find repeated adaptivity/smoothness paragraphs | Mehdi | results/discussion/conclusion |
+| ⬜      | Keep one clear explanation only                | Mehdi | avoid repetition              |
+| ⬜      | Remove duplicated qualitative interpretation   | Mehdi | compact                       |
+| ⬜      | Weaken unsupported claims                      | Mehdi | especially user preference    |
+| ⬜      | Make contribution technical, not statistical   | Mehdi | system paper framing          |
+
+Acceptance criteria:
+
+* Reviewer 1 cannot say the same tradeoff is repeated many times.
+
+---
+
+# WP3 — [HIGH] Figures and visual material
+
+Goal: answer the request for setup and architecture images.
+
+Recommended owner: Luca
+Can run in parallel with: WP1, WP2
+
+---
+
+## WP3.1 — [HIGH] Hardware/setup figure
+
+| Status | Task                            | Owner | Notes                                 |
+| ------ | ------------------------------- | ----- | ------------------------------------- |
+| ⬜      | Take photo of real setup        | Luca  | robot, camera, objects, user position |
+| ⬜      | Add clean labels                | Luca  | robot, camera, objects, user          |
+| ⬜      | Hide sensitive/private elements | Luca  | faces, screens, keys                  |
+| ⬜      | Export high-resolution PNG/JPG  | Luca  | paper quality                         |
+| ⬜      | Write concise caption           | Mehdi | for manuscript                        |
+| ⬜      | Insert figure in manuscript     | Mehdi | implementation/system section         |
+
+Acceptance criteria:
+
+* Reviewer can understand robot/camera/object layout from one figure.
+
+---
+
+## WP3.2 — [HIGH] Architecture figure
+
+| Status | Task                          | Owner | Notes                         |
+| ------ | ----------------------------- | ----- | ----------------------------- |
+| ⬜      | Create clean pipeline diagram | Luca  | not overloaded                |
+| ⬜      | Include perception modules    | Luca  | STT, emotion, object, posture |
+| ⬜      | Include context package       | Luca  | central block                 |
+| ⬜      | Include KG retrieval          | Luca  | key contribution              |
+| ⬜      | Include primary LLM           | Luca  | decision                      |
+| ⬜      | Include verifier LLM          | Luca  | safety/format                 |
+| ⬜      | Include command parser        | Luca  | prefix handling               |
+| ⬜      | Include execution layer       | Luca  | TTS + robot pointing          |
+| ⬜      | Include logging/feedback loop | Luca  | objective metrics             |
+| ⬜      | Write caption                 | Mehdi | for manuscript                |
+| ⬜      | Insert figure in manuscript   | Mehdi | system architecture           |
+
+Acceptance criteria:
+
+* Diagram clearly explains the neuro-symbolic closed loop.
+
+---
+
+# WP4 — [CRITICAL] Reviewer experiments
+
+Goal: generate the additional evidence requested by reviewers.
+
+Recommended owner: Luca
+Can start after: WP1.1, WP1.2, basic LLM pipeline working
+Can run in parallel with: WP2
+
+---
+
+## WP4.1 — [CRITICAL] LLM-only vs KG+LLM baseline
+
+Goal: show whether the Knowledge Graph contributes anything.
 
 | Status | Task                                     | Owner | Notes                     |
 | ------ | ---------------------------------------- | ----- | ------------------------- |
-| ⬜      | Create `experiments/scenarios.json`      |       | 20–30 scenarios           |
-| ⬜      | Define expected action for each scenario |       | manual oracle             |
-| ⬜      | Implement condition A: LLM-only          |       | raw context only          |
-| ⬜      | Implement condition B: KG+LLM            |       | context + KG relations    |
-| ⬜      | Implement condition C: KG+LLM+Verifier   |       | if possible               |
-| ⬜      | Measure action correctness               |       | expected vs output        |
-| ⬜      | Measure object relevance                 |       | selected object relevant? |
-| ⬜      | Measure prefix validity                  |       | valid command format      |
-| ⬜      | Measure hallucinated object rate         |       | points to absent object   |
-| ⬜      | Measure unsafe/incoherent outputs        |       | manual or rule-based      |
-| ⬜      | Measure latency                          |       | timestamp start/end       |
-| ⬜      | Export `results_baseline.csv`            |       | for paper                 |
-| ⬜      | Create final table for manuscript        |       | compact                   |
+| ⬜      | Create `experiments/scenarios.json`      | Luca  | 20–30 scenarios           |
+| ⬜      | Define expected action for each scenario | Both  | manual oracle             |
+| ⬜      | Implement condition A: LLM-only          | Luca  | raw context only          |
+| ⬜      | Implement condition B: KG+LLM            | Luca  | context + KG relations    |
+| ⬜      | Implement condition C: KG+LLM+Verifier   | Luca  | if possible               |
+| ⬜      | Measure action correctness               | Luca  | expected vs output        |
+| ⬜      | Measure object relevance                 | Luca  | selected object relevant? |
+| ⬜      | Measure prefix validity                  | Luca  | valid command format      |
+| ⬜      | Measure hallucinated object rate         | Luca  | points to absent object   |
+| ⬜      | Measure unsafe/incoherent outputs        | Both  | manual or rule-based      |
+| ⬜      | Measure latency                          | Luca  | timestamp start/end       |
+| ⬜      | Export `results_baseline.csv`            | Luca  | for paper                 |
+| ⬜      | Create final baseline table              | Both  | for manuscript            |
 
 Acceptance criteria:
 
 * At least 20 scenarios.
-* At least 2 compared systems: LLM-only and KG+LLM.
-* Table ready for paper.
+* At least LLM-only and KG+LLM are compared.
+* Paper has a table showing KG contribution.
 
 ---
 
-## WP2.2 Long-session analysis
+## WP4.2 — [HIGH] Failure case collection
+
+Goal: provide explicit failure analysis.
+
+| Status | Task                                      | Owner | Notes                      |
+| ------ | ----------------------------------------- | ----- | -------------------------- |
+| ⬜      | Collect real observed failures from tests | Luca  | best evidence              |
+| ⬜      | Add simulated failures if needed          | Both  | clearly label as simulated |
+| ⬜      | Document wrong emotion detection          | Luca  | mic/camera issue           |
+| ⬜      | Document object hallucination             | Luca  | LLM issue                  |
+| ⬜      | Document invalid prefix                   | Luca  | parser/verifier issue      |
+| ⬜      | Document repeated verifier rejection      | Luca  | fallback issue             |
+| ⬜      | Document latency issue                    | Luca  | cloud API                  |
+| ⬜      | Document posture detection issue          | Luca  | camera angle               |
+| ⬜      | Document conflicting inputs               | Both  | voice vs face vs posture   |
+| ⬜      | Add mitigation for every failure          | Both  | not only description       |
+| ⬜      | Create final failure-case table           | Both  | for manuscript             |
+
+Acceptance criteria:
+
+* At least 8 failure cases.
+* Each has cause, example, impact, mitigation.
+
+---
+
+## WP4.3 — [MEDIUM] Long-session analysis
 
 Goal: answer reviewer concern about LLM degradation when context grows.
 
 | Status | Task                                               | Owner | Notes                    |
 | ------ | -------------------------------------------------- | ----- | ------------------------ |
-| ⬜      | Create long-session script                         |       | 15–20 turns/session      |
-| ⬜      | Session A: normal routine                          |       | simple case              |
-| ⬜      | Session B: fatigue + refusal of water              |       | memory/refusal test      |
-| ⬜      | Session C: pain + interruptions + changing objects |       | robustness               |
-| ⬜      | Measure format validity over time                  |       | prefix correctness       |
-| ⬜      | Measure repetition rate                            |       | repeated suggestions     |
-| ⬜      | Measure context consistency                        |       | respects previous turns  |
-| ⬜      | Measure latency growth                             |       | response time over turns |
-| ⬜      | Export `results_long_session.csv`                  |       | for paper                |
-| ⬜      | Write 1-paragraph interpretation                   |       | for discussion           |
+| ⬜      | Create long-session script                         | Luca  | 15–20 turns/session      |
+| ⬜      | Session A: normal routine                          | Luca  | simple case              |
+| ⬜      | Session B: fatigue + refusal of water              | Luca  | memory/refusal test      |
+| ⬜      | Session C: pain + interruptions + changing objects | Luca  | robustness               |
+| ⬜      | Measure format validity over time                  | Luca  | prefix correctness       |
+| ⬜      | Measure repetition rate                            | Luca  | repeated suggestions     |
+| ⬜      | Measure context consistency                        | Both  | respects previous turns  |
+| ⬜      | Measure latency growth                             | Luca  | response time over turns |
+| ⬜      | Export `results_long_session.csv`                  | Luca  | for paper                |
+| ⬜      | Write 1-paragraph interpretation                   | Mehdi | for discussion           |
 
 Acceptance criteria:
 
@@ -178,177 +404,25 @@ Acceptance criteria:
 
 ---
 
-## WP2.3 Failure case collection
+# WP5 — [FINAL] Results tables and paper-ready evidence
 
-Goal: provide explicit failure analysis.
+Goal: turn raw experiment outputs into compact manuscript tables.
 
-| Status | Task                                      | Owner | Notes                      |
-| ------ | ----------------------------------------- | ----- | -------------------------- |
-| ⬜      | Collect real observed failures from tests |       | best evidence              |
-| ⬜      | Add simulated failures if needed          |       | clearly label as simulated |
-| ⬜      | Document wrong emotion detection          |       | mic/camera issue           |
-| ⬜      | Document object hallucination             |       | LLM issue                  |
-| ⬜      | Document invalid prefix                   |       | parser/verifier issue      |
-| ⬜      | Document repeated verifier rejection      |       | fallback issue             |
-| ⬜      | Document latency issue                    |       | cloud API                  |
-| ⬜      | Document posture detection issue          |       | camera angle               |
-| ⬜      | Document conflicting inputs               |       | voice vs face vs posture   |
-| ⬜      | Add mitigation for every failure          |       | not only description       |
-| ⬜      | Create final failure-case table           |       | for manuscript             |
-
-Acceptance criteria:
-
-* At least 8 failure cases.
-* Each has cause, example, impact, mitigation.
+Recommended owner: Both
+Starts after: WP4 outputs
+Can run in parallel with: WP6
 
 ---
 
-# WP3 — Figures and visual materials
+## WP5.1 — [FINAL] Baseline results table
 
-Goal: answer reviewer request for setup and architecture image.
-Can be done in parallel with: WP1 and WP4.
-
----
-
-## WP3.1 Hardware/setup figure
-
-| Status | Task                            | Owner | Notes                                 |
-| ------ | ------------------------------- | ----- | ------------------------------------- |
-| ⬜      | Take photo of real setup        |       | robot, camera, user position, objects |
-| ⬜      | Add clean labels                |       | Robot arm, camera, objects, user      |
-| ⬜      | Hide sensitive/private elements |       | faces, screens, keys                  |
-| ⬜      | Export high-res PNG/JPG         |       | paper quality                         |
-| ⬜      | Write caption                   |       | concise                               |
-| ⬜      | Insert figure in manuscript     |       | Implementation or System              |
-
-Acceptance criteria:
-
-* Reviewer can understand robot/camera/object layout from one figure.
-
----
-
-## WP3.2 Architecture figure
-
-| Status | Task                          | Owner | Notes                         |
-| ------ | ----------------------------- | ----- | ----------------------------- |
-| ⬜      | Create clean pipeline diagram |       | not overloaded                |
-| ⬜      | Include perception modules    |       | STT, emotion, object, posture |
-| ⬜      | Include context package       |       | central block                 |
-| ⬜      | Include KG retrieval          |       | key contribution              |
-| ⬜      | Include primary LLM           |       | decision                      |
-| ⬜      | Include verifier LLM          |       | safety/format                 |
-| ⬜      | Include command parser        |       | prefix handling               |
-| ⬜      | Include execution layer       |       | TTS + robot pointing          |
-| ⬜      | Include logging/feedback loop |       | objective metrics             |
-| ⬜      | Insert figure in manuscript   |       | System Architecture           |
-
-Acceptance criteria:
-
-* Diagram clearly explains neuro-symbolic loop.
-
----
-
-# WP4 — Manuscript restructuring
-
-Goal: prepare paper sections while code/experiments are still running.
-
-Can start immediately.
-Can run in parallel with: WP1, WP2, WP3.
-
----
-
-## WP4.1 Global reframing as pilot study
-
-| Status | Task                                             | Owner | Notes                     |
-| ------ | ------------------------------------------------ | ----- | ------------------------- |
-| ⬜      | Reframe abstract as pilot/proof-of-concept       |       | very important            |
-| ⬜      | Reframe introduction                             |       | no strong empirical claim |
-| ⬜      | Reframe evaluation section                       |       | exploratory only          |
-| ⬜      | Reframe discussion                               |       | no overclaim              |
-| ⬜      | Reframe conclusion                               |       | pilot evidence only       |
-| ⬜      | Replace “shows/proves” with “suggests/indicates” |       | cautious language         |
-
-Acceptance criteria:
-
-* N=3 is never presented as strong evidence.
-* The paper is clearly a pilot/prototype study.
-
----
-
-## WP4.2 Research questions and competency questions
-
-| Status | Task                                              | Owner | Notes                        |
-| ------ | ------------------------------------------------- | ----- | ---------------------------- |
-| ⬜      | Rewrite RQ1–RQ3 clearly                           |       | intro                        |
-| ⬜      | Create section `Competency Questions`             |       | before or inside evaluation  |
-| ⬜      | Define 8–10 competency questions                  |       | fatigue, pain, refusal, etc. |
-| ⬜      | Add expected behavior for each CQ                 |       | table                        |
-| ⬜      | Add evidence column                               |       | logs/results                 |
-| ⬜      | Create section `Answering the Research Questions` |       | discussion                   |
-| ⬜      | Answer RQ1 directly                               |       | architecture/adaptation      |
-| ⬜      | Answer RQ2 directly                               |       | KG baseline                  |
-| ⬜      | Answer RQ3 directly                               |       | pilot perception             |
-
-Acceptance criteria:
-
-* Reviewer no longer has to reconstruct answers.
-* Each RQ has an explicit answer.
-
----
-
-## WP4.3 Evaluation rationale
-
-| Status | Task                                              | Owner | Notes                                  |
-| ------ | ------------------------------------------------- | ----- | -------------------------------------- |
-| ⬜      | Rename section to `Exploratory Pilot Evaluation`  |       | clearer                                |
-| ⬜      | Justify why N=3                                   |       | prototype feasibility                  |
-| ⬜      | Explicitly state no statistical generalization    |       | important                              |
-| ⬜      | Justify custom questionnaire                      |       | adapted to object relevance/adaptivity |
-| ⬜      | Mention limitation of non-validated questionnaire |       | honest                                 |
-| ⬜      | Add future work with SUS/Godspeed/Trust scales    |       | reviewer 2                             |
-| ⬜      | Add objective metrics subsection                  |       | from WP2                               |
-| ⬜      | Add baseline subsection                           |       | from WP2                               |
-
-Acceptance criteria:
-
-* Methodological weakness is acknowledged and controlled.
-
----
-
-## WP4.4 Reduce repetition and clean claims
-
-| Status | Task                                           | Owner | Notes                         |
-| ------ | ---------------------------------------------- | ----- | ----------------------------- |
-| ⬜      | Find repeated adaptivity/smoothness paragraphs |       | results/discussion/conclusion |
-| ⬜      | Keep one strong explanation only               |       | avoid repetition              |
-| ⬜      | Remove duplicated qualitative interpretation   |       | compact                       |
-| ⬜      | Weaken unsupported claims                      |       | especially user preference    |
-| ⬜      | Make contribution technical, not statistical   |       | system paper framing          |
-
-Acceptance criteria:
-
-* Reviewer 1 cannot say the same tradeoff is repeated many times.
-
----
-
-# WP5 — Results tables and final evidence
-
-Goal: convert experiment outputs into paper-ready tables.
-
-Starts after: WP2 has outputs.
-Can run in parallel with: WP6 writing.
-
----
-
-## WP5.1 Baseline results table
-
-| Status | Task                    | Owner | Notes                  |
-| ------ | ----------------------- | ----- | ---------------------- |
-| ⬜      | Import baseline CSV     |       | from WP2.1             |
-| ⬜      | Compute summary metrics |       | averages / percentages |
-| ⬜      | Create compact table    |       | LLM-only vs KG+LLM     |
-| ⬜      | Write interpretation    |       | cautious               |
-| ⬜      | Add to Results          |       | manuscript             |
+| Status | Task                          | Owner | Notes                  |
+| ------ | ----------------------------- | ----- | ---------------------- |
+| ⬜      | Import baseline CSV           | Luca  | from WP4.1             |
+| ⬜      | Compute summary metrics       | Luca  | averages / percentages |
+| ⬜      | Create compact table          | Both  | LLM-only vs KG+LLM     |
+| ⬜      | Write cautious interpretation | Mehdi | no overclaim           |
+| ⬜      | Add to Results                | Mehdi | manuscript             |
 
 Example table:
 
@@ -362,195 +436,246 @@ Example table:
 
 ---
 
-## WP5.2 Objective metrics table
+## WP5.2 — [FINAL] Objective metrics table
 
 | Status | Task                                    | Owner | Notes               |
 | ------ | --------------------------------------- | ----- | ------------------- |
-| ⬜      | Compute mean LLM latency                |       | seconds             |
-| ⬜      | Compute verifier correction rate        |       | %                   |
-| ⬜      | Compute invalid output count            |       | count               |
-| ⬜      | Compute number of adaptations           |       | count               |
-| ⬜      | Compute object pointing success/failure |       | count               |
-| ⬜      | Create compact table                    |       | for Results         |
-| ⬜      | Write interpretation                    |       | link to limitations |
+| ⬜      | Compute mean LLM latency                | Luca  | seconds             |
+| ⬜      | Compute verifier correction rate        | Luca  | percentage          |
+| ⬜      | Compute invalid output count            | Luca  | count               |
+| ⬜      | Compute number of adaptations           | Luca  | count               |
+| ⬜      | Compute object pointing success/failure | Luca  | count               |
+| ⬜      | Create compact table                    | Both  | for Results         |
+| ⬜      | Write interpretation                    | Mehdi | link to limitations |
 
 ---
 
-## WP5.3 Failure case table
+## WP5.3 — [FINAL] Failure case table
 
 | Status | Task                                | Owner | Notes               |
 | ------ | ----------------------------------- | ----- | ------------------- |
-| ⬜      | Select strongest failure cases      |       | 8–10 max            |
-| ⬜      | Add cause/example/impact/mitigation |       | table               |
-| ⬜      | Mark observed vs simulated          |       | honest              |
-| ⬜      | Add to Discussion                   |       | robustness analysis |
+| ⬜      | Select strongest failure cases      | Both  | 8–10 max            |
+| ⬜      | Add cause/example/impact/mitigation | Both  | table               |
+| ⬜      | Mark observed vs simulated          | Both  | honest              |
+| ⬜      | Add to Discussion                   | Mehdi | robustness analysis |
 
 ---
 
-# WP6 — Final manuscript writing
+# WP6 — [FINAL] Final manuscript integration
 
-Goal: integrate all revised content into one coherent manuscript.
-Starts after: WP4 draft + WP5 tables + WP3 figures.
+Goal: integrate all revised material into one coherent manuscript.
+
+Recommended owner: Mehdi
+Starts after: WP2 draft + WP3 figures + WP5 tables
 
 ---
 
-## WP6.1 Section integration
+## WP6.1 — [FINAL] Section integration
 
 | Status | Task                            | Owner | Notes                     |
 | ------ | ------------------------------- | ----- | ------------------------- |
-| ⬜      | Integrate revised abstract      |       | pilot framing             |
-| ⬜      | Integrate revised introduction  |       | contributions/RQs         |
-| ⬜      | Integrate architecture figure   |       | system section            |
-| ⬜      | Integrate setup figure          |       | implementation            |
-| ⬜      | Integrate competency questions  |       | implementation/evaluation |
-| ⬜      | Integrate evaluation rationale  |       | evaluation                |
-| ⬜      | Integrate baseline results      |       | results                   |
-| ⬜      | Integrate objective metrics     |       | results                   |
-| ⬜      | Integrate RQ answers            |       | discussion                |
-| ⬜      | Integrate failure analysis      |       | discussion                |
-| ⬜      | Integrate long-session analysis |       | discussion/results        |
-| ⬜      | Integrate revised conclusion    |       | cautious                  |
+| ⬜      | Integrate revised abstract      | Mehdi | pilot framing             |
+| ⬜      | Integrate revised introduction  | Mehdi | contributions/RQs         |
+| ⬜      | Integrate architecture figure   | Mehdi | system section            |
+| ⬜      | Integrate setup figure          | Mehdi | implementation            |
+| ⬜      | Integrate competency questions  | Mehdi | implementation/evaluation |
+| ⬜      | Integrate evaluation rationale  | Mehdi | evaluation                |
+| ⬜      | Integrate baseline results      | Mehdi | results                   |
+| ⬜      | Integrate objective metrics     | Mehdi | results                   |
+| ⬜      | Integrate RQ answers            | Mehdi | discussion                |
+| ⬜      | Integrate failure analysis      | Mehdi | discussion                |
+| ⬜      | Integrate long-session analysis | Mehdi | discussion/results        |
+| ⬜      | Integrate revised conclusion    | Mehdi | cautious                  |
 
-## WP6.2 Final consistency check
+Acceptance criteria:
+
+* Manuscript contains all reviewer-requested additions.
+* Claims are cautious and consistent.
+
+---
+
+## WP6.2 — [FINAL] Consistency check
 
 | Status | Task                                              | Owner | Notes             |
 | ------ | ------------------------------------------------- | ----- | ----------------- |
-| ⬜      | Check paper does not claim unimplemented features |       | critical          |
-| ⬜      | Check verifier description matches code           |       | critical          |
-| ⬜      | Check confirmation protocol matches code          |       | critical          |
-| ⬜      | Check perception is described honestly            |       | real vs simulated |
-| ⬜      | Check object names are consistent                 |       | KG/LLM/robot      |
-| ⬜      | Check all figures are referenced                  |       | no orphan figure  |
-| ⬜      | Check references and citations                    |       | no placeholders   |
-| ⬜      | Check final file is Word or LaTeX                 |       | no PDF            |
+| ⬜      | Check paper does not claim unimplemented features | Both  | critical          |
+| ⬜      | Check verifier description matches code           | Both  | critical          |
+| ⬜      | Check confirmation protocol matches code          | Both  | critical          |
+| ⬜      | Check perception is described honestly            | Both  | real vs simulated |
+| ⬜      | Check object names are consistent                 | Both  | KG/LLM/robot      |
+| ⬜      | Check all figures are referenced                  | Mehdi | no orphan figure  |
+| ⬜      | Check references and citations                    | Mehdi | no placeholders   |
+| ⬜      | Check final file is Word or LaTeX                 | Mehdi | no PDF            |
 
 Acceptance criteria:
 
-* Revised manuscript is coherent and ready for Filip’s review.
+* Paper, code, and experiments tell the same story.
+* Manuscript is ready for Filip’s review.
 
 ---
 
-# WP7 — Rebuttal / response to reviewers
+# WP7 — [FINAL] Rebuttal / response to reviewers
 
 Goal: produce the point-by-point response.
 
-Starts after: main manuscript changes are known.
-Can draft earlier, finalize after WP6.
+Recommended owner: Mehdi
+Can draft early, but finalize after WP6
 
 ---
 
-## WP7.1 Editor response
+## WP7.1 — [FINAL] Editor response
 
-| Status | Task                             | Owner | Notes                        |
-| ------ | -------------------------------- | ----- | ---------------------------- |
-| ⬜      | Thank editor                     |       | polite                       |
-| ⬜      | Summarize main changes           |       | pilot framing, RQs, baseline |
-| ⬜      | Mention editable files submitted |       | Word/LaTeX                   |
+| Status | Task                             | Owner | Notes                         |
+| ------ | -------------------------------- | ----- | ----------------------------- |
+| ⬜      | Thank editor                     | Mehdi | polite                        |
+| ⬜      | Summarize main changes           | Mehdi | pilot, RQs, baseline, figures |
+| ⬜      | Mention editable files submitted | Mehdi | Word/LaTeX                    |
 
-## WP7.2 Reviewer 1 response
+---
+
+## WP7.2 — [FINAL] Reviewer 1 response
 
 | Status | Task                                   | Owner | Notes                 |
 | ------ | -------------------------------------- | ----- | --------------------- |
-| ⬜      | Respond to small sample size           |       | pilot framing         |
-| ⬜      | Respond to failure cases               |       | new section/table     |
-| ⬜      | Respond to conflicting/malicious input |       | failure analysis      |
-| ⬜      | Respond to verifier repeated rejection |       | fallback discussion   |
-| ⬜      | Respond to long-session concern        |       | long-session analysis |
-| ⬜      | Respond to RQs not revisited           |       | new RQ section        |
-| ⬜      | Respond to missing setup image         |       | new figure            |
-| ⬜      | Respond to KG contribution not tested  |       | baseline              |
-| ⬜      | Respond to repetition issue            |       | condensed discussion  |
-
-## WP7.3 Reviewer 2 response
-
-| Status | Task                                              | Owner | Notes                 |
-| ------ | ------------------------------------------------- | ----- | --------------------- |
-| ⬜      | Acknowledge N=3 limitation                        |       | do not argue too hard |
-| ⬜      | Explain pilot/proof-of-concept framing            |       | throughout manuscript |
-| ⬜      | Respond to weak RQ answers                        |       | new RQ section        |
-| ⬜      | Respond to KG not demonstrated                    |       | baseline              |
-| ⬜      | Respond to custom questionnaire                   |       | evaluation rationale  |
-| ⬜      | Respond to lack of objective metrics              |       | new metrics           |
-| ⬜      | Respond to no comparison with simpler alternative |       | LLM-only baseline     |
-| ⬜      | Respond to strong conclusions                     |       | claims weakened       |
+| ⬜      | Respond to small sample size           | Mehdi | pilot framing         |
+| ⬜      | Respond to failure cases               | Mehdi | new section/table     |
+| ⬜      | Respond to conflicting/malicious input | Mehdi | failure analysis      |
+| ⬜      | Respond to verifier repeated rejection | Mehdi | fallback discussion   |
+| ⬜      | Respond to long-session concern        | Mehdi | long-session analysis |
+| ⬜      | Respond to RQs not revisited           | Mehdi | new RQ section        |
+| ⬜      | Respond to missing setup image         | Mehdi | new figure            |
+| ⬜      | Respond to KG contribution not tested  | Mehdi | baseline              |
+| ⬜      | Respond to repetition issue            | Mehdi | condensed discussion  |
 
 Acceptance criteria:
 
-* Every reviewer point has a polite answer.
-* Every answer mentions where the manuscript was changed.
+* Every Reviewer 1 point is answered.
+* Each answer says where the manuscript changed.
 
 ---
 
-# WP8 — Final submission
+## WP7.3 — [FINAL] Reviewer 2 response
 
-Goal: prepare final package.
+| Status | Task                                              | Owner | Notes                 |
+| ------ | ------------------------------------------------- | ----- | --------------------- |
+| ⬜      | Acknowledge N=3 limitation                        | Mehdi | do not argue too hard |
+| ⬜      | Explain pilot/proof-of-concept framing            | Mehdi | throughout manuscript |
+| ⬜      | Respond to weak RQ answers                        | Mehdi | new RQ section        |
+| ⬜      | Respond to KG not demonstrated                    | Mehdi | baseline              |
+| ⬜      | Respond to custom questionnaire                   | Mehdi | evaluation rationale  |
+| ⬜      | Respond to lack of objective metrics              | Mehdi | new metrics           |
+| ⬜      | Respond to no comparison with simpler alternative | Mehdi | LLM-only baseline     |
+| ⬜      | Respond to strong conclusions                     | Mehdi | claims weakened       |
 
-Recommended owner: Both + Filip validation.
+Acceptance criteria:
+
+* Every Reviewer 2 point is answered.
+* Tone is polite and non-defensive.
+
+---
+
+# WP8 — [FINAL] Submission
+
+Goal: prepare and submit the final revision package.
+
+Recommended owner: Both + Filip validation
 
 | Status | Task                              | Owner | Notes          |
 | ------ | --------------------------------- | ----- | -------------- |
-| ⬜      | Send revised manuscript to Filip  |       | for validation |
-| ⬜      | Send rebuttal to Filip            |       | for validation |
-| ⬜      | Apply Filip’s comments            |       | final edits    |
-| ⬜      | Check journal format              |       | KI / Springer  |
-| ⬜      | Submit editable source files only |       | Word or LaTeX  |
-| ⬜      | Submit rebuttal/list of changes   |       | required       |
-| ⬜      | Submit before 04 July 2026        |       | deadline       |
+| ⬜      | Send revised manuscript to Filip  | Mehdi | for validation |
+| ⬜      | Send rebuttal to Filip            | Mehdi | for validation |
+| ⬜      | Apply Filip’s comments            | Both  | final edits    |
+| ⬜      | Check KI / Springer format        | Mehdi | journal format |
+| ⬜      | Submit editable source files only | Mehdi | Word or LaTeX  |
+| ⬜      | Submit rebuttal/list of changes   | Mehdi | required       |
+| ⬜      | Submit before 04 July 2026        | Mehdi | deadline       |
+
+Acceptance criteria:
+
+* Manuscript submitted as editable source.
+* Rebuttal/list of changes submitted.
+* Submission completed before deadline.
 
 ---
 
-# Suggested parallel distribution
+# Priority summary
 
-## Luca focus
+## Must start immediately
 
-1. WP1 — Code stabilization
-2. WP2 — Experiments
-3. WP3 — Figures
-4. WP5 — Raw result tables
+| Priority   | WP                           | Owner |
+| ---------- | ---------------------------- | ----- |
+| [CRITICAL] | WP0 Coordination             | Both  |
+| [CRITICAL] | WP1 Code stabilization       | Luca  |
+| [CRITICAL] | WP2 Manuscript restructuring | Mehdi |
 
-## Mehdi focus
+## Next priority
 
-1. WP4 — Paper restructuring
-2. WP6 — Manuscript integration
-3. WP7 — Rebuttal
-4. WP8 — Final submission coordination
+| Priority   | WP                            | Owner        |
+| ---------- | ----------------------------- | ------------ |
+| [HIGH]     | WP3 Figures                   | Luca + Mehdi |
+| [CRITICAL] | WP4.1 LLM-only vs KG baseline | Luca         |
+| [HIGH]     | WP4.2 Failure cases           | Both         |
 
-## Both
+## If time allows
 
-1. WP5 — Interpret results
-2. WP6.2 — Final consistency check
-3. Final meeting before submission
+| Priority | WP                          | Owner |
+| -------- | --------------------------- | ----- |
+| [MEDIUM] | WP4.3 Long-session analysis | Luca  |
+| [FINAL]  | WP5 Tables                  | Both  |
+
+## Finalization
+
+| Priority | WP                         | Owner         |
+| -------- | -------------------------- | ------------- |
+| [FINAL]  | WP6 Manuscript integration | Mehdi         |
+| [FINAL]  | WP7 Rebuttal               | Mehdi         |
+| [FINAL]  | WP8 Submission             | Mehdi + Filip |
 
 ---
 
-# Recommended execution order
+# Recommended timeline
 
 ## Day 1–2
 
-* WP0 setup
-* WP1 code stabilization starts
-* WP4 paper reframing starts
-* WP3 setup/architecture figures start
+| Owner | Tasks                                |
+| ----- | ------------------------------------ |
+| Luca  | WP1.1, WP1.2, WP1.4                  |
+| Mehdi | WP2.1, WP2.2, WP2.3                  |
+| Both  | WP0, object naming convention        |
+| Luca  | Start WP3 figures if setup available |
 
 ## Day 3–4
 
-* WP2 baseline experiments
-* WP2 long-session experiments
-* WP4 RQ/CQ/evaluation sections
+| Owner | Tasks                         |
+| ----- | ----------------------------- |
+| Luca  | WP4.1 baseline experiments    |
+| Luca  | WP4.2 failure case collection |
+| Mehdi | Draft RQ/CQ sections          |
+| Mehdi | Draft evaluation rationale    |
+| Both  | Review first baseline results |
 
 ## Day 5
 
-* WP5 results tables
-* WP5 failure-case table
-* WP6 manuscript integration
+| Owner | Tasks                        |
+| ----- | ---------------------------- |
+| Luca  | Export experiment CSVs       |
+| Both  | WP5 results tables           |
+| Mehdi | Integrate figures and tables |
+| Mehdi | Start rebuttal draft         |
 
 ## Day 6
 
-* WP7 rebuttal
-* WP6 consistency check
-* Send to Filip
+| Owner | Tasks                            |
+| ----- | -------------------------------- |
+| Mehdi | WP6 final manuscript integration |
+| Both  | WP6.2 consistency check          |
+| Mehdi | WP7 rebuttal finalization        |
+| Mehdi | Send to Filip                    |
 
 ## Final day
 
-* Apply final comments
-* Submit Word/LaTeX + rebuttal
+| Owner | Tasks                        |
+| ----- | ---------------------------- |
+| Both  | Apply Filip’s comments       |
+| Mehdi | Final format check           |
+| Mehdi | Submit Word/LaTeX + rebuttal |
