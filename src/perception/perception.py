@@ -1,14 +1,27 @@
 from ultralytics import YOLO
 import cv2
+import sys
+from config import YOLO_MODEL_PATH
 
-model = YOLO("data/models/yolov8n.pt")  
+_model = None
+
+def get_yolo_model():
+    global _model
+    if _model is None:
+        try:
+            _model = YOLO(YOLO_MODEL_PATH)
+        except Exception as e:
+            print(f"Error loading YOLO model: {e}", file=sys.stderr)
+            sys.exit(1)
+    return _model
 
 def get_environment_context(frame, show_window=True):
     if frame is None:
         return "- The robot sees: nothing (no image provided)."
 
    
-    results = model(frame)
+    m = get_yolo_model()
+    results = m(frame)
     detected = set()
 
     
@@ -17,7 +30,7 @@ def get_environment_context(frame, show_window=True):
         boxes = r.boxes
         for box in boxes:
             cls_id = int(box.cls[0])
-            label = model.names[cls_id]
+            label = m.names[cls_id]
             detected.add(label)
             
             xyxy = box.xyxy[0].cpu().numpy().astype(int)

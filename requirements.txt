@@ -11,3 +11,6 @@ pygame
 gradio_client
 playsound
 requests
+python-dotenv
+huggingface-hub
+python-dotenv

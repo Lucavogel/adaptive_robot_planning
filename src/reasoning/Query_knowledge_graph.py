@@ -1,12 +1,12 @@
 import json
 from openai import OpenAI
-from utils.config import API_KEY   # tu dois définir ça dans config.py
+from config import API_KEY   # tu dois définir ça dans config.py
 import requests
 from perception.perception import get_environment_context_test
 from transformers import pipeline
 from reasoning.reasoning import query_llm_about_entities
 context_description = get_environment_context_test()
-MODEL = "deepseek/deepseek-r1-0528-qwen3-8b:free"
+from config import MODEL
 BASE_URL = "https://openrouter.ai/api/v1"
 
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)

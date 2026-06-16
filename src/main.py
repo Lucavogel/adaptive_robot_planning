@@ -18,6 +18,7 @@ from perception.perception import get_environment_context_test, get_environment_
 from interaction.speech_to_text import listen_until_silent
 from interaction.text_to_speech import speak, speak_text_realistic
 from reasoning.Query_knowledge_graph import  get_multiple_entities_relations, load_knowledge_graph
+from reasoning.verification_loop import verify_with_hf_llm
 emotion_of_voice = "happy"  # Par défaut, on utilise une émotion neutre
 user_states = ["InPain"]#"Tired","InPain","happy"
 wether_conditions = ["Rainy"]# "Rainy", "Cold", "HotDay"
@@ -44,25 +45,24 @@ class LLMCommander(Node):
 
 def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_node, stop_flag, dialogue_history, get_status_func, perception_context, state, exercise_done):
     while not stop_flag['stop']:
-        """
-        audio_queue = queue.Queue()
-        listening_done = threading.Event()
-
-        def listening_task():
-            text = listen_until_silent(timeout=1)
-            audio_queue.put(text)
-            listening_done.set()
-
-        thread = threading.Thread(target=listening_task)
-        thread.start()
-        listening_done.wait()
-
-        try:
-            human_input = audio_queue.get_nowait()
-        except queue.Empty:
+        if exercise_done["done"]:
+            break
+            
+        print("Listening for input (or press Enter to skip)...")
+        # Use a non-blocking approach for testing or integration with STT
+        # We will poll `input` or user can type. To avoid blocking the execution loop
+        # we check if any input event happened or STT finished.
+        import sys, select
+        
+        # fallback to timeout-based input reading (only works well on Unix)
+        i, o, e = select.select( [sys.stdin], [], [], 2.0 )
+        if (i):
+            human_input = sys.stdin.readline().strip()
+        else:
             human_input = ""
-        """
-        human_input = input("You (text input): ")
+            if exercise_done["done"]:
+                break
+                
         latest_status = get_status_func()
         
         # Récupération temps
@@ -93,6 +93,27 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
             llm_response = query_llm_about_entities(concepts_relations,user_states, human_input, exercise, next_exercise, dialogue_history,context_description,detected_objects )
             print("\nRéponse du LLM :")
             print(llm_response)
+
+            try:
+                verified_response = verify_with_hf_llm(
+                    llm_response,
+                    context_description,
+                    exercise,
+                    next_exercise,
+                    dialogue_history
+                )
+                print("\nRéponse vérifiée :")
+                print(verified_response)
+                # Ensure we only extract the 'CorrectedOutput:' part if the LLM formatted it properly
+                if "CorrectedOutput:" in verified_response:
+                    llm_response = verified_response.split("CorrectedOutput:")[1].split("Reasoning:")[0].strip()
+                else:
+                    llm_response = verified_response
+            except Exception as e:
+                print(f"Verifier LLM error: {e}. Using original response.")
+                # We log the fallback requirement! WP1.4
+                with open("experiments/verifier_errors.log", "a") as f:
+                    f.write(f"Error: {e}\nOriginal Response used: {llm_response}\n\n")
 
             action = extract_action_from_response(llm_response)
             print("Robot Action:", action)

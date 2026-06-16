@@ -80,11 +80,11 @@ Can run in parallel with: WP2, WP3
 | Status | Task                                                | Owner | Notes                   |
 | ------ | --------------------------------------------------- | ----- | ----------------------- |
 | ⬜      | Revoke leaked OpenRouter API key                    | Luca  | critical security issue |
-| ⬜      | Remove API key from `src/config.py`                 | Luca  | no secret in Git        |
-| ⬜      | Load API key with `os.getenv("OPENROUTER_API_KEY")` | Luca  | use env variable        |
-| ⬜      | Add `.env` to `.gitignore`                          | Luca  | avoid future leak       |
-| ⬜      | Add `.env.example`                                  | Luca  | fake values only        |
-| ⬜      | Test LLM call with local env variable               | Luca  | must work               |
+| ✅      | Remove API key from `src/config.py`                 | Luca  | no secret in Git        |
+| ✅      | Load API key with `os.getenv("OPENROUTER_API_KEY")` | Luca  | use env variable        |
+| ✅      | Add `.env` to `.gitignore`                          | Luca  | avoid future leak       |
+| ✅      | Add `.env.example`                                  | Luca  | fake values only        |
+| ✅      | Test LLM call with local env variable               | Luca  | must work               |
 
 Acceptance criteria:
 
@@ -97,10 +97,10 @@ Acceptance criteria:
 
 | Status | Task                                                                 | Owner | Notes                      |
 | ------ | -------------------------------------------------------------------- | ----- | -------------------------- |
-| ⬜      | Fix `from utils.config import API_KEY` in `reasoning.py`             | Luca  | currently broken           |
-| ⬜      | Fix `from utils.config import API_KEY` in `Query_knowledge_graph.py` | Luca  | currently broken           |
-| ⬜      | Run `python -m compileall src`                                       | Luca  | catch syntax/import errors |
-| ⬜      | Add missing `__init__.py` if needed                                  | Luca  | package cleanliness        |
+| ✅      | Fix `from utils.config import API_KEY` in `reasoning.py`             | Luca  | currently broken           |
+| ✅      | Fix `from utils.config import API_KEY` in `Query_knowledge_graph.py` | Luca  | currently broken           |
+| ✅      | Run `python -m compileall src`                                       | Luca  | catch syntax/import errors |
+| ✅      | Add missing `__init__.py` if needed                                  | Luca  | package cleanliness        |
 | ⬜      | Test `python src/main.py` until first interaction                    | Luca  | no import crash            |
 
 Acceptance criteria:
@@ -114,11 +114,11 @@ Acceptance criteria:
 
 | Status | Task                                                | Owner | Notes                |
 | ------ | --------------------------------------------------- | ----- | -------------------- |
-| ⬜      | Avoid loading Vosk model at import time             | Luca  | lazy loading         |
-| ⬜      | Add clean error if Vosk model is missing            | Luca  | avoid obscure crash  |
-| ⬜      | Avoid loading YOLO model at import time if possible | Luca  | lazy loading         |
-| ⬜      | Add configurable model paths                        | Luca  | no hardcoded paths   |
-| ⬜      | Document model download steps                       | Luca  | short README section |
+| ✅      | Avoid loading Vosk model at import time             | Luca  | lazy loading         |
+| ✅      | Add clean error if Vosk model is missing            | Luca  | avoid obscure crash  |
+| ✅      | Avoid loading YOLO model at import time if possible | Luca  | lazy loading         |
+| ✅      | Add configurable model paths                        | Luca  | no hardcoded paths   |
+| ✅      | Document model download steps                       | Luca  | short README section |
 
 Acceptance criteria:
 
@@ -131,11 +131,11 @@ Acceptance criteria:
 
 | Status | Task                                            | Owner | Notes                        |
 | ------ | ----------------------------------------------- | ----- | ---------------------------- |
-| ⬜      | Remove blocking `input()` issue in `main.py`    | Luca  | queue / timeout / event      |
-| ⬜      | Allow routine to continue after task success    | Luca  | no infinite waiting          |
-| ⬜      | Connect verifier LLM to main loop               | Luca  | paper claims verifier        |
-| ⬜      | Add fallback if verifier rejects multiple times | Luca  | safe scripted answer         |
-| ⬜      | Log verifier corrections                        | Luca  | needed for objective metrics |
+| ✅      | Remove blocking `input()` issue in `main.py`    | Luca  | queue / timeout / event      |
+| ✅      | Allow routine to continue after task success    | Luca  | no infinite waiting          |
+| ✅      | Connect verifier LLM to main loop               | Luca  | paper claims verifier        |
+| ✅      | Add fallback if verifier rejects multiple times | Luca  | safe scripted answer         |
+| ✅      | Log verifier corrections                        | Luca  | needed for objective metrics |
 
 Acceptance criteria:
 

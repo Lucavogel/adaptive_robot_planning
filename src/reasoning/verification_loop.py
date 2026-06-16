@@ -2,9 +2,12 @@ import os
 from huggingface_hub import InferenceClient
 
 
-HF_TOKEN = os.environ.get("HF_TOKEN")
+from dotenv import load_dotenv
+load_dotenv()
+
+HF_TOKEN = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACEHUB_API_TOKEN")
 if not HF_TOKEN:
-    raise ValueError("Set your HF_TOKEN environment variable with your Hugging Face API key.")
+    raise ValueError("Set your HF_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable with your Hugging Face API key.")
 
 
 hf_client = InferenceClient(

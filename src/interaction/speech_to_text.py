@@ -3,11 +3,28 @@ import queue
 import vosk
 import json
 import time
+import os
+import sys
+
+from config import VOSK_MODEL_PATH
 
 q = queue.Queue()
 
+_model = None
 
-model = vosk.Model("data/models/vosk-model-small-en-us-0.15") 
+def get_vosk_model():
+    global _model
+    if _model is None:
+        if not os.path.exists(VOSK_MODEL_PATH):
+            print(f"Error: Vosk model not found at {VOSK_MODEL_PATH}.", file=sys.stderr)
+            print("Please download it (e.g. from https://alphacephei.com/vosk/models) and extract it to the correct path.", file=sys.stderr)
+            sys.exit(1)
+        try:
+            _model = vosk.Model(VOSK_MODEL_PATH)
+        except Exception as e:
+            print(f"Error loading Vosk model: {e}", file=sys.stderr)
+            sys.exit(1)
+    return _model
 
 def _callback(indata, frames, time_info, status):
     if status:
@@ -16,7 +33,8 @@ def _callback(indata, frames, time_info, status):
 
 def listen_until_silent(timeout=1.2):
     print("🎤 Listening (stop talking for", timeout, "s to end)...")
-    rec = vosk.KaldiRecognizer(model, 16000)
+    m = get_vosk_model()
+    rec = vosk.KaldiRecognizer(m, 16000)
     silence_start = None
     full_text = ""
 

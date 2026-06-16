@@ -55,6 +55,11 @@ The project is organized into several core modules:
 - Benchmarking of perception-to-action pipelines
 - Education and prototyping for advanced robotics
 
+## Model Setup
+Before running the project, ensure you download the required models:
+- **Vosk model** (for STT): Download `vosk-model-small-en-us-0.15` from [Vosk Models](https://alphacephei.com/vosk/models) and extract it to `data/models/vosk-model-small-en-us-0.15`. You can also configure the path via the `VOSK_MODEL_PATH` environment variable.
+- **YOLO model**: Will download automatically as `yolov8n.pt` when first used, or configure a path via the `YOLO_MODEL_PATH` environment variable.
+
 ## Key Features
 - Modular and extensible codebase
 - Supports both simulation and real robot deployment
