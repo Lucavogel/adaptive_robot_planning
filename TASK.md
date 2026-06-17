@@ -149,12 +149,12 @@ Acceptance criteria:
 
 | Status | Task                                                 | Owner | Notes                            |
 | ------ | ---------------------------------------------------- | ----- | -------------------------------- |
-| ⬜      | Remove hardcoded `user_states = ["InPain"]`          | Luca  | fake adaptation                  |
-| ⬜      | Replace with real or explicitly simulated user state | Luca  | must be honest                   |
-| ⬜      | Replace or rename `get_environment_context_test()`   | Luca  | avoid pretending real perception |
-| ⬜      | Log objects sent to the LLM                          | Luca  | needed for experiments           |
-| ⬜      | Log emotional state sent to the LLM                  | Luca  | needed for failure analysis      |
-| ⬜      | Log user utterance / STT input                       | Luca  | needed for traceability          |
+| ✅      | Remove hardcoded `user_states = ["InPain"]`          | Luca  | fake adaptation                  |
+| ✅      | Replace with real or explicitly simulated user state | Luca  | must be honest                   |
+| ✅      | Replace or rename `get_environment_context_test()`   | Luca  | avoid pretending real perception |
+| ✅      | Log objects sent to the LLM                          | Luca  | needed for experiments           |
+| ✅      | Log emotional state sent to the LLM                  | Luca  | needed for failure analysis      |
+| ✅      | Log user utterance / STT input                       | Luca  | needed for traceability          |
 
 Acceptance criteria:
 

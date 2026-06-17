@@ -2,7 +2,7 @@ import json
 from openai import OpenAI
 from config import API_KEY
 import requests
-from perception.perception import get_environment_context_test
+from perception.perception import get_simulated_environment_context
 from config import MODEL
 BASE_URL = "https://openrouter.ai/api/v1"
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)

@@ -47,7 +47,7 @@ def get_environment_context(frame, show_window=True):
 
     return list(detected)
 
-def get_environment_context_test():
+def get_simulated_environment_context():
 
     return (
         "GlassOfWater, Towel, Banana, Coffee, Chair"

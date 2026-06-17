@@ -2,10 +2,10 @@ import json
 from openai import OpenAI
 from config import API_KEY   # tu dois définir ça dans config.py
 import requests
-from perception.perception import get_environment_context_test
+from perception.perception import get_simulated_environment_context
 from transformers import pipeline
 from reasoning.reasoning import query_llm_about_entities
-context_description = get_environment_context_test()
+context_description = get_simulated_environment_context()
 from config import MODEL
 BASE_URL = "https://openrouter.ai/api/v1"
 

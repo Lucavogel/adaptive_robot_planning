@@ -1,3 +1,4 @@
+import logging
 import re
 import time
 import threading
@@ -14,13 +15,13 @@ import mediapipe as mp
 from perception.task_monitoring import check_exercise  # ta fonction avec timers
 from reasoning.reasoning import reason_with_context,query_llm_about_entities
 from reasoning.Text_cleaning import extract_action_from_response, clean_llm_response
-from perception.perception import get_environment_context_test, get_environment_context
+from perception.perception import get_simulated_environment_context, get_environment_context
 from interaction.speech_to_text import listen_until_silent
 from interaction.text_to_speech import speak, speak_text_realistic
 from reasoning.Query_knowledge_graph import  get_multiple_entities_relations, load_knowledge_graph
 from reasoning.verification_loop import verify_with_hf_llm
 emotion_of_voice = "happy"  # Par défaut, on utilise une émotion neutre
-user_states = ["InPain"]#"Tired","InPain","happy"
+simulated_user_states = ["InPain"]#"Tired","InPain","happy"
 wether_conditions = ["Rainy"]# "Rainy", "Cold", "HotDay"
 
 YOLO_OBJECT_MAP = {
@@ -81,16 +82,22 @@ def llm_interaction_thread(exercise,detected_objects, next_exercise, commander_n
             dialogue_history.append(f"Human: {human_input}")
 
         if human_input or latest_status == "success":
+            # WP1.5 logging
+            logging.basicConfig(filename='experiments/context_llm.log', level=logging.INFO, format='%(asctime)s - %(message)s')
+            logging.info(f"User Utterance / STT input sent to LLM: {human_input}")
+            logging.info(f"Objects sent to LLM: {detected_objects}")
+            logging.info(f"Emotional State sent to LLM: {simulated_user_states}")
+
             kg = load_knowledge_graph()
             #concepts = [obj.capitalize() for obj in detected_objects]
             
-            concepts = ["Coffee", "Banana", "GlassOfWater","HotDay","Towel","Chair"] + user_states
+            concepts = ["Coffee", "Banana", "GlassOfWater","HotDay","Towel","Chair"] + simulated_user_states
             concepts_relations = get_multiple_entities_relations(concepts, kg)
             print("Relations extraites :")
             for k, v in concepts_relations.items():
                 print(f"{k} → {len(v)} relations")
 
-            llm_response = query_llm_about_entities(concepts_relations,user_states, human_input, exercise, next_exercise, dialogue_history,context_description,detected_objects )
+            llm_response = query_llm_about_entities(concepts_relations,simulated_user_states, human_input, exercise, next_exercise, dialogue_history,context_description,detected_objects )
             print("\nRéponse du LLM :")
             print(llm_response)
 
@@ -179,7 +186,7 @@ def main():
     speak(clean_llm_response(action))
     dialogue_history.append(f"Robot: {action}")
 
-    perception_context = get_environment_context_test()
+    perception_context = get_simulated_environment_context()
     cap = cv2.VideoCapture(0)
 
     while cap.isOpened() and exercise_idx < len(exercise_sequence) and not stop_flag["stop"]:
