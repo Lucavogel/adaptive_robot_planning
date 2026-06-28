@@ -281,10 +281,10 @@ Can run in parallel with: WP1, WP2
 
 | Status | Task                            | Owner | Notes                                 |
 | ------ | ------------------------------- | ----- | ------------------------------------- |
-| ⬜      | Take photo of real setup        | Luca  | robot, camera, objects, user position |
-| ⬜      | Add clean labels                | Luca  | robot, camera, objects, user          |
+| ✅      | Take photo of real setup        | Luca  | robot, camera, objects, user position |
+| ✅      | Add clean labels                | Luca  | robot, camera, objects, user          |
 | ⬜      | Hide sensitive/private elements | Luca  | faces, screens, keys                  |
-| ⬜      | Export high-resolution PNG/JPG  | Luca  | paper quality                         |
+| ✅      | Export high-resolution PNG/JPG  | Luca  | paper quality                         |
 | ⬜      | Write concise caption           | Mehdi | for manuscript                        |
 | ⬜      | Insert figure in manuscript     | Mehdi | implementation/system section         |
 
