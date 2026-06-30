@@ -48,14 +48,14 @@ Goal: avoid conflicts and prepare clean revision material.
 
 | Status | Task                                | Owner | Notes                                |
 | ------ | ----------------------------------- | ----- | ------------------------------------ |
-| ⬜      | Create branch `revision-kuin-2026`  |       | `git checkout -b revision-kuin-2026` |
-| ⬜      | Create folder `revision_materials/` |       | figures, logs, experiments, rebuttal |
-| ⬜      | Create folder `experiments/`        |       | baseline + long-session scripts      |
-| ⬜      | Create folder `paper_revision/`     |       | rewritten sections                   |
+| ✅      | Create branch `revision-kuin-2026`  |       | current branch                       |
+| ✅      | Create folder `revision_materials/` |       | figures, logs, experiments, rebuttal |
+| ✅      | Create folder `experiments/`        |       | baseline + long-session scripts      |
+| ✅      | Create folder `paper_revision/`     |       | rewritten sections                   |
 | ⬜      | Create `REBUTTAL_DRAFT.md`          |       | point-by-point response              |
 | ⬜      | Create `CHANGELOG_REVIEWERS.md`     |       | list of manuscript changes           |
-| ⬜      | Assign owners for each WP           | Both  | Mehdi / Luca                         |
-| ⬜      | Agree on official object names      | Both  | Water, Banana, Coffee, Towel, Chair  |
+| ✅      | Assign owners for each WP           | Both  | Mehdi / Luca                         |
+| 🔄      | Agree on official object names      | Both  | remove chair; harmonize water naming |
 
 Acceptance criteria:
 
@@ -197,12 +197,12 @@ Can run in parallel with: WP1, WP3, WP4
 
 | Status | Task                                             | Owner | Notes                     |
 | ------ | ------------------------------------------------ | ----- | ------------------------- |
-| ⬜      | Reframe abstract as pilot/proof-of-concept       | Mehdi | very important            |
-| ⬜      | Reframe introduction                             | Mehdi | no strong empirical claim |
-| ⬜      | Reframe evaluation section                       | Mehdi | exploratory only          |
-| ⬜      | Reframe discussion                               | Mehdi | no overclaim              |
-| ⬜      | Reframe conclusion                               | Mehdi | pilot evidence only       |
-| ⬜      | Replace “shows/proves” with “suggests/indicates” | Mehdi | cautious language         |
+| 🔄      | Reframe abstract as pilot/proof-of-concept       | Mehdi | needs final weaker wording |
+| ✅      | Reframe introduction                             | Mehdi | no strong empirical claim |
+| ✅      | Reframe evaluation section                       | Mehdi | exploratory only          |
+| ✅      | Reframe discussion                               | Mehdi | no overclaim              |
+| 🔄      | Reframe conclusion                               | Mehdi | needs final weaker wording |
+| 🔄      | Replace “shows/proves” with “suggests/indicates” | Mehdi | mostly done; final pass needed |
 
 Acceptance criteria:
 
@@ -215,15 +215,15 @@ Acceptance criteria:
 
 | Status | Task                                              | Owner | Notes                                    |
 | ------ | ------------------------------------------------- | ----- | ---------------------------------------- |
-| ⬜      | Rewrite RQ1–RQ3 clearly                           | Mehdi | introduction                             |
+| ✅      | Rewrite RQ1–RQ3 clearly                           | Mehdi | introduction                             |
 | ⬜      | Create section `Competency Questions`             | Mehdi | before/in evaluation                     |
 | ⬜      | Define 8–10 competency questions                  | Mehdi | fatigue, pain, refusal, object relevance |
 | ⬜      | Add expected behavior for each CQ                 | Mehdi | table                                    |
 | ⬜      | Add evidence column                               | Mehdi | logs/results                             |
-| ⬜      | Create section `Answering the Research Questions` | Mehdi | discussion                               |
-| ⬜      | Answer RQ1 directly                               | Mehdi | architecture/adaptation                  |
-| ⬜      | Answer RQ2 directly                               | Mehdi | KG baseline                              |
-| ⬜      | Answer RQ3 directly                               | Mehdi | pilot perception                         |
+| ✅      | Create section `Answering the Research Questions` | Mehdi | discussion                               |
+| ✅      | Answer RQ1 directly                               | Mehdi | architecture/adaptation                  |
+| ✅      | Answer RQ2 directly                               | Mehdi | KG baseline limitation stated            |
+| ✅      | Answer RQ3 directly                               | Mehdi | pilot perception                         |
 
 Acceptance criteria:
 
@@ -236,14 +236,14 @@ Acceptance criteria:
 
 | Status | Task                                              | Owner | Notes                       |
 | ------ | ------------------------------------------------- | ----- | --------------------------- |
-| ⬜      | Rename section to `Exploratory Pilot Evaluation`  | Mehdi | clearer                     |
-| ⬜      | Justify why N=3                                   | Mehdi | prototype feasibility       |
-| ⬜      | State no statistical generalization               | Mehdi | important                   |
-| ⬜      | Justify custom questionnaire                      | Mehdi | adaptivity/object relevance |
-| ⬜      | Mention limitation of non-validated questionnaire | Mehdi | honest                      |
-| ⬜      | Add future work with SUS/Godspeed/Trust scales    | Mehdi | reviewer 2                  |
-| ⬜      | Add objective metrics subsection placeholder      | Mehdi | filled after WP4            |
-| ⬜      | Add baseline subsection placeholder               | Mehdi | filled after WP4            |
+| ✅      | Rename section to `Exploratory Pilot Evaluation`  | Mehdi | pilot framing made explicit |
+| ✅      | Justify why N=3                                   | Mehdi | prototype feasibility       |
+| ✅      | State no statistical generalization               | Mehdi | important                   |
+| ✅      | Justify custom questionnaire                      | Mehdi | adaptivity/object relevance |
+| ✅      | Mention limitation of non-validated questionnaire | Mehdi | honest                      |
+| ✅      | Add future work with SUS/Godspeed/Trust scales    | Mehdi | reviewer 2                  |
+| ✅      | Add objective metrics subsection placeholder      | Mehdi | diagnostic technical measures |
+| ✅      | Add baseline subsection placeholder               | Mehdi | baseline framed as future ablation |
 
 Acceptance criteria:
 
@@ -256,11 +256,11 @@ Acceptance criteria:
 
 | Status | Task                                           | Owner | Notes                         |
 | ------ | ---------------------------------------------- | ----- | ----------------------------- |
-| ⬜      | Find repeated adaptivity/smoothness paragraphs | Mehdi | results/discussion/conclusion |
-| ⬜      | Keep one clear explanation only                | Mehdi | avoid repetition              |
-| ⬜      | Remove duplicated qualitative interpretation   | Mehdi | compact                       |
-| ⬜      | Weaken unsupported claims                      | Mehdi | especially user preference    |
-| ⬜      | Make contribution technical, not statistical   | Mehdi | system paper framing          |
+| ✅      | Find repeated adaptivity/smoothness paragraphs | Mehdi | results/discussion cleaned    |
+| ✅      | Keep one clear explanation only                | Mehdi | avoid repetition              |
+| ✅      | Remove duplicated qualitative interpretation   | Mehdi | compact                       |
+| ✅      | Weaken unsupported claims                      | Mehdi | especially user preference    |
+| ✅      | Make contribution technical, not statistical   | Mehdi | system paper framing          |
 
 Acceptance criteria:
 
@@ -283,10 +283,10 @@ Can run in parallel with: WP1, WP2
 | ------ | ------------------------------- | ----- | ------------------------------------- |
 | ✅      | Take photo of real setup        | Luca  | robot, camera, objects, user position |
 | ✅      | Add clean labels                | Luca  | robot, camera, objects, user          |
-| ⬜      | Hide sensitive/private elements | Luca  | faces, screens, keys                  |
+| ✅      | Hide sensitive/private elements | Luca  | no faces; setup labels visible        |
 | ✅      | Export high-resolution PNG/JPG  | Luca  | paper quality                         |
-| ⬜      | Write concise caption           | Mehdi | for manuscript                        |
-| ⬜      | Insert figure in manuscript     | Mehdi | implementation/system section         |
+| ✅      | Write concise caption           | Mehdi | for manuscript                        |
+| ✅      | Insert figure in manuscript     | Mehdi | implementation section                |
 
 Acceptance criteria:
 
@@ -298,17 +298,17 @@ Acceptance criteria:
 
 | Status | Task                          | Owner | Notes                         |
 | ------ | ----------------------------- | ----- | ----------------------------- |
-| ⬜      | Create clean pipeline diagram | Luca  | not overloaded                |
-| ⬜      | Include perception modules    | Luca  | STT, emotion, object, posture |
-| ⬜      | Include context package       | Luca  | central block                 |
-| ⬜      | Include KG retrieval          | Luca  | key contribution              |
-| ⬜      | Include primary LLM           | Luca  | decision                      |
-| ⬜      | Include verifier LLM          | Luca  | safety/format                 |
-| ⬜      | Include command parser        | Luca  | prefix handling               |
-| ⬜      | Include execution layer       | Luca  | TTS + robot pointing          |
-| ⬜      | Include logging/feedback loop | Luca  | objective metrics             |
-| ⬜      | Write caption                 | Mehdi | for manuscript                |
-| ⬜      | Insert figure in manuscript   | Mehdi | system architecture           |
+| ✅      | Create clean pipeline diagram | Luca  | not overloaded                |
+| ✅      | Include perception modules    | Luca  | STT, emotion, object, posture |
+| ✅      | Include context package       | Luca  | central block                 |
+| ✅      | Include KG retrieval          | Luca  | key contribution              |
+| ✅      | Include primary LLM           | Luca  | decision                      |
+| ✅      | Include verifier LLM          | Luca  | safety/format                 |
+| ✅      | Include command parser        | Luca  | prefix handling               |
+| ✅      | Include execution layer       | Luca  | TTS + robot pointing          |
+| ✅      | Include logging/feedback loop | Luca  | feedback loop shown           |
+| ✅      | Write caption                 | Mehdi | for manuscript                |
+| ✅      | Insert figure in manuscript   | Mehdi | system architecture           |
 
 Acceptance criteria:
 
@@ -361,16 +361,16 @@ Goal: provide explicit failure analysis.
 | Status | Task                                      | Owner | Notes                      |
 | ------ | ----------------------------------------- | ----- | -------------------------- |
 | ⬜      | Collect real observed failures from tests | Luca  | best evidence              |
-| ⬜      | Add simulated failures if needed          | Both  | clearly label as simulated |
-| ⬜      | Document wrong emotion detection          | Luca  | mic/camera issue           |
-| ⬜      | Document object hallucination             | Luca  | LLM issue                  |
-| ⬜      | Document invalid prefix                   | Luca  | parser/verifier issue      |
-| ⬜      | Document repeated verifier rejection      | Luca  | fallback issue             |
-| ⬜      | Document latency issue                    | Luca  | cloud API                  |
-| ⬜      | Document posture detection issue          | Luca  | camera angle               |
-| ⬜      | Document conflicting inputs               | Both  | voice vs face vs posture   |
-| ⬜      | Add mitigation for every failure          | Both  | not only description       |
-| ⬜      | Create final failure-case table           | Both  | for manuscript             |
+| 🔄      | Add simulated failures if needed          | Both  | label observed/anticipated |
+| ✅      | Document wrong emotion detection          | Luca  | affect treated as optional |
+| 🔄      | Document object hallucination             | Luca  | anticipated risk only      |
+| ✅      | Document invalid prefix                   | Luca  | parser/verifier issue      |
+| ✅      | Document repeated verifier rejection      | Luca  | fallback issue             |
+| ✅      | Document latency issue                    | Luca  | cloud API                  |
+| ✅      | Document posture detection issue          | Luca  | camera angle               |
+| ✅      | Document conflicting inputs               | Both  | voice vs face vs posture   |
+| ✅      | Add mitigation for every failure          | Both  | not only description       |
+| 🔄      | Create final failure-case table           | Both  | needs observed/anticipated column |
 
 Acceptance criteria:
 
@@ -394,7 +394,7 @@ Goal: answer reviewer concern about LLM degradation when context grows.
 | ⬜      | Measure context consistency                        | Both  | respects previous turns  |
 | ⬜      | Measure latency growth                             | Luca  | response time over turns |
 | ⬜      | Export `results_long_session.csv`                  | Luca  | for paper                |
-| ⬜      | Write 1-paragraph interpretation                   | Mehdi | for discussion           |
+| ✅      | Write 1-paragraph interpretation                   | Mehdi | discussion limitation    |
 
 Acceptance criteria:
 
@@ -454,10 +454,10 @@ Example table:
 
 | Status | Task                                | Owner | Notes               |
 | ------ | ----------------------------------- | ----- | ------------------- |
-| ⬜      | Select strongest failure cases      | Both  | 8–10 max            |
-| ⬜      | Add cause/example/impact/mitigation | Both  | table               |
-| ⬜      | Mark observed vs simulated          | Both  | honest              |
-| ⬜      | Add to Discussion                   | Mehdi | robustness analysis |
+| ✅      | Select strongest failure cases      | Both  | 8–10 max            |
+| ✅      | Add cause/example/impact/mitigation | Both  | table               |
+| 🔄      | Mark observed vs simulated          | Both  | needs status column |
+| ✅      | Add to Discussion                   | Mehdi | robustness analysis |
 
 ---
 
@@ -474,18 +474,18 @@ Starts after: WP2 draft + WP3 figures + WP5 tables
 
 | Status | Task                            | Owner | Notes                     |
 | ------ | ------------------------------- | ----- | ------------------------- |
-| ⬜      | Integrate revised abstract      | Mehdi | pilot framing             |
-| ⬜      | Integrate revised introduction  | Mehdi | contributions/RQs         |
-| ⬜      | Integrate architecture figure   | Mehdi | system section            |
-| ⬜      | Integrate setup figure          | Mehdi | implementation            |
+| 🔄      | Integrate revised abstract      | Mehdi | needs final weaker wording |
+| ✅      | Integrate revised introduction  | Mehdi | contributions/RQs         |
+| ✅      | Integrate architecture figure   | Mehdi | system section            |
+| ✅      | Integrate setup figure          | Mehdi | implementation            |
 | ⬜      | Integrate competency questions  | Mehdi | implementation/evaluation |
-| ⬜      | Integrate evaluation rationale  | Mehdi | evaluation                |
+| ✅      | Integrate evaluation rationale  | Mehdi | evaluation                |
 | ⬜      | Integrate baseline results      | Mehdi | results                   |
-| ⬜      | Integrate objective metrics     | Mehdi | results                   |
-| ⬜      | Integrate RQ answers            | Mehdi | discussion                |
-| ⬜      | Integrate failure analysis      | Mehdi | discussion                |
-| ⬜      | Integrate long-session analysis | Mehdi | discussion/results        |
-| ⬜      | Integrate revised conclusion    | Mehdi | cautious                  |
+| ✅      | Integrate objective metrics     | Mehdi | diagnostic observations   |
+| ✅      | Integrate RQ answers            | Mehdi | discussion                |
+| 🔄      | Integrate failure analysis      | Mehdi | needs observed/anticipated cleanup |
+| ✅      | Integrate long-session analysis | Mehdi | discussion/results        |
+| 🔄      | Integrate revised conclusion    | Mehdi | needs final weaker wording |
 
 Acceptance criteria:
 
@@ -498,12 +498,12 @@ Acceptance criteria:
 
 | Status | Task                                              | Owner | Notes             |
 | ------ | ------------------------------------------------- | ----- | ----------------- |
-| ⬜      | Check paper does not claim unimplemented features | Both  | critical          |
+| 🔄      | Check paper does not claim unimplemented features | Both  | chair/water + baseline wording |
 | ⬜      | Check verifier description matches code           | Both  | critical          |
 | ⬜      | Check confirmation protocol matches code          | Both  | critical          |
-| ⬜      | Check perception is described honestly            | Both  | real vs simulated |
-| ⬜      | Check object names are consistent                 | Both  | KG/LLM/robot      |
-| ⬜      | Check all figures are referenced                  | Mehdi | no orphan figure  |
+| 🔄      | Check perception is described honestly            | Both  | affect optional; final pass needed |
+| 🔄      | Check object names are consistent                 | Both  | remove chair/water bottle inconsistency |
+| 🔄      | Check all figures are referenced                  | Mehdi | duplicate architecture figures remain |
 | ⬜      | Check references and citations                    | Mehdi | no placeholders   |
 | ⬜      | Check final file is Word or LaTeX                 | Mehdi | no PDF            |
 

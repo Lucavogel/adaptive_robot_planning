@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="760" viewBox="0 0 1800 760">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .panel { fill: #f8fbff; stroke: #0b5cad; stroke-width: 3; }
+      .panel-alt { fill: #fbf9ff; stroke: #6b21c9; stroke-width: 3; }
+      .panel-kg { fill: #f8fcfb; stroke: #087f5b; stroke-width: 3; }
+      .box { fill: #ffffff; stroke: #0b5cad; stroke-width: 2.2; }
+      .box-alt { fill: #ffffff; stroke: #6b21c9; stroke-width: 2.2; }
+      .box-kg { fill: #ffffff; stroke: #087f5b; stroke-width: 2.2; }
+      .title { font: 700 22px Arial, sans-serif; fill: #063b78; letter-spacing: 0; }
+      .title-purple { font: 700 22px Arial, sans-serif; fill: #4c168f; letter-spacing: 0; }
+      .title-green { font: 700 22px Arial, sans-serif; fill: #065f46; letter-spacing: 0; }
+      .label { font: 500 17px Arial, sans-serif; fill: #111827; letter-spacing: 0; }
+      .small { font: 500 15px Arial, sans-serif; fill: #111827; letter-spacing: 0; }
+      .mono { font: 600 14px "Courier New", monospace; fill: #111827; letter-spacing: 0; }
+      .num { fill: #ffffff; stroke: #0b5cad; stroke-width: 2.6; }
+      .num-text { font: 700 22px Arial, sans-serif; fill: #0b5cad; }
+      .arrow { fill: none; stroke: #4b5563; stroke-width: 3; marker-end: url(#arrowhead); }
+      .feedback { fill: none; stroke: #64748b; stroke-width: 2.5; stroke-dasharray: 9 7; marker-end: url(#arrowhead-muted); }
+      .dot { fill: #6b21c9; }
+      .caption { font: 500 16px Arial, sans-serif; fill: #475569; letter-spacing: 0; }
+    </style>
+    <marker id="arrowhead" markerWidth="12" markerHeight="9" refX="10" refY="4.5" orient="auto">
+      <path d="M0,0 L11,4.5 L0,9 Z" fill="#4b5563"/>
+    </marker>
+    <marker id="arrowhead-muted" markerWidth="12" markerHeight="9" refX="10" refY="4.5" orient="auto">
+      <path d="M0,0 L11,4.5 L0,9 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1800" height="760"/>
+
+  <!-- 1 Perception -->
+  <g transform="translate(45,70)">
+    <rect class="panel" x="0" y="0" width="210" height="440" rx="18"/>
+    <circle class="num" cx="185" cy="-6" r="17"/>
+    <text class="num-text" x="185" y="2" text-anchor="middle">1</text>
+    <text class="title" x="105" y="38" text-anchor="middle">Perception</text>
+    <text class="caption" x="105" y="62" text-anchor="middle">multimodal sensing</text>
+    <rect class="box" x="22" y="92" width="166" height="58" rx="8"/>
+    <text class="label" x="105" y="127" text-anchor="middle">Speech-to-text</text>
+    <rect class="box" x="22" y="170" width="166" height="58" rx="8"/>
+    <text class="label" x="105" y="205" text-anchor="middle">Emotion cues</text>
+    <rect class="box" x="22" y="248" width="166" height="58" rx="8"/>
+    <text class="label" x="105" y="283" text-anchor="middle">Object detection</text>
+    <rect class="box" x="22" y="326" width="166" height="58" rx="8"/>
+    <text class="label" x="105" y="361" text-anchor="middle">Pose monitoring</text>
+  </g>
+
+  <!-- 2 Context package -->
+  <g transform="translate(330,70)">
+    <rect class="panel-alt" x="0" y="0" width="235" height="440" rx="18"/>
+    <circle class="num" cx="210" cy="-6" r="17"/>
+    <text class="num-text" x="210" y="2" text-anchor="middle">2</text>
+    <text class="title-purple" x="117.5" y="38" text-anchor="middle">Context Package</text>
+    <text class="caption" x="117.5" y="62" text-anchor="middle">runtime state</text>
+    <circle class="dot" cx="42" cy="112" r="9"/>
+    <text class="label" x="65" y="118">User utterance</text>
+    <circle class="dot" cx="42" cy="166" r="9"/>
+    <text class="label" x="65" y="172">Detected objects</text>
+    <circle class="dot" cx="42" cy="220" r="9"/>
+    <text class="label" x="65" y="226">Exercise status</text>
+    <circle class="dot" cx="42" cy="274" r="9"/>
+    <text class="label" x="65" y="280">Affective state</text>
+    <circle class="dot" cx="42" cy="328" r="9"/>
+    <text class="label" x="65" y="334">Interaction history</text>
+    <rect class="box-alt" x="28" y="372" width="179" height="42" rx="8"/>
+    <text class="small" x="117.5" y="399" text-anchor="middle">structured prompt input</text>
+  </g>
+
+  <!-- 3 KG retrieval -->
+  <g transform="translate(650,70)">
+    <rect class="panel-kg" x="0" y="0" width="250" height="440" rx="18"/>
+    <circle class="num" cx="225" cy="-6" r="17"/>
+    <text class="num-text" x="225" y="2" text-anchor="middle">3</text>
+    <text class="title-green" x="125" y="36" text-anchor="middle">Knowledge Graph</text>
+    <text class="title-green" x="125" y="62" text-anchor="middle">Retrieval</text>
+
+    <!-- Small graph icon -->
+    <line x1="125" y1="120" x2="90" y2="150" stroke="#111827" stroke-width="4"/>
+    <line x1="125" y1="120" x2="165" y2="150" stroke="#111827" stroke-width="4"/>
+    <line x1="125" y1="120" x2="125" y2="80" stroke="#111827" stroke-width="4"/>
+    <line x1="90" y1="150" x2="78" y2="190" stroke="#111827" stroke-width="4"/>
+    <line x1="165" y1="150" x2="200" y2="178" stroke="#111827" stroke-width="4"/>
+    <circle cx="125" cy="120" r="15" fill="#111827"/>
+    <circle cx="125" cy="80" r="9" fill="#ffffff" stroke="#111827" stroke-width="4"/>
+    <circle cx="90" cy="150" r="9" fill="#ffffff" stroke="#111827" stroke-width="4"/>
+    <circle cx="165" cy="150" r="9" fill="#ffffff" stroke="#111827" stroke-width="4"/>
+    <circle cx="78" cy="190" r="9" fill="#ffffff" stroke="#111827" stroke-width="4"/>
+    <circle cx="200" cy="178" r="9" fill="#ffffff" stroke="#111827" stroke-width="4"/>
+
+    <rect class="box-kg" x="28" y="240" width="194" height="58" rx="8"/>
+    <text class="label" x="125" y="275" text-anchor="middle">Internal KG</text>
+    <path class="feedback" d="M125 306 L125 340"/>
+    <rect class="box-kg" x="28" y="348" width="194" height="58" rx="8"/>
+    <text class="label" x="125" y="374" text-anchor="middle">ConceptNet</text>
+    <text class="small" x="125" y="394" text-anchor="middle">fallback</text>
+  </g>
+
+  <!-- 4 Primary LLM -->
+  <g transform="translate(985,70)">
+    <rect class="panel" x="0" y="0" width="235" height="440" rx="18"/>
+    <circle class="num" cx="210" cy="-6" r="17"/>
+    <text class="num-text" x="210" y="2" text-anchor="middle">4</text>
+    <text class="title" x="117.5" y="38" text-anchor="middle">Primary LLM</text>
+    <text class="caption" x="117.5" y="62" text-anchor="middle">grounded reasoning</text>
+    <rect class="box" x="25" y="145" width="185" height="75" rx="8"/>
+    <text class="label" x="117.5" y="176" text-anchor="middle">Adaptive decision</text>
+    <text class="small" x="117.5" y="198" text-anchor="middle">action prefix</text>
+    <rect class="box" x="25" y="265" width="185" height="75" rx="8"/>
+    <text class="label" x="117.5" y="296" text-anchor="middle">Natural-language</text>
+    <text class="small" x="117.5" y="318" text-anchor="middle">response</text>
+  </g>
+
+  <!-- 5 Verifier -->
+  <g transform="translate(1305,70)">
+    <rect class="panel" x="0" y="0" width="235" height="440" rx="18"/>
+    <circle class="num" cx="210" cy="-6" r="17"/>
+    <text class="num-text" x="210" y="2" text-anchor="middle">5</text>
+    <text class="title" x="117.5" y="38" text-anchor="middle">Verifier LLM</text>
+    <text class="caption" x="117.5" y="62" text-anchor="middle">optional safeguard</text>
+    <path d="M117 88 C142 105 162 102 176 96 C174 159 149 190 117 204 C85 190 60 159 58 96 C72 102 92 105 117 88 Z"
+          fill="#ffffff" stroke="#111827" stroke-width="5"/>
+    <path d="M94 146 L112 164 L146 124" fill="none" stroke="#111827" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect class="box" x="24" y="235" width="187" height="49" rx="8"/>
+    <text class="label" x="117.5" y="266" text-anchor="middle">Format check</text>
+    <rect class="box" x="24" y="302" width="187" height="49" rx="8"/>
+    <text class="label" x="117.5" y="333" text-anchor="middle">Tone check</text>
+    <rect class="box" x="24" y="369" width="187" height="49" rx="8"/>
+    <text class="label" x="117.5" y="400" text-anchor="middle">Safety/coherence</text>
+  </g>
+
+  <!-- 6 Execution and planning -->
+  <g transform="translate(1600,70)">
+    <rect class="panel" x="0" y="0" width="170" height="440" rx="18"/>
+    <circle class="num" cx="145" cy="-6" r="17"/>
+    <text class="num-text" x="145" y="2" text-anchor="middle">6</text>
+    <text class="title" x="85" y="34" text-anchor="middle">Parser &amp;</text>
+    <text class="title" x="85" y="60" text-anchor="middle">Execution</text>
+    <rect class="box" x="18" y="102" width="134" height="146" rx="8"/>
+    <text class="label" x="85" y="130" text-anchor="middle">Command</text>
+    <text class="label" x="85" y="152" text-anchor="middle">parser</text>
+    <text class="mono" x="34" y="184">NEXT_EXERCISE</text>
+    <text class="mono" x="34" y="208">POINT_OBJECT</text>
+    <text class="mono" x="34" y="232">STOP_ROUTINE</text>
+    <rect class="box" x="18" y="276" width="134" height="136" rx="8"/>
+    <text class="label" x="85" y="306" text-anchor="middle">Execution</text>
+    <text class="small" x="85" y="336" text-anchor="middle">Speech output</text>
+    <text class="small" x="85" y="362" text-anchor="middle">Robot pointing</text>
+    <text class="small" x="85" y="388" text-anchor="middle">Routine control</text>
+  </g>
+
+  <!-- Planning and adaptation bar -->
+  <g transform="translate(585,595)">
+    <rect x="0" y="0" width="680" height="86" rx="16" fill="#f9fafb" stroke="#64748b" stroke-width="2.5"/>
+    <text class="title" x="340" y="35" text-anchor="middle" fill="#334155">Planning &amp; Adaptation State</text>
+    <text class="caption" x="340" y="62" text-anchor="middle">updates current exercise, remembered refusals, object state, and interaction history</text>
+  </g>
+
+  <!-- Main arrows -->
+  <path class="arrow" d="M260 290 L318 290"/>
+  <path class="arrow" d="M570 290 L638 290"/>
+  <path class="arrow" d="M905 290 L973 290"/>
+  <path class="arrow" d="M1225 290 L1293 290"/>
+  <path class="arrow" d="M1545 290 L1588 290"/>
+
+  <!-- Feedback loop -->
+  <path class="feedback" d="M1685 520 C1685 650 1420 705 1265 638"/>
+  <path class="feedback" d="M585 638 C420 694 210 650 210 520"/>
+  <text class="caption" x="1495" y="704" text-anchor="middle">execution feedback</text>
+  <text class="caption" x="355" y="704" text-anchor="middle">updated context for next turn</text>
+</svg>
