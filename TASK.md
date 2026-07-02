@@ -52,8 +52,8 @@ Goal: avoid conflicts and prepare clean revision material.
 | ✅      | Create folder `revision_materials/` |       | figures, logs, experiments, rebuttal |
 | ✅      | Create folder `experiments/`        |       | baseline + long-session scripts      |
 | ✅      | Create folder `paper_revision/`     |       | rewritten sections                   |
-| ⬜      | Create `REBUTTAL_DRAFT.md`          |       | point-by-point response              |
-| ⬜      | Create `CHANGELOG_REVIEWERS.md`     |       | list of manuscript changes           |
+| ✅      | Create `REBUTTAL_DRAFT.md`          |       | point-by-point response              |
+| ✅      | Create `CHANGELOG_REVIEWERS.md`     |       | list of manuscript changes           |
 | ✅      | Assign owners for each WP           | Both  | Mehdi / Luca                         |
 | 🔄      | Agree on official object names      | Both  | remove chair; harmonize water naming |
 
@@ -527,9 +527,9 @@ Can draft early, but finalize after WP6
 
 | Status | Task                             | Owner | Notes                         |
 | ------ | -------------------------------- | ----- | ----------------------------- |
-| ⬜      | Thank editor                     | Mehdi | polite                        |
-| ⬜      | Summarize main changes           | Mehdi | pilot, RQs, baseline, figures |
-| ⬜      | Mention editable files submitted | Mehdi | Word/LaTeX                    |
+| ✅      | Thank editor                     | Mehdi | polite                        |
+| ✅      | Summarize main changes           | Mehdi | pilot, RQs, baseline, figures |
+| 🔄      | Mention editable files submitted | Mehdi | finalize at submission        |
 
 ---
 
@@ -537,15 +537,15 @@ Can draft early, but finalize after WP6
 
 | Status | Task                                   | Owner | Notes                 |
 | ------ | -------------------------------------- | ----- | --------------------- |
-| ⬜      | Respond to small sample size           | Mehdi | pilot framing         |
-| ⬜      | Respond to failure cases               | Mehdi | new section/table     |
-| ⬜      | Respond to conflicting/malicious input | Mehdi | failure analysis      |
-| ⬜      | Respond to verifier repeated rejection | Mehdi | fallback discussion   |
-| ⬜      | Respond to long-session concern        | Mehdi | long-session analysis |
-| ⬜      | Respond to RQs not revisited           | Mehdi | new RQ section        |
-| ⬜      | Respond to missing setup image         | Mehdi | new figure            |
-| ⬜      | Respond to KG contribution not tested  | Mehdi | baseline              |
-| ⬜      | Respond to repetition issue            | Mehdi | condensed discussion  |
+| 🔄      | Respond to small sample size           | Mehdi | drafted; update page refs |
+| 🔄      | Respond to failure cases               | Mehdi | drafted; status column pending |
+| 🔄      | Respond to conflicting/malicious input | Mehdi | drafted; update page refs |
+| 🔄      | Respond to verifier repeated rejection | Mehdi | drafted; update page refs |
+| 🔄      | Respond to long-session concern        | Mehdi | drafted; update page refs |
+| 🔄      | Respond to RQs not revisited           | Mehdi | drafted; update page refs |
+| 🔄      | Respond to missing setup image         | Mehdi | drafted; update page refs |
+| 🔄      | Respond to KG contribution not tested  | Mehdi | drafted as limitation/future ablation |
+| 🔄      | Respond to repetition issue            | Mehdi | drafted; update page refs |
 
 Acceptance criteria:
 
@@ -558,14 +558,14 @@ Acceptance criteria:
 
 | Status | Task                                              | Owner | Notes                 |
 | ------ | ------------------------------------------------- | ----- | --------------------- |
-| ⬜      | Acknowledge N=3 limitation                        | Mehdi | do not argue too hard |
-| ⬜      | Explain pilot/proof-of-concept framing            | Mehdi | throughout manuscript |
-| ⬜      | Respond to weak RQ answers                        | Mehdi | new RQ section        |
-| ⬜      | Respond to KG not demonstrated                    | Mehdi | baseline              |
-| ⬜      | Respond to custom questionnaire                   | Mehdi | evaluation rationale  |
-| ⬜      | Respond to lack of objective metrics              | Mehdi | new metrics           |
-| ⬜      | Respond to no comparison with simpler alternative | Mehdi | LLM-only baseline     |
-| ⬜      | Respond to strong conclusions                     | Mehdi | claims weakened       |
+| 🔄      | Acknowledge N=3 limitation                        | Mehdi | drafted; update page refs |
+| 🔄      | Explain pilot/proof-of-concept framing            | Mehdi | drafted; update page refs |
+| 🔄      | Respond to weak RQ answers                        | Mehdi | drafted; update page refs |
+| 🔄      | Respond to KG not demonstrated                    | Mehdi | drafted as limitation/future ablation |
+| 🔄      | Respond to custom questionnaire                   | Mehdi | drafted; update page refs |
+| 🔄      | Respond to lack of objective metrics              | Mehdi | drafted as diagnostic observations |
+| 🔄      | Respond to no comparison with simpler alternative | Mehdi | drafted as future ablation |
+| 🔄      | Respond to strong conclusions                     | Mehdi | drafted; final abstract/conclusion pass |
 
 Acceptance criteria:
 
