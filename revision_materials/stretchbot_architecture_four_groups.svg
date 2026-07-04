@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="860" viewBox="0 0 1800 860">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font: 800 38px Arial, sans-serif; fill: #0f172a; letter-spacing: 0; }
+      .group { fill: #f8fbff; stroke-width: 3.2; }
+      .group-blue { stroke: #0b5cad; }
+      .group-purple { stroke: #6d3fa0; fill: #fbf8ff; }
+      .group-teal { stroke: #0f7c85; fill: #f4fdff; }
+      .group-gray { stroke: #64748b; fill: #f8fafc; }
+      .card { fill: #ffffff; stroke-width: 2.2; }
+      .blue { stroke: #0b5cad; }
+      .purple { stroke: #6d3fa0; }
+      .orange { stroke: #f97316; }
+      .green { stroke: #0f8a5f; }
+      .teal { stroke: #0f7c85; }
+      .gray { stroke: #64748b; }
+      .h-blue { fill: #0b5cad; }
+      .h-purple { fill: #5b2d91; }
+      .h-orange { fill: #ea580c; }
+      .h-green { fill: #08734f; }
+      .h-teal { fill: #0f6f78; }
+      .h-gray { fill: #475569; }
+      .group-title { font: 800 24px Arial, sans-serif; letter-spacing: 0; }
+      .sub-title { font: 600 15px Arial, sans-serif; fill: #475569; letter-spacing: 0; }
+      .label { font: 700 17px Arial, sans-serif; fill: #111827; letter-spacing: 0; }
+      .body { font: 500 15px Arial, sans-serif; fill: #111827; letter-spacing: 0; }
+      .small { font: 500 13px Arial, sans-serif; fill: #334155; letter-spacing: 0; }
+      .mono { font: 700 13px "Courier New", monospace; fill: #0f4f68; letter-spacing: 0; }
+      .num { fill: #ffffff; stroke-width: 2.8; }
+      .num-text { font: 800 22px Arial, sans-serif; fill: #ffffff; }
+      .arrow { fill: none; stroke: #111827; stroke-width: 3.6; marker-end: url(#arrow); }
+      .soft-arrow { fill: none; stroke: #64748b; stroke-width: 3; stroke-dasharray: 8 7; marker-end: url(#arrow-muted); }
+      .mini-arrow { fill: none; stroke: #475569; stroke-width: 2.5; marker-end: url(#arrow-muted); }
+      .dot-purple { fill: #6d3fa0; }
+    </style>
+    <marker id="arrow" markerWidth="13" markerHeight="10" refX="11" refY="5" orient="auto">
+      <path d="M0,0 L12,5 L0,10 Z" fill="#111827"/>
+    </marker>
+    <marker id="arrow-muted" markerWidth="12" markerHeight="9" refX="10" refY="4.5" orient="auto">
+      <path d="M0,0 L11,4.5 L0,9 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1800" height="860"/>
+  <text class="title" x="900" y="58" text-anchor="middle">StretchBot Neuro-Symbolic Architecture</text>
+
+  <!-- Group 1: Perception -->
+  <g transform="translate(35,115)">
+    <rect class="group group-blue" x="0" y="0" width="285" height="500" rx="18"/>
+    <circle cx="30" cy="-10" r="24" fill="#0b5cad"/>
+    <text class="num-text" x="30" y="-1" text-anchor="middle">1</text>
+    <text class="group-title h-blue" x="142.5" y="46" text-anchor="middle">PERCEPTION</text>
+    <text class="sub-title" x="142.5" y="68" text-anchor="middle">multimodal user</text>
+    <text class="sub-title" x="142.5" y="88" text-anchor="middle">and environment signals</text>
+
+    <rect class="card blue" x="30" y="112" width="225" height="68" rx="9"/>
+    <text class="label" x="142.5" y="141" text-anchor="middle">Speech-to-text</text>
+    <text class="small" x="142.5" y="164" text-anchor="middle">user utterance</text>
+
+    <rect class="card blue" x="30" y="205" width="225" height="68" rx="9"/>
+    <text class="label" x="142.5" y="234" text-anchor="middle">Emotion cues</text>
+    <text class="small" x="142.5" y="257" text-anchor="middle">optional affective state</text>
+
+    <rect class="card blue" x="30" y="298" width="225" height="68" rx="9"/>
+    <text class="label" x="142.5" y="327" text-anchor="middle">Object detection</text>
+    <text class="small" x="142.5" y="350" text-anchor="middle">water, coffee, banana, towel</text>
+
+    <rect class="card blue" x="30" y="391" width="225" height="68" rx="9"/>
+    <text class="label" x="142.5" y="420" text-anchor="middle">Pose monitoring</text>
+    <text class="small" x="142.5" y="443" text-anchor="middle">exercise status</text>
+  </g>
+
+  <!-- Group 2: Reasoning -->
+  <g transform="translate(375,85)">
+    <rect class="group group-purple" x="0" y="0" width="805" height="560" rx="20"/>
+    <circle cx="32" cy="-10" r="24" fill="#6d3fa0"/>
+    <text class="num-text" x="32" y="-1" text-anchor="middle">2</text>
+    <text class="group-title h-purple" x="402.5" y="46" text-anchor="middle">REASONING</text>
+    <text class="sub-title" x="402.5" y="70" text-anchor="middle">context construction, actionable knowledge retrieval, LLM decision, and verification</text>
+
+    <!-- Context package -->
+    <g transform="translate(28,112)">
+      <rect class="card purple" x="0" y="0" width="178" height="360" rx="12"/>
+      <text class="label h-purple" x="89" y="34" text-anchor="middle">Context Package</text>
+      <circle class="dot-purple" cx="28" cy="83" r="7"/>
+      <text class="body" x="48" y="89">utterance</text>
+      <circle class="dot-purple" cx="28" cy="125" r="7"/>
+      <text class="body" x="48" y="131">objects</text>
+      <circle class="dot-purple" cx="28" cy="167" r="7"/>
+      <text class="body" x="48" y="173">exercise status</text>
+      <circle class="dot-purple" cx="28" cy="209" r="7"/>
+      <text class="body" x="48" y="215">affective state</text>
+      <circle class="dot-purple" cx="28" cy="251" r="7"/>
+      <text class="body" x="48" y="257">history</text>
+      <rect class="card purple" x="20" y="295" width="138" height="40" rx="8"/>
+      <text class="small" x="89" y="320" text-anchor="middle">structured prompt</text>
+    </g>
+
+    <!-- KG retrieval -->
+    <g transform="translate(232,112)">
+      <rect class="card orange" x="0" y="0" width="178" height="360" rx="12"/>
+      <text class="label h-orange" x="89" y="32" text-anchor="middle">KG Retrieval</text>
+      <text class="small" x="89" y="54" text-anchor="middle">actionable relations</text>
+      <line x1="89" y1="94" x2="54" y2="124" stroke="#f97316" stroke-width="4"/>
+      <line x1="89" y1="94" x2="124" y2="124" stroke="#f97316" stroke-width="4"/>
+      <line x1="89" y1="94" x2="89" y2="62" stroke="#f97316" stroke-width="4"/>
+      <line x1="54" y1="124" x2="40" y2="158" stroke="#f97316" stroke-width="4"/>
+      <line x1="124" y1="124" x2="152" y2="153" stroke="#f97316" stroke-width="4"/>
+      <circle cx="89" cy="94" r="13" fill="#f97316"/>
+      <circle cx="89" cy="62" r="8" fill="#f97316"/>
+      <circle cx="54" cy="124" r="8" fill="#f97316"/>
+      <circle cx="124" cy="124" r="8" fill="#f97316"/>
+      <circle cx="40" cy="158" r="8" fill="#f97316"/>
+      <circle cx="152" cy="153" r="8" fill="#f97316"/>
+      <rect class="card orange" x="22" y="205" width="134" height="52" rx="8"/>
+      <text class="body" x="89" y="237" text-anchor="middle">Internal KG</text>
+      <path class="mini-arrow" d="M89 263 L89 292"/>
+      <rect class="card orange" x="22" y="298" width="134" height="45" rx="8"/>
+      <text class="body" x="89" y="326" text-anchor="middle">ConceptNet</text>
+    </g>
+
+    <!-- Primary LLM -->
+    <g transform="translate(436,112)">
+      <rect class="card green" x="0" y="0" width="178" height="360" rx="12"/>
+      <text class="label h-green" x="89" y="34" text-anchor="middle">Primary LLM</text>
+      <text class="small" x="89" y="56" text-anchor="middle">grounded response</text>
+      <path d="M72 90 C56 90 50 106 57 118 C43 124 46 151 66 151 C70 168 95 168 101 154 C119 154 126 132 112 121 C119 101 101 84 87 95 C84 92 79 90 72 90 Z"
+            fill="#ffffff" stroke="#0f8a5f" stroke-width="3.6"/>
+      <path d="M98 104 L139 104 M98 123 L146 123 M98 142 L139 142" stroke="#0f8a5f" stroke-width="3.6"/>
+      <circle cx="148" cy="104" r="4.6" fill="#0f8a5f"/>
+      <circle cx="155" cy="123" r="4.6" fill="#0f8a5f"/>
+      <circle cx="148" cy="142" r="4.6" fill="#0f8a5f"/>
+      <rect class="card green" x="20" y="205" width="138" height="55" rx="8"/>
+      <text class="body" x="89" y="229" text-anchor="middle">Adaptive</text>
+      <text class="small" x="89" y="249" text-anchor="middle">action prefix</text>
+      <rect class="card green" x="20" y="288" width="138" height="55" rx="8"/>
+      <text class="body" x="89" y="313" text-anchor="middle">Natural-language</text>
+      <text class="small" x="89" y="333" text-anchor="middle">response</text>
+    </g>
+
+    <!-- Verifier -->
+    <g transform="translate(640,112)">
+      <rect class="card blue" x="0" y="0" width="137" height="360" rx="12"/>
+      <text class="label h-blue" x="68.5" y="34" text-anchor="middle">Verifier</text>
+      <text class="small" x="68.5" y="56" text-anchor="middle">safeguard</text>
+      <path d="M68 82 C88 96 105 94 118 89 C116 141 95 170 68 184 C41 170 20 141 18 89 C31 94 48 96 68 82 Z"
+            fill="#ffffff" stroke="#0b5cad" stroke-width="4"/>
+      <path d="M48 130 L64 146 L91 112" fill="none" stroke="#0b5cad" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect class="card blue" x="14" y="216" width="109" height="38" rx="7"/>
+      <text class="small" x="68.5" y="240" text-anchor="middle">format</text>
+      <rect class="card blue" x="14" y="270" width="109" height="38" rx="7"/>
+      <text class="small" x="68.5" y="294" text-anchor="middle">tone</text>
+      <rect class="card blue" x="14" y="324" width="109" height="26" rx="7"/>
+      <text class="small" x="68.5" y="342" text-anchor="middle">safety</text>
+    </g>
+
+    <path class="mini-arrow" d="M210 292 L228 292"/>
+    <path class="mini-arrow" d="M414 292 L432 292"/>
+    <path class="mini-arrow" d="M618 292 L636 292"/>
+  </g>
+
+  <!-- Group 3: Action execution -->
+  <g transform="translate(1235,115)">
+    <rect class="group group-teal" x="0" y="0" width="270" height="500" rx="18"/>
+    <circle cx="30" cy="-10" r="24" fill="#0f7c85"/>
+    <text class="num-text" x="30" y="-1" text-anchor="middle">3</text>
+    <text class="group-title h-teal" x="135" y="42" text-anchor="middle">ACTION</text>
+    <text class="group-title h-teal" x="135" y="70" text-anchor="middle">EXECUTION</text>
+
+    <rect class="card teal" x="28" y="112" width="214" height="155" rx="10"/>
+    <text class="label h-teal" x="135" y="145" text-anchor="middle">Command Parser</text>
+    <text class="mono" x="55" y="184">NEXT_EXERCISE</text>
+    <text class="mono" x="55" y="214">POINT_&lt;OBJECT&gt;</text>
+    <text class="mono" x="55" y="244">STOP_ROUTINE</text>
+
+    <rect class="card teal" x="28" y="310" width="214" height="145" rx="10"/>
+    <text class="label h-teal" x="135" y="342" text-anchor="middle">Execution Layer</text>
+    <text class="body" x="135" y="380" text-anchor="middle">speech output</text>
+    <text class="body" x="135" y="413" text-anchor="middle">robot pointing</text>
+    <text class="body" x="135" y="446" text-anchor="middle">routine control</text>
+  </g>
+
+  <!-- Group 4: Planning and adaptation -->
+  <g transform="translate(1550,115)">
+    <rect class="group group-gray" x="0" y="0" width="220" height="500" rx="18"/>
+    <circle cx="30" cy="-10" r="24" fill="#64748b"/>
+    <text class="num-text" x="30" y="-1" text-anchor="middle">4</text>
+    <text class="group-title h-gray" x="110" y="42" text-anchor="middle">PLANNING</text>
+    <text class="group-title h-gray" x="110" y="70" text-anchor="middle">AND ADAPTATION</text>
+
+    <rect class="card gray" x="24" y="112" width="172" height="68" rx="9"/>
+    <text class="label" x="110" y="140" text-anchor="middle">State update</text>
+    <text class="small" x="110" y="163" text-anchor="middle">current exercise</text>
+
+    <rect class="card gray" x="24" y="210" width="172" height="68" rx="9"/>
+    <text class="label" x="110" y="238" text-anchor="middle">Memory</text>
+    <text class="small" x="110" y="261" text-anchor="middle">history and refusals</text>
+
+    <rect class="card gray" x="24" y="308" width="172" height="68" rx="9"/>
+    <text class="label" x="110" y="336" text-anchor="middle">Metrics</text>
+    <text class="small" x="110" y="359" text-anchor="middle">latency, edits, action</text>
+
+    <rect class="card gray" x="24" y="406" width="172" height="54" rx="9"/>
+    <text class="label" x="110" y="439" text-anchor="middle">Feedback loop</text>
+  </g>
+
+  <!-- Main arrows between groups -->
+  <path class="arrow" d="M325 365 L366 365"/>
+  <path class="arrow" d="M1187 365 L1224 365"/>
+  <path class="arrow" d="M1510 365 L1540 365"/>
+
+  <!-- Feedback loop back to reasoning/context -->
+  <path class="soft-arrow" d="M1660 632 C1660 760 930 782 780 650"/>
+  <path class="soft-arrow" d="M780 650 C650 548 514 575 492 556"/>
+  <text class="sub-title" x="1145" y="758" text-anchor="middle">execution feedback updates context and planning state for the next interaction turn</text>
+
+  <!-- Flow footer -->
+  <g transform="translate(280,802)">
+    <rect x="0" y="0" width="1240" height="44" rx="8" fill="#ffffff" stroke="#0b5cad" stroke-width="2" stroke-dasharray="8 6"/>
+    <text class="label h-blue" x="76" y="29" text-anchor="middle">FLOW:</text>
+    <text class="body" x="670" y="29" text-anchor="middle">Perception -&gt; Reasoning -&gt; Action Execution -&gt; Planning and Adaptation -&gt; updated context</text>
+  </g>
+</svg>
