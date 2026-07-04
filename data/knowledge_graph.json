@@ -21,6 +21,8 @@
       "type": "PhysicalState",
       "relations": {
         "motivates": "TakeBreak",
+        "can_motivate": "EatBanana",
+        "preferred_support_object": "Banana",
         "reduces": "Performance",
         "can_be_detected_by": "SlowMovements",
         "is_a": "Discomfort"
@@ -30,6 +32,8 @@
       "type": "PhysicalState",
       "relations": {
         "motivates": "DrinkWater",
+        "preferred_support_object": "GlassOfWater",
+        "priority_when_combined_with": "Sweating",
         "is_alleviated_by": "Hydration",
         "causes": "Discomfort",
         "is_a": "Need"
@@ -39,6 +43,11 @@
       "type": "Action",
       "relations": {
         "requires": "GlassOfWater",
+        "requires_detected_object": "GlassOfWater",
+        "if_required_object_unavailable": "RespondVerballyWithoutPointing",
+        "forbidden_if_object_unavailable": "POINT_WATER",
+        "availability_check": "Use POINT_WATER only if water appears in Available objects",
+        "command_if_available": "POINT_WATER",
         "used_for": "Hydration",
         "motivated_by": "Thirst",
         "prevents": "Dehydration"
@@ -48,7 +57,10 @@
       "type": "Object",
       "relations": {
         "affords": "DrinkWater",
-        "at_location": "OnTable",
+        "location_source": "PerceptionModule",
+        "pointable_only_if": "ListedInAvailableObjects",
+        "if_not_listed_in_available_objects": "DoNotUsePointWater",
+        "command": "POINT_WATER",
         "used_for": "Hydration",
         "has_property": "Liquid",
         "is_relevant_when": "Thirst"
@@ -65,15 +77,21 @@
       "type": "Action",
       "relations": {
         "helps_with": ["Fatigue", "BreathingRegulation"],
-        "motivated_by": "Fatigue"
+        "motivated_by": "Fatigue",
+        "does_not_require_pointing": true,
+        "response_mode": "verbal_guidance"
       }
     },
     "Towel": {
       "type": "Object",
       "relations": {
         "affords": "DrySweat",
-        "at_location": "OnTable",
-        "is_relevant_when": "Sweating",
+        "location_source": "PerceptionModule",
+        "pointable_only_if": "ListedInAvailableObjects",
+        "command": "POINT_TOWEL",
+        "is_relevant_when": "SweatingWithoutCompetingNeed",
+        "not_relevant_when": ["NeedRest", "NeedToSit", "Cold", "BodyTension", "Thirst"],
+        "not_valid_fallback_for": ["Chair", "TakeASeat", "Rest", "Hydration"],
         "can_indicate": "Exertion",
         "used_for": "DrySweat",
         "capable_of": "AbsorbingSweat"
@@ -83,20 +101,28 @@
       "type": "Action",
       "relations": {
         "requires": "Towel",
-        "helps_with": "Comfort"
+        "requires_detected_object": "Towel",
+        "command_if_available": "POINT_TOWEL",
+        "forbidden_when": ["NeedRest", "Cold", "ThirstPresent"],
+        "helps_with": "Comfort",
+        "lower_priority_than": "DrinkWaterWhenThirstPresent"
       }
     },
     "Sweating": {
       "type": "PhysicalState",
       "relations": {
         "indicates": "Exertion",
-        "motivates": "DrySweat"
+        "motivates": "DrySweat",
+        "if_combined_with_thirst": "PrioritizeHydrationBeforeDrySweat"
       }
     },
     "Banana": {
       "type": "Object",
       "relations": {
         "affords": "EatBanana",
+        "pointable_only_if": "ListedInAvailableObjects",
+        "if_not_listed_in_available_objects": "DoNotUsePointBanana",
+        "command": "POINT_BANANA",
         "used_for": "QuickEnergyBoost",
         "is_relevant_when": "Fatigue",
         "is_a": "Food"
@@ -127,7 +153,8 @@
       "type": "Environment",
       "relations": {
         "increases": "BodyTemperature",
-        "motivates": "DrinkWater"
+        "motivates": "DrinkWater",
+        "preferred_support_action": "DrinkWater"
       }
     },
     "Rainy": {
@@ -142,8 +169,20 @@
       "type": "Environment",
       "relations": {
         "motivates": "WearWarmClothes",
-        "increases": "BodyTension"
+        "increases": "BodyTension",
+        "response_mode": "verbal_guidance",
+        "preferred_robot_response": "Acknowledge cold and continue gently without pointing",
+        "does_not_motivate_pointing": ["POINT_WATER", "POINT_TOWEL", "POINT_COFFEE", "POINT_BANANA"]
 
+      }
+    },
+    "BodyTension": {
+      "type": "PhysicalState",
+      "relations": {
+        "can_be_caused_by": "Cold",
+        "response_mode": "verbal_guidance",
+        "does_not_require_object_pointing": true,
+        "forbidden_commands": ["POINT_WATER", "POINT_TOWEL", "POINT_COFFEE", "POINT_BANANA"]
       }
     },
     "Observation": {
@@ -158,14 +197,19 @@
       "type": "Routine",
       "relations": {
         "contains": ["ArmRaise", "ToeTouch", "LeanLeftRight"],
-        "goal": "BodyRelaxation"
+        "goal": "BodyRelaxation",
+        "if_next_exercise_exists": "NEXT_EXERCISE",
+        "if_next_exercise_none": "STOP_ROUTINE",
+        "if_exercise_status_success_and_next_exists": "NEXT_EXERCISE",
+        "if_exercise_status_success_and_next_none": "STOP_ROUTINE"
       }
     },
     "ArmRaise": {
       "type": "Stretch",
       "relations": {
         "targets": "UpperBack",
-        "reduces": "ShoulderStiffness"
+        "reduces": "ShoulderStiffness",
+        "if_completed_and_next_exercise_exists": "NEXT_EXERCISE"
       }
     },
     "ToeTouch": {
@@ -173,14 +217,17 @@
       "relations": {
         "targets": "Hamstrings",
         "requires_flexibility": "Moderate",
-        "can_cause": "LowerBackStrain"
+        "can_cause": "LowerBackStrain",
+        "if_completed_and_next_exercise_exists": "NEXT_EXERCISE"
       }
     },
     "LeanLeftRight": {
       "type": "Stretch",
       "relations": {
         "targets": "Obliques",
-        "helps_with": "SpinalMobility"
+        "helps_with": "SpinalMobility",
+        "can_be_final_exercise": true,
+        "if_completed_and_no_next_exercise": "STOP_ROUTINE"
       }
     },
     "NeckStretch": {
@@ -188,14 +235,17 @@
       "relations": {
         "targets": "Neck",
         "duration": "30s",
-        "reduces": "NeckTension"
+        "reduces": "NeckTension",
+        "response_mode": "verbal_guidance",
+        "does_not_require_object_pointing": true
       }
     },
     "StopExercise": {
       "type": "Action",
       "relations": {
         "is_triggered_by": "Pain",
-        "is_recommended_if": "InjuryRisk"
+        "is_recommended_if": "InjuryRisk",
+        "command": "STOP_ROUTINE"
       }
     },
     "Food": {
@@ -224,6 +274,9 @@
       "type": "Object",
       "relations": {
         "affords": "DrinkCoffee",
+        "pointable_only_if": "ListedInAvailableObjects",
+        "if_not_listed_in_available_objects": "DoNotUsePointCoffee",
+        "command": "POINT_COFFEE",
         "used_for": "EnergyBoost",
         "is_relevant_when": "Tired"
       }
@@ -232,6 +285,7 @@
       "type": "PhysicalState",
       "relations": {
         "motivates": "DrinkCoffee",
+        "preferred_support_object": "Coffee",
         "is_a": "Fatigue"
       }
     },
@@ -253,6 +307,11 @@
       "type": "Action",
       "relations": {
         "requires": "Coffee",
+        "requires_detected_object": "Coffee",
+        "if_required_object_unavailable": "RespondVerballyWithoutPointing",
+        "forbidden_if_object_unavailable": "POINT_COFFEE",
+        "availability_check": "Use POINT_COFFEE only if coffee appears in Available objects",
+        "command_if_available": "POINT_COFFEE",
         "provides": "EnergyBoost",
         "motivated_by": "Tired"
       }
@@ -261,6 +320,11 @@
       "type": "Action",
       "relations": {
         "requires": "Banana",
+        "requires_detected_object": "Banana",
+        "if_required_object_unavailable": "RespondVerballyWithoutPointing",
+        "forbidden_if_object_unavailable": "POINT_BANANA",
+        "availability_check": "Use POINT_BANANA only if banana appears in Available objects",
+        "command_if_available": "POINT_BANANA",
         "provides": "QuickEnergyBoost",
         "motivated_by": "Fatigue"
       }
@@ -277,13 +341,17 @@
         "affords": "TakeASeat",
         "used_for": "Rest",
         "is_relevant_when": ["Fatigue", "NeedRest"],
-        "at_location": "OnFloor"
+        "location_source": "PerceptionModule",
+        "pointable_only_if": "ListedInAvailableObjects"
       }
     },
     "TakeASeat": {
       "type": "Action",
       "relations": {
         "requires": "Chair",
+        "requires_detected_object": "Chair",
+        "if_required_object_unavailable": "RespondVerballyWithoutPointing",
+        "forbidden_fallback_objects_if_chair_unavailable": ["Towel", "Water", "Coffee", "Banana"],
         "provides": "Rest",
         "motivated_by": ["Fatigue", "NeedRest"]
       }
@@ -298,6 +366,9 @@
       "type": "PhysicalState",
       "relations": {
         "motivates": "TakeASeat",
+        "fallback_if_chair_unavailable": "TakeBreak",
+        "response_mode_if_chair_unavailable": "verbal_guidance_without_pointing",
+        "forbidden_commands_if_chair_unavailable": ["POINT_TOWEL", "POINT_WATER", "POINT_COFFEE", "POINT_BANANA"],
         "is_a": "Need"
       }
     }

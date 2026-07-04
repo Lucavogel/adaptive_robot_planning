@@ -17,3 +17,8 @@ data/models/yolov5s.pt
 data/models/yolov8n.pt
 data/models/vosk-model-*
 .env
+
+# Experiment outputs
+experiments/results_*.csv
+experiments/results_*.jsonl
+experiments/manual_*.txt
