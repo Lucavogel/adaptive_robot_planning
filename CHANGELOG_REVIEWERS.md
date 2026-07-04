@@ -28,9 +28,9 @@ This document summarizes the main revisions made to the manuscript in response t
 
 ## System Architecture
 
-- Kept the original system-level architecture figure as the main overview because the surrounding text is organized around it.
-- Added a second detailed interaction-pipeline figure focused on the per-turn KG/LLM/verifier/parser flow.
-- Clarified that the first figure gives the high-level system structure, while the new figure details context packaging, KG retrieval, primary LLM generation, verifier checking, and command parsing before execution.
+- Replaced the original architecture figure with a revised four-stage architecture figure organized around Perception, Reasoning, Action Execution, and Planning and Adaptation.
+- Integrated the detailed per-turn KG/LLM/verifier/parser flow inside the Reasoning stage of the new Figure 1, so the figure now preserves the manuscript's original four-stage structure while adding the reviewer-requested implementation detail.
+- Added a dashed feedback arrow to show how execution feedback updates the context, routine state, and interaction history for the next interaction turn.
 - Clarified the information flow from perception to context construction, KG retrieval, primary LLM reasoning, verifier, command parser/execution, and planning-state update.
 - Clarified the verifier as a safeguard for command-format checking, object-availability filtering, and safety-related corrections.
 - Made optional/prototype components clearer, especially affective sensing and verifier use.
@@ -109,7 +109,7 @@ This document summarizes the main revisions made to the manuscript in response t
 
 - Checked object naming consistency across the text.
 - Identified DOI formatting issues where references contained duplicated DOI URL prefixes; these should be corrected in the bibliography source before final submission.
-- Verified that the architecture figures have distinct roles: one system-level overview and one detailed interaction pipeline.
+- Verified that Figure 1 now serves as both the system-level overview and the detailed KG/LLM/verifier interaction pipeline, avoiding duplicate architecture figures.
 
 ## Submission Notes
 

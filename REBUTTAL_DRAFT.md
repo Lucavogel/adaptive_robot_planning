@@ -10,7 +10,7 @@ Below we provide a point-by-point response. Section references should be checked
 
 **Comment:** The three most important points are: (1) the small sample size and pilot framing, plus failure cases, long-term LLM usage findings if possible, and an LLM baseline comparison; (2) detailed answers to the competency questions; and (3) additional information, including an architecture image and evaluation explanation.
 
-**Response:** We addressed these points in the revised manuscript. First, we strengthened the pilot/prototype framing throughout the paper and now explicitly state that the N=3 user study is exploratory and not intended for statistical generalization. Second, we added competency questions describing the expected reasoning behavior of the system, including fatigue support, pain response, refusal memory, exercise transitions, unavailable objects, invalid commands, unsafe requests, and KG coverage gaps. Third, we added and clarified visual material, including a system-level architecture figure, a detailed interaction-pipeline figure, and a physical setup figure. Fourth, we added an evaluation-design rationale explaining why the pilot and custom questionnaire were used. Fifth, we added a prompt-level ablation over 30 scripted scenarios comparing LLM-only, KG+LLM, and KG+LLM+verifier conditions. Finally, we expanded the failure-case and longer-session discussion.
+**Response:** We addressed these points in the revised manuscript. First, we strengthened the pilot/prototype framing throughout the paper and now explicitly state that the N=3 user study is exploratory and not intended for statistical generalization. Second, we added competency questions describing the expected reasoning behavior of the system, including fatigue support, pain response, refusal memory, exercise transitions, unavailable objects, invalid commands, unsafe requests, and KG coverage gaps. Third, we replaced the architecture figure with a revised four-stage architecture that also details the KG/LLM/verifier/parser flow inside the Reasoning stage, and we added a physical setup figure. Fourth, we added an evaluation-design rationale explaining why the pilot and custom questionnaire were used. Fifth, we added a prompt-level ablation over 30 scripted scenarios comparing LLM-only, KG+LLM, and KG+LLM+verifier conditions. Finally, we expanded the failure-case and longer-session discussion.
 
 ## Reviewer 1
 
@@ -105,7 +105,7 @@ Below we provide a point-by-point response. Section references should be checked
 - Harmonized the object list in the setup and evaluation sections to water, coffee, banana, and towel.
 - Removed misleading references to a chair as a pilot object where it was not part of the actual setup.
 - Replaced "water bottle" wording with water / cup or glass of water where appropriate.
-- Kept the original system-level architecture figure and added a second detailed pipeline figure focused on the KG/LLM/verifier/parser interaction loop.
+- Replaced the original architecture figure with a revised Figure 1 that keeps the four main stages while adding the detailed KG/LLM/verifier/parser interaction loop inside the Reasoning stage.
 - Added Appendix A with an example system prompt.
 - Added Appendix B with the verifier prompt used in the prompt-level ablation.
 - Added a note after the ablation table explaining that correctness was manually assessed against predefined expected actions.
