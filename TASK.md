@@ -55,7 +55,7 @@ Goal: avoid conflicts and prepare clean revision material.
 | ✅      | Create `REBUTTAL_DRAFT.md`          |       | point-by-point response              |
 | ✅      | Create `CHANGELOG_REVIEWERS.md`     |       | list of manuscript changes           |
 | ✅      | Assign owners for each WP           | Both  | Mehdi / Luca                         |
-| 🔄      | Agree on official object names      | Both  | remove chair; harmonize water naming |
+| ✅      | Agree on official object names      | Both  | water, coffee, banana, towel; chair removed from pilot object list |
 
 Acceptance criteria:
 
@@ -168,7 +168,7 @@ Acceptance criteria:
 
 | Status | Task                                                         | Owner | Notes                               |
 | ------ | ------------------------------------------------------------ | ----- | ----------------------------------- |
-| ⬜      | Define official object list                                  | Both  | Water, Banana, Coffee, Towel, Chair |
+| ✅      | Define official object list                                  | Both  | water, coffee, banana, towel |
 | ⬜      | Unify names between YOLO, KG, LLM, and C++                   | Luca  | avoid `GlassOfWater` vs `glass`     |
 | ⬜      | Ensure every `POINT_OBJECT` has execution or verbal fallback | Luca  | no silent failure                   |
 | ⬜      | Prevent pointing to absent objects                           | Luca  | reviewer issue                      |
@@ -197,12 +197,12 @@ Can run in parallel with: WP1, WP3, WP4
 
 | Status | Task                                             | Owner | Notes                     |
 | ------ | ------------------------------------------------ | ----- | ------------------------- |
-| 🔄      | Reframe abstract as pilot/proof-of-concept       | Mehdi | needs final weaker wording |
+| ✅      | Reframe abstract as pilot/proof-of-concept       | Mehdi | final weaker pilot wording added |
 | ✅      | Reframe introduction                             | Mehdi | no strong empirical claim |
 | ✅      | Reframe evaluation section                       | Mehdi | exploratory only          |
 | ✅      | Reframe discussion                               | Mehdi | no overclaim              |
-| 🔄      | Reframe conclusion                               | Mehdi | needs final weaker wording |
-| 🔄      | Replace “shows/proves” with “suggests/indicates” | Mehdi | mostly done; final pass needed |
+| ✅      | Reframe conclusion                               | Mehdi | final weaker wording added |
+| ✅      | Replace “shows/proves” with “suggests/indicates” | Mehdi | cautious pilot wording used |
 
 Acceptance criteria:
 
@@ -216,13 +216,13 @@ Acceptance criteria:
 | Status | Task                                              | Owner | Notes                                    |
 | ------ | ------------------------------------------------- | ----- | ---------------------------------------- |
 | ✅      | Rewrite RQ1–RQ3 clearly                           | Mehdi | introduction                             |
-| ⬜      | Create section `Competency Questions`             | Mehdi | before/in evaluation                     |
-| ⬜      | Define 8–10 competency questions                  | Mehdi | fatigue, pain, refusal, object relevance |
-| ⬜      | Add expected behavior for each CQ                 | Mehdi | table                                    |
-| ⬜      | Add evidence column                               | Mehdi | logs/results                             |
+| ✅      | Create section `Competency Questions`             | Mehdi | added before/results discussion material |
+| ✅      | Define 8–10 competency questions                  | Mehdi | fatigue, pain, refusal, object relevance |
+| ✅      | Add expected behavior for each CQ                 | Mehdi | compact CQ list added                    |
+| ✅      | Add evidence column                               | Mehdi | covered through ablation/results notes   |
 | ✅      | Create section `Answering the Research Questions` | Mehdi | discussion                               |
 | ✅      | Answer RQ1 directly                               | Mehdi | architecture/adaptation                  |
-| ✅      | Answer RQ2 directly                               | Mehdi | KG baseline limitation stated            |
+| ✅      | Answer RQ2 directly                               | Mehdi | KG ablation and verifier role stated     |
 | ✅      | Answer RQ3 directly                               | Mehdi | pilot perception                         |
 
 Acceptance criteria:
@@ -243,7 +243,7 @@ Acceptance criteria:
 | ✅      | Mention limitation of non-validated questionnaire | Mehdi | honest                      |
 | ✅      | Add future work with SUS/Godspeed/Trust scales    | Mehdi | reviewer 2                  |
 | ✅      | Add objective metrics subsection placeholder      | Mehdi | diagnostic technical measures |
-| ✅      | Add baseline subsection placeholder               | Mehdi | baseline framed as future ablation |
+| ✅      | Add baseline subsection placeholder               | Mehdi | replaced with completed ablation |
 
 Acceptance criteria:
 
@@ -332,19 +332,19 @@ Goal: show whether the Knowledge Graph contributes anything.
 
 | Status | Task                                     | Owner | Notes                     |
 | ------ | ---------------------------------------- | ----- | ------------------------- |
-| ⬜      | Create `experiments/scenarios.json`      | Luca  | 20–30 scenarios           |
-| ⬜      | Define expected action for each scenario | Both  | manual oracle             |
-| ⬜      | Implement condition A: LLM-only          | Luca  | raw context only          |
-| ⬜      | Implement condition B: KG+LLM            | Luca  | context + KG relations    |
-| ⬜      | Implement condition C: KG+LLM+Verifier   | Luca  | if possible               |
-| ⬜      | Measure action correctness               | Luca  | expected vs output        |
-| ⬜      | Measure object relevance                 | Luca  | selected object relevant? |
-| ⬜      | Measure prefix validity                  | Luca  | valid command format      |
-| ⬜      | Measure hallucinated object rate         | Luca  | points to absent object   |
-| ⬜      | Measure unsafe/incoherent outputs        | Both  | manual or rule-based      |
-| ⬜      | Measure latency                          | Luca  | timestamp start/end       |
-| ⬜      | Export `results_baseline.csv`            | Luca  | for paper                 |
-| ⬜      | Create final baseline table              | Both  | for manuscript            |
+| ✅      | Create `experiments/scenarios.json`      | Luca  | 30 scenarios embedded in `run_actual_kg_ablation.py` |
+| ✅      | Define expected action for each scenario | Both  | manual oracle             |
+| ✅      | Implement condition A: LLM-only          | Luca  | raw context only          |
+| ✅      | Implement condition B: KG+LLM            | Luca  | context + KG relations    |
+| ✅      | Implement condition C: KG+LLM+Verifier   | Luca  | OpenRouter verifier       |
+| ✅      | Measure action correctness               | Luca  | expected vs output        |
+| ✅      | Measure object relevance                 | Luca  | covered via object/action correctness and unavailable-object checks |
+| ✅      | Measure prefix validity                  | Luca  | valid command format      |
+| ✅      | Measure hallucinated object rate         | Luca  | unavailable-object count  |
+| ✅      | Measure unsafe/incoherent outputs        | Both  | safety scenarios included |
+| ✅      | Measure latency                          | Luca  | timestamp start/end       |
+| ✅      | Export `results_baseline.csv`            | Luca  | generated as `results_actual_kg_ablation.csv` |
+| ✅      | Create final baseline table              | Both  | added to manuscript       |
 
 Acceptance criteria:
 
@@ -361,16 +361,16 @@ Goal: provide explicit failure analysis.
 | Status | Task                                      | Owner | Notes                      |
 | ------ | ----------------------------------------- | ----- | -------------------------- |
 | ⬜      | Collect real observed failures from tests | Luca  | best evidence              |
-| 🔄      | Add simulated failures if needed          | Both  | label observed/anticipated |
+| ✅      | Add simulated failures if needed          | Both  | labelled as stress-case/anticipated risks in text |
 | ✅      | Document wrong emotion detection          | Luca  | affect treated as optional |
-| 🔄      | Document object hallucination             | Luca  | anticipated risk only      |
+| ✅      | Document object hallucination             | Luca  | anticipated risk only      |
 | ✅      | Document invalid prefix                   | Luca  | parser/verifier issue      |
 | ✅      | Document repeated verifier rejection      | Luca  | fallback issue             |
 | ✅      | Document latency issue                    | Luca  | cloud API                  |
 | ✅      | Document posture detection issue          | Luca  | camera angle               |
 | ✅      | Document conflicting inputs               | Both  | voice vs face vs posture   |
 | ✅      | Add mitigation for every failure          | Both  | not only description       |
-| 🔄      | Create final failure-case table           | Both  | needs observed/anticipated column |
+| ✅      | Create final failure-case table           | Both  | added to Discussion |
 
 Acceptance criteria:
 
@@ -418,11 +418,11 @@ Can run in parallel with: WP6
 
 | Status | Task                          | Owner | Notes                  |
 | ------ | ----------------------------- | ----- | ---------------------- |
-| ⬜      | Import baseline CSV           | Luca  | from WP4.1             |
-| ⬜      | Compute summary metrics       | Luca  | averages / percentages |
-| ⬜      | Create compact table          | Both  | LLM-only vs KG+LLM     |
-| ⬜      | Write cautious interpretation | Mehdi | no overclaim           |
-| ⬜      | Add to Results                | Mehdi | manuscript             |
+| ✅      | Import baseline CSV           | Luca  | from WP4.1             |
+| ✅      | Compute summary metrics       | Luca  | 18/30, 21/30, 30/30 + latency |
+| ✅      | Create compact table          | Both  | LLM-only vs KG+LLM vs KG+LLM+Verifier |
+| ✅      | Write cautious interpretation | Mehdi | no overclaim           |
+| ✅      | Add to Results                | Mehdi | manuscript             |
 
 Example table:
 
@@ -440,13 +440,13 @@ Example table:
 
 | Status | Task                                    | Owner | Notes               |
 | ------ | --------------------------------------- | ----- | ------------------- |
-| ⬜      | Compute mean LLM latency                | Luca  | seconds             |
+| ✅      | Compute mean LLM latency                | Luca  | seconds             |
 | ⬜      | Compute verifier correction rate        | Luca  | percentage          |
-| ⬜      | Compute invalid output count            | Luca  | count               |
+| ✅      | Compute invalid output count            | Luca  | prefix validity / blank responses |
 | ⬜      | Compute number of adaptations           | Luca  | count               |
 | ⬜      | Compute object pointing success/failure | Luca  | count               |
-| ⬜      | Create compact table                    | Both  | for Results         |
-| ⬜      | Write interpretation                    | Mehdi | link to limitations |
+| ✅      | Create compact table                    | Both  | ablation table in Results |
+| ✅      | Write interpretation                    | Mehdi | link to limitations |
 
 ---
 
@@ -474,18 +474,18 @@ Starts after: WP2 draft + WP3 figures + WP5 tables
 
 | Status | Task                            | Owner | Notes                     |
 | ------ | ------------------------------- | ----- | ------------------------- |
-| 🔄      | Integrate revised abstract      | Mehdi | needs final weaker wording |
+| ✅      | Integrate revised abstract      | Mehdi | final weaker wording |
 | ✅      | Integrate revised introduction  | Mehdi | contributions/RQs         |
 | ✅      | Integrate architecture figure   | Mehdi | system section            |
 | ✅      | Integrate setup figure          | Mehdi | implementation            |
-| ⬜      | Integrate competency questions  | Mehdi | implementation/evaluation |
+| ✅      | Integrate competency questions  | Mehdi | implementation/evaluation |
 | ✅      | Integrate evaluation rationale  | Mehdi | evaluation                |
-| ⬜      | Integrate baseline results      | Mehdi | results                   |
+| ✅      | Integrate baseline results      | Mehdi | results                   |
 | ✅      | Integrate objective metrics     | Mehdi | diagnostic observations   |
 | ✅      | Integrate RQ answers            | Mehdi | discussion                |
-| 🔄      | Integrate failure analysis      | Mehdi | needs observed/anticipated cleanup |
+| ✅      | Integrate failure analysis      | Mehdi | added as risk/failure table |
 | ✅      | Integrate long-session analysis | Mehdi | discussion/results        |
-| 🔄      | Integrate revised conclusion    | Mehdi | needs final weaker wording |
+| ✅      | Integrate revised conclusion    | Mehdi | final weaker wording |
 
 Acceptance criteria:
 
@@ -498,12 +498,12 @@ Acceptance criteria:
 
 | Status | Task                                              | Owner | Notes             |
 | ------ | ------------------------------------------------- | ----- | ----------------- |
-| 🔄      | Check paper does not claim unimplemented features | Both  | chair/water + baseline wording |
+| ✅      | Check paper does not claim unimplemented features | Both  | chair/water + baseline wording reviewed |
 | ⬜      | Check verifier description matches code           | Both  | critical          |
 | ⬜      | Check confirmation protocol matches code          | Both  | critical          |
-| 🔄      | Check perception is described honestly            | Both  | affect optional; final pass needed |
-| 🔄      | Check object names are consistent                 | Both  | remove chair/water bottle inconsistency |
-| 🔄      | Check all figures are referenced                  | Mehdi | duplicate architecture figures remain |
+| ✅      | Check perception is described honestly            | Both  | affect optional wording added |
+| ✅      | Check object names are consistent                 | Both  | chair/water bottle inconsistency addressed |
+| ✅      | Check all figures are referenced                  | Mehdi | global architecture + detailed pipeline clarified |
 | ⬜      | Check references and citations                    | Mehdi | no placeholders   |
 | ⬜      | Check final file is Word or LaTeX                 | Mehdi | no PDF            |
 
@@ -537,15 +537,15 @@ Can draft early, but finalize after WP6
 
 | Status | Task                                   | Owner | Notes                 |
 | ------ | -------------------------------------- | ----- | --------------------- |
-| 🔄      | Respond to small sample size           | Mehdi | drafted; update page refs |
-| 🔄      | Respond to failure cases               | Mehdi | drafted; status column pending |
-| 🔄      | Respond to conflicting/malicious input | Mehdi | drafted; update page refs |
-| 🔄      | Respond to verifier repeated rejection | Mehdi | drafted; update page refs |
-| 🔄      | Respond to long-session concern        | Mehdi | drafted; update page refs |
-| 🔄      | Respond to RQs not revisited           | Mehdi | drafted; update page refs |
-| 🔄      | Respond to missing setup image         | Mehdi | drafted; update page refs |
-| 🔄      | Respond to KG contribution not tested  | Mehdi | drafted as limitation/future ablation |
-| 🔄      | Respond to repetition issue            | Mehdi | drafted; update page refs |
+| ✅      | Respond to small sample size           | Mehdi | drafted in rebuttal |
+| ✅      | Respond to failure cases               | Mehdi | drafted in rebuttal |
+| ✅      | Respond to conflicting/malicious input | Mehdi | drafted in rebuttal |
+| ✅      | Respond to verifier repeated rejection | Mehdi | drafted in rebuttal |
+| ✅      | Respond to long-session concern        | Mehdi | drafted in rebuttal |
+| ✅      | Respond to RQs not revisited           | Mehdi | drafted in rebuttal |
+| ✅      | Respond to missing setup image         | Mehdi | drafted in rebuttal |
+| ✅      | Respond to KG contribution not tested  | Mehdi | updated with completed ablation |
+| ✅      | Respond to repetition issue            | Mehdi | drafted in rebuttal |
 
 Acceptance criteria:
 
@@ -558,14 +558,14 @@ Acceptance criteria:
 
 | Status | Task                                              | Owner | Notes                 |
 | ------ | ------------------------------------------------- | ----- | --------------------- |
-| 🔄      | Acknowledge N=3 limitation                        | Mehdi | drafted; update page refs |
-| 🔄      | Explain pilot/proof-of-concept framing            | Mehdi | drafted; update page refs |
-| 🔄      | Respond to weak RQ answers                        | Mehdi | drafted; update page refs |
-| 🔄      | Respond to KG not demonstrated                    | Mehdi | drafted as limitation/future ablation |
-| 🔄      | Respond to custom questionnaire                   | Mehdi | drafted; update page refs |
-| 🔄      | Respond to lack of objective metrics              | Mehdi | drafted as diagnostic observations |
-| 🔄      | Respond to no comparison with simpler alternative | Mehdi | drafted as future ablation |
-| 🔄      | Respond to strong conclusions                     | Mehdi | drafted; final abstract/conclusion pass |
+| ✅      | Acknowledge N=3 limitation                        | Mehdi | drafted in rebuttal |
+| ✅      | Explain pilot/proof-of-concept framing            | Mehdi | drafted in rebuttal |
+| ✅      | Respond to weak RQ answers                        | Mehdi | drafted in rebuttal |
+| ✅      | Respond to KG not demonstrated                    | Mehdi | updated with completed ablation |
+| ✅      | Respond to custom questionnaire                   | Mehdi | drafted in rebuttal |
+| ✅      | Respond to lack of objective metrics              | Mehdi | diagnostic observations + ablation |
+| ✅      | Respond to no comparison with simpler alternative | Mehdi | updated with completed ablation |
+| ✅      | Respond to strong conclusions                     | Mehdi | final abstract/conclusion pass |
 
 Acceptance criteria:
 
